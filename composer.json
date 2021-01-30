@@ -1,0 +1,33 @@
+{
+    "name": "alex-kalanis/kw_mapper",
+    "description": "Mapper for accessing resources in KWCMS",
+    "keywords": [
+        "mapper",
+        "files",
+        "file",
+        "mysql",
+        "sql"
+    ],
+    "license": "BSD-3-Clause",
+    "type": "library",
+    "require": {
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "php": ">=7.2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=7.2"
+    },
+    "suggest": {
+        "alex-kalanis/kw_input": "Remote input for storing in resources"
+    },
+    "autoload": {
+        "psr-4": {
+            "kalanis\\kw_mapper\\": "php-src/"
+        }
+    },
+    "scripts": {
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
