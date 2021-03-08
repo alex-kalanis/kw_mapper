@@ -6,7 +6,7 @@ namespace kalanis\kw_mapper\Records;
 use ArrayAccess;
 use Iterator;
 use kalanis\kw_mapper\Interfaces\ICanFill;
-use kalanis\kw_mapper\Interfaces\IType;
+use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 
 
@@ -22,11 +22,11 @@ abstract class ARecord implements ArrayAccess, Iterator
 {
     use TMapper;
 
-    /** @var Entry[] */
-    private $entries = [];
     private $key = null;
+    /** @var Entry[] */
+    protected $entries = [];
 
-    protected static $types = [IType::TYPE_BOOLEAN, IType::TYPE_INTEGER, IType::TYPE_STRING, IType::TYPE_ARRAY, IType::TYPE_OBJECT];
+    protected static $types = [IEntryType::TYPE_BOOLEAN, IEntryType::TYPE_INTEGER, IEntryType::TYPE_FLOAT, IEntryType::TYPE_STRING, IEntryType::TYPE_SET, IEntryType::TYPE_ARRAY, IEntryType::TYPE_OBJECT];
 
     /**
      * Mapper constructor.
@@ -77,7 +77,6 @@ abstract class ARecord implements ArrayAccess, Iterator
     /**
      * @param string|int $name
      * @param mixed $value
-     * @throws MapperException
      */
     final public function __set($name, $value)
     {
@@ -141,12 +140,14 @@ abstract class ARecord implements ArrayAccess, Iterator
         $data = & $this->entries[$offset];
 
         switch ($data->getType()) {
-            case IType::TYPE_BOOLEAN:
-            case IType::TYPE_INTEGER:
-            case IType::TYPE_STRING:
-            case IType::TYPE_ARRAY:
+            case IEntryType::TYPE_BOOLEAN:
+            case IEntryType::TYPE_INTEGER:
+            case IEntryType::TYPE_FLOAT:
+            case IEntryType::TYPE_STRING:
+            case IEntryType::TYPE_SET:
+            case IEntryType::TYPE_ARRAY:
                 return $data->getData();
-            case IType::TYPE_OBJECT:
+            case IEntryType::TYPE_OBJECT:
                 if (empty($data->getData())) {
                     return null;
                 }
@@ -157,44 +158,6 @@ abstract class ARecord implements ArrayAccess, Iterator
                 throw new MapperException(sprintf('Unknown type %d', $data->getType()));
                 // @codeCoverageIgnoreEnd
         }
-    }
-
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     * @throws MapperException
-     */
-    final public function offsetSet($offset, $value)
-    {
-        $this->offsetCheck($offset);
-        $data = & $this->entries[$offset];
-        switch ($data->getType()) {
-            case IType::TYPE_BOOLEAN:
-                $this->checkBool($value, $offset);
-                break;
-            case IType::TYPE_INTEGER:
-                $this->checkNumeric($value, $offset);
-                $this->checkSize($value, intval($data->getParams()));
-                break;
-            case IType::TYPE_STRING:
-                $this->checkString($value, $offset);
-                $this->checkLength($value, intval($data->getParams()));
-                break;
-            case IType::TYPE_ARRAY:
-                $this->checkArrayForNotEntries($value, $offset);
-                break;
-            case IType::TYPE_OBJECT:
-                $this->reloadClass($data);
-                $class = $data->getData();
-                $class->fillData($value);
-                return; // fill data elsewhere
-            default:
-                // @codeCoverageIgnoreStart
-                // happens only when someone is evil enough and change type directly on entry
-                throw new MapperException(sprintf('Unknown type %d', $data->getType()));
-                // @codeCoverageIgnoreEnd
-        }
-        $data->setData($value);
     }
 
     /**
@@ -210,14 +173,14 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param $offset
      * @throws MapperException
      */
-    final private function offsetCheck($offset)
+    final protected function offsetCheck($offset)
     {
         if (!$this->offsetExists($offset)) {
             throw new MapperException(sprintf('Unknown key %s', $offset));
         }
     }
 
-    final private function reloadClass(Entry $data)
+    final protected function reloadClass(Entry $data)
     {
         if (empty($data->getData())) {
             $dataClass = $data->getParams();
@@ -234,112 +197,21 @@ abstract class ARecord implements ArrayAccess, Iterator
     final private function checkDefault(int $type, $default)
     {
         switch ($type) {
-            case IType::TYPE_INTEGER:
-            case IType::TYPE_STRING:
+            case IEntryType::TYPE_INTEGER:
+            case IEntryType::TYPE_FLOAT:
+            case IEntryType::TYPE_STRING:
                 $this->checkLengthNumeric($default, $type);
                 return;
-            case IType::TYPE_BOOLEAN:
-            case IType::TYPE_ARRAY:
+            case IEntryType::TYPE_BOOLEAN:
+            case IEntryType::TYPE_ARRAY:
+            case IEntryType::TYPE_SET:
                 return;
-            case IType::TYPE_OBJECT:
+            case IEntryType::TYPE_OBJECT:
                 $this->checkObjectString($default, $type);
                 $this->checkObjectInstance($default, $type);
                 return;
             default:
                 throw new MapperException(sprintf('Unknown type %d', $type));
-        }
-    }
-
-    /**
-     * @param mixed $value
-     * @param string $key
-     * @throws MapperException
-     */
-    final private function checkBool($value, string $key)
-    {
-        if (is_null($value)) {
-            return;
-        }
-        if (!is_bool($value)) {
-            throw new MapperException(sprintf('Try to set something other than number into key %s', $key));
-        }
-    }
-
-    /**
-     * @param mixed $value
-     * @param string $key
-     * @throws MapperException
-     */
-    final private function checkNumeric($value, string $key)
-    {
-        if (is_null($value)) {
-            return;
-        }
-        if (!is_numeric($value)) {
-            throw new MapperException(sprintf('Try to set something other than number into key %s', $key));
-        }
-    }
-
-    /**
-     * @param mixed $value
-     * @param string $key
-     * @throws MapperException
-     */
-    final private function checkString($value, string $key)
-    {
-        if (is_null($value)) {
-            return;
-        }
-        if (!is_string($value)) {
-            throw new MapperException(sprintf('Try to set something other than string into key %s', $key));
-        }
-    }
-
-    /**
-     * @param mixed $value
-     * @param int $limit
-     * @throws MapperException
-     */
-    final private function checkSize($value, int $limit)
-    {
-        if (is_null($value)) {
-            return;
-        }
-        if ($value > $limit) {
-            throw new MapperException(sprintf('Try to set number larger than allowed size (%d > %d)', $value, $limit));
-        }
-    }
-
-    /**
-     * @param mixed $value
-     * @param int $limit
-     * @throws MapperException
-     */
-    final private function checkLength($value, int $limit)
-    {
-        if (is_null($value)) {
-            return;
-        }
-        $size = mb_strlen($value);
-        if ($size > $limit) {
-            throw new MapperException(sprintf('Try to set string longer than allowed size (%d > %d)', $size, $limit));
-        }
-    }
-
-    /**
-     * @param mixed $value
-     * @param string $key
-     * @throws MapperException
-     */
-    final private function checkArrayForNotEntries($value, string $key)
-    {
-        if (!is_array($value)) {
-            throw new MapperException(sprintf('You must set array into key %s', $key));
-        }
-        foreach ($value as $item) {
-            if (!$item instanceof ARecord) {
-                throw new MapperException(sprintf('Array in key %s contains something that is not link to another mapper', $key));
-            }
         }
     }
 

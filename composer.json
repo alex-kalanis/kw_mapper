@@ -5,20 +5,33 @@
         "mapper",
         "files",
         "file",
+        "database",
         "mysql",
+        "mssql",
+        "oracle",
+        "postgres",
+        "sqlite",
         "sql"
     ],
     "license": "BSD-3-Clause",
     "type": "library",
     "require": {
+        "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "ext-pdo": "*",
         "php": ">=7.2.0"
     },
     "require-dev": {
+        "ext-pdo": "*",
+        "ext-yaml": "*",
+        "alex-kalanis/kw_storage": ">=1.0",
         "phpunit/phpunit": ">=7.2"
     },
     "suggest": {
+        "ext-pdo": "Content stored in database",
+        "ext-yaml": "Content encoded in YAML",
+        "alex-kalanis/kw_storage": "Remote input for storing in resources",
         "alex-kalanis/kw_input": "Remote input for storing in resources"
     },
     "autoload": {

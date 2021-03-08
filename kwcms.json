@@ -8,6 +8,7 @@
     "php": ">=7.2.0"
   },
   "suggest": {
+    "alex-kalanis/kw_storage": "dev-master",
     "alex-kalanis/kw_input": "dev-master"
   },
   "require-dev": {

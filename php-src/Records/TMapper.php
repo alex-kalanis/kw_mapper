@@ -18,7 +18,9 @@ use kalanis\kw_mapper\Mappers;
 trait TMapper
 {
     /** @var Mappers\AMapper|null */
-    private $mapper = null;
+    protected $mapper = null;
+    /** @var Mappers\Factory|null */
+    private $mapperFactory = null;
 
     /**
      * @param string $name
@@ -37,7 +39,19 @@ trait TMapper
     protected function mapperFromFactory(string $name): Mappers\AMapper
     {
         // factory returns class as static instance, so it is not necessary to fill more memory with necessities
-        return Mappers\Factory::getInstance($name);
+        if (empty($this->mapperFactory)) {
+            $this->mapperFactory = $this->mapperFactory();
+        }
+        return $this->mapperFactory->getInstance($name);
+    }
+
+    /**
+     * You can set own factory to load other mappers
+     * @return Mappers\Factory
+     */
+    protected function mapperFactory(): Mappers\Factory
+    {
+        return new Mappers\Factory();
     }
 
     /**
@@ -69,6 +83,41 @@ trait TMapper
     {
         $this->checkMapper();
         return $this->mapper->load($this->getSelf());
+    }
+
+    /**
+     * @return bool
+     * @throws MapperException
+     */
+    final public function delete(): bool
+    {
+        $this->checkMapper();
+        return $this->mapper->delete($this->getSelf());
+    }
+
+    /**
+     * @return int
+     * @throws MapperException
+     */
+    final public function count(): int
+    {
+        $this->checkMapper();
+        return $this->mapper->countRecord($this->getSelf());
+    }
+
+    /**
+     * @return ARecord[]
+     * @throws MapperException
+     */
+    final public function loadMultiple(): array
+    {
+        $this->checkMapper();
+        return $this->mapper->loadMultiple($this->getSelf());
+    }
+
+    public function getMapper(): Mappers\AMapper
+    {
+        return $this->mapper;
     }
 
     abstract protected function getSelf(): ARecord;

@@ -41,10 +41,11 @@
 
     <testsuites>
         <testsuite name="ALL">
-            <directory>php-tests/RecordsTests</directory>
+            <directory>php-tests/FilesTests</directory>
+            <directory>php-tests/RunningTests</directory>
         </testsuite>
-        <testsuite name="records">
-            <directory>php-tests/RecordsTests</directory>
+        <testsuite name="debugs">
+            <directory>php-tests/DebugsTests</directory>
         </testsuite>
     </testsuites>
 </phpunit>

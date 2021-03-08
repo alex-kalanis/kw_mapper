@@ -15,11 +15,11 @@ class EntryTest extends CommonTestClass
         $this->assertEmpty($data->getType());
         $this->assertEmpty($data->getParams());
         $this->assertEmpty($data->getData());
-        $this->assertFalse($data->isChanged());
+        $this->assertFalse($data->isFromStorage());
 
         $data->setData('different %s %s');
         $this->assertEquals('different %s %s', $data->getData());
-        $this->assertTrue($data->isChanged());
+        $this->assertTrue($data->isFromStorage());
 
         $data->setParams('conv');
         $this->assertEquals('conv', $data->getParams());
@@ -30,9 +30,9 @@ class EntryTest extends CommonTestClass
         $data2 = clone $data;
         $data2->setData('new test', false);
         $this->assertEquals('new test', $data2->getData());
-        $this->assertFalse($data2->isChanged());
+        $this->assertFalse($data2->isFromStorage());
         $this->assertNotEquals('new test', $data->getData());
         $this->assertEquals('different %s %s', $data->getData());
-        $this->assertTrue($data->isChanged());
+        $this->assertTrue($data->isFromStorage());
     }
 }

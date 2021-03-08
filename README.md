@@ -2,7 +2,7 @@
 
 Mapping records and their entries onto other object like tables or files 
 
-# PHP Installation
+## PHP Installation
 
 ```
 {
@@ -22,7 +22,7 @@ Mapping records and their entries onto other object like tables or files
 familiar with composer)
 
 
-# PHP Usage
+## PHP Usage
 
 1.) Use your autoloader (if not already done via Composer autoloader)
 
@@ -34,17 +34,13 @@ familiar with composer)
 
 5.) Just call setting and render
 
-# Python Installation
+## Caveats
 
-into your "setup.py":
+The most of dialects for database has no limits when updating or deleting
+- and roundabout way is to get sub-query with dialect-unknown primary column
+by which the db will limit selection.
 
-```
-    install_requires=[
-        'kw_mapper',
-    ]
-```
+Another one is when you define children with the same alias - you cannot ask for
+them in one query or it will mesh together and you got corrupted data. In better
+case.
 
-# Python Usage
-
-1.) Connect the "kw_mapper.records" into your app. When it came necessary
-you can extends every library to comply your use-case; mainly your sending agent.

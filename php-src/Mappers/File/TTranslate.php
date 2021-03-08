@@ -1,0 +1,44 @@
+<?php
+
+namespace kalanis\kw_mapper\Mappers\File;
+
+
+use kalanis\kw_mapper\Interfaces\IEntryType;
+
+
+/**
+ * Trait TTranslate
+ * @package kalanis\kw_mapper\Mappers\File
+ */
+trait TTranslate
+{
+    protected function translateTypeFrom(string $type, $input)
+    {
+        switch ($type) {
+            case IEntryType::TYPE_BOOLEAN:
+                return boolval(intval($input));
+            case IEntryType::TYPE_INTEGER:
+                return intval($input);
+            case IEntryType::TYPE_FLOAT:
+                return floatval($input);
+            case IEntryType::TYPE_ARRAY:
+            case IEntryType::TYPE_OBJECT:
+                return unserialize($input);
+            default:
+                return strval($input);
+        }
+    }
+
+    protected function translateTypeTo(int $type, $input): string
+    {
+        switch ($type) {
+            case IEntryType::TYPE_BOOLEAN:
+                return strval(intval($input));
+            case IEntryType::TYPE_ARRAY:
+            case IEntryType::TYPE_OBJECT:
+                return serialize($input);
+            default:
+                return strval($input);
+        }
+    }
+}

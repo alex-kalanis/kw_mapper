@@ -16,7 +16,7 @@ class Entry
     protected $type = 0;
     protected $data = null;
     protected $params = null;
-    protected $isChanged = false;
+    protected $isFromStorage = false;
 
     public static function getInstance(): Entry
     {
@@ -36,13 +36,13 @@ class Entry
 
     /**
      * @param null|int|string|ICanFill $data
-     * @param bool $isChanged
+     * @param bool $isFromStorage
      * @return Entry
      */
-    public function setData($data, bool $isChanged = true): self
+    public function setData($data, bool $isFromStorage = false): self
     {
         $this->data = $data;
-        $this->isChanged = $isChanged;
+        $this->isFromStorage = $isFromStorage;
         return $this;
     }
 
@@ -65,8 +65,8 @@ class Entry
         return $this->params;
     }
 
-    public function isChanged(): bool
+    public function isFromStorage(): bool
     {
-        return $this->isChanged;
+        return $this->isFromStorage;
     }
 }
