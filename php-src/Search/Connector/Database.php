@@ -30,12 +30,14 @@ class Database extends AConnector
     public function __construct(ARecord $record)
     {
         $this->basicRecord = $record;
-        $this->records[$record->getMapper()->getAlias()] = $record;
+        $alias = $record->getMapper()->getAlias();
+        $this->records[$alias] = $record;
+        $this->childTree[$alias] = [$alias => $alias];
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
         $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());
         $this->queryBuilder = new Storage\Database\QueryBuilder($this->dialect);
-        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $this->queryBuilder->setBaseTable($alias);
         $this->filler = new Database\Filler($record);
     }
 

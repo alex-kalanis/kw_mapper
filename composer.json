@@ -5,6 +5,7 @@
         "mapper",
         "files",
         "file",
+        "ldap",
         "database",
         "mysql",
         "mssql",
@@ -31,6 +32,8 @@
     "suggest": {
         "ext-pdo": "Content stored in database",
         "ext-yaml": "Content encoded in YAML",
+        "ext-ldap": "Access to LDAP database",
+        "ext-mysqli": "Older connection to MySQL database",
         "alex-kalanis/kw_storage": "Remote input for storing in resources",
         "alex-kalanis/kw_input": "Remote input for storing in resources"
     },

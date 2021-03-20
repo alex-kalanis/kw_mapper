@@ -137,7 +137,7 @@ abstract class ADialect
             case IQueryBuilder::OPERATION_NIN:
                 return sprintf('(%s)', implode(',', $this->notEmptyArray($columnKey)));
             default:
-                throw new MapperException(sprintf('Unknown operation %s', $operation));
+                throw new MapperException(sprintf('Unknown operation *%s*', $operation));
         }
     }
 

@@ -18,6 +18,10 @@ Storage\Database\ConfigStorage::getInstance()->addConfig(
     Storage\Database\Config::init()->setTarget(
         IDriverSources::TYPE_PDO_SQLITE, 'asia', '::1', 7293, 'testing', 'testing', 'external'
     ));
+Storage\Database\ConfigStorage::getInstance()->addConfig(
+    Storage\Database\Config::init()->setTarget(
+        IDriverSources::TYPE_RAW_LDAP, 'auth', '::1', 9215, 'testing', 'testing', 'tree'
+    ));
 
 
 # then define records and mappers

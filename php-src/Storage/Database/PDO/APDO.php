@@ -3,7 +3,7 @@
 namespace kalanis\kw_mapper\Storage\Database\PDO;
 
 
-use kalanis\kw_mapper\Storage\Database\ADatabase;
+use kalanis\kw_mapper\Storage\Database\ASQL;
 use PDO;
 use PDOStatement;
 
@@ -14,12 +14,20 @@ use PDOStatement;
  * PHP data object abstraction
  * Uses placeholders, not question marks
  */
-abstract class APDO extends ADatabase
+abstract class APDO extends ASQL
 {
     /** @var PDO|null */
     protected $connection = null;
     /** @var PDOStatement|null */
     protected $lastStatement;
+
+    public function __destruct()
+    {
+        if ($this->isConnected()) {
+            unset($this->connection);
+            $this->connection = null;
+        }
+    }
 
     public function reconnect(): void
     {

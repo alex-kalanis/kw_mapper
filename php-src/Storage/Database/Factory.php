@@ -19,6 +19,8 @@ class Factory
         IDriverSources::TYPE_PDO_ORACLE => '\kalanis\kw_mapper\Storage\Database\PDO\Oracle',
         IDriverSources::TYPE_PDO_POSTGRES => '\kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL',
         IDriverSources::TYPE_PDO_SQLITE => '\kalanis\kw_mapper\Storage\Database\PDO\SQLite',
+        IDriverSources::TYPE_RAW_MYSQLI => '\kalanis\kw_mapper\Storage\Database\Raw\MySQLi',
+        IDriverSources::TYPE_RAW_LDAP => '\kalanis\kw_mapper\Storage\Database\Raw\Ldap',
     ];
 
     protected static $instances = [];

@@ -15,4 +15,6 @@ interface IDriverSources
     const TYPE_PDO_ORACLE = 'oracle';
     const TYPE_PDO_POSTGRES = 'postgres';
     const TYPE_PDO_SQLITE = 'sqlite';
+    const TYPE_RAW_MYSQLI = 'mysqlnd';
+    const TYPE_RAW_LDAP = 'ldap';
 }

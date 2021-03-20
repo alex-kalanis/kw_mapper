@@ -82,6 +82,11 @@ class Records extends AConnector
         throw new MapperException('Cannot make relations over already loaded records!');
     }
 
+    public function childTree(string $childAlias): array
+    {
+        throw new MapperException('Cannot access relations over already loaded records!');
+    }
+
     public function getCount(): int
     {
         return count($this->getResults(false));

@@ -20,6 +20,8 @@ abstract class AConnector
     protected $basicRecord = null;
     /** @var ARecord[] */
     protected $records = [];
+    /** @var string[][] */
+    protected $childTree = [];
     /** @var Storage\Shared\QueryBuilder */
     protected $queryBuilder = null;
 
@@ -334,15 +336,19 @@ abstract class AConnector
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for child *%s*', $parentKey->getRemoteEntryKey(), $childAlias));
         }
 
+        $tableAlias = empty($customAlias) ? $childAlias : $customAlias;
+        $knownTableName = empty($parentAlias) ? $parentRecord->getMapper()->getAlias() : $parentAlias ;
         $this->queryBuilder->addJoin(
             $childAlias,
             $childMapper->getMapper()->getAlias(),
             $childRelations[$parentKey->getRemoteEntryKey()],
-            empty($parentAlias) ? $parentRecord->getMapper()->getAlias() : $parentAlias ,
+            $knownTableName,
             $parentRelations[$parentKey->getLocalEntryKey()],
             $joinType,
-            empty($customAlias) ? $childAlias : $customAlias
+            $tableAlias
         );
+
+        $this->childTree[$tableAlias] = $this->childTree[$knownTableName] + [$tableAlias => $childAlias];
         return $this;
     }
 
@@ -365,6 +371,20 @@ abstract class AConnector
             IQueryBuilder::OPERATION_NULL
         );
         return $this;
+    }
+
+    /**
+     * Returns tree for accessing the child
+     * @param string $childAlias
+     * @return string[]
+     * @throws MapperException
+     */
+    public function childTree(string $childAlias): array
+    {
+        if (!isset($this->childTree[$childAlias])) {
+            throw new MapperException(sprintf('Unknown alias *%s* in child tree.', $childAlias));
+        }
+        return $this->childTree[$childAlias];
     }
 
     /**

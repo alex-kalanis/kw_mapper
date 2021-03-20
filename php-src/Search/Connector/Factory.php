@@ -31,6 +31,8 @@ class Factory
         $mapper = $record->getMapper();
         if ($mapper instanceof Mappers\Database\ADatabase) {
             return new Database($record);
+        } elseif ($mapper instanceof Mappers\Database\ALdap) {
+            return new Ldap($record);
         } elseif ($mapper instanceof Mappers\File\ATable) {
             return new FileTable($record);
         } elseif (!empty($initialRecords)) {
