@@ -6,7 +6,7 @@ namespace MappersTests;
 use CommonTestClass;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\File;
+use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Storage;
 
 
@@ -77,12 +77,68 @@ class TraitTest extends CommonTestClass
             ['lkjhgdf', IEntryType::TYPE_STRING, 'lkjhgdf'],
         ];
     }
+
+    public function testPks()
+    {
+        $pk = new Pk();
+        $pk->addPrimaryKey('foo');
+        $pk->addPrimaryKey('bar');
+        $contains = $pk->getPrimaryKeys();
+        $this->assertEquals(2, count($contains));
+        $this->assertEquals('foo', reset($contains));
+        $this->assertEquals('bar', next($contains));
+
+        $this->assertTrue($pk->filterPrimary('baz', 'bar'));
+        $this->assertFalse($pk->filterPrimary('uhb', 'nhz'));
+        $this->assertFalse($pk->filterPrimary('uhb', ''));
+    }
+
+    public function testFks()
+    {
+        $fk = new Fk();
+        $fk->addForeignKey('foo', '\Record', 'local', 'remote');
+        $fk->addForeignKey('bar', '\Record', 'baz', 'remote');
+        $contains = $fk->getForeignKeys();
+        $this->assertEquals(2, count($contains));
+        $entry = reset($contains);
+        $this->assertEquals('foo', $entry->getLocalAlias());
+        $this->assertEquals('\Record', $entry->getRemoteRecord());
+        $this->assertEquals('local', $entry->getLocalEntryKey());
+        $this->assertEquals('remote', $entry->getRemoteEntryKey());
+        $entry = next($contains);
+        $this->assertEquals('bar', $entry->getLocalAlias());
+        $this->assertEquals('\Record', $entry->getRemoteRecord());
+        $this->assertEquals('baz', $entry->getLocalEntryKey());
+        $this->assertEquals('remote', $entry->getRemoteEntryKey());
+    }
+
+    public function testRelations()
+    {
+        $relations = new Relations();
+        $relations->setRelation('foo', 'local');
+        $relations->setRelation('bar', 'baz');
+        $contains = $relations->getRelations();
+        $this->assertEquals(2, count($contains));
+        $this->assertEquals('local', reset($contains));
+        $this->assertEquals('foo', key($contains));
+        $this->assertEquals('baz', next($contains));
+        $this->assertEquals('bar', key($contains));
+    }
+
+    public function testSource()
+    {
+        $source = new Source();
+        $source->setSource('foo');
+        $this->assertEquals('foo', $source->getSource());
+        $source->setSource('bar');
+        $this->assertEquals('bar', $source->getSource());
+    }
 }
 
 
 class Content
 {
-    use File\TContent;
+    use Mappers\File\TContent;
 
     public function getKey(): string
     {
@@ -93,7 +149,7 @@ class Content
 
 class Translate
 {
-    use File\TTranslate;
+    use Mappers\File\TTranslate;
 
     public function from(int $type, $content)
     {
@@ -104,4 +160,28 @@ class Translate
     {
         return $this->translateTypeTo($type, $content);
     }
+}
+
+
+class Pk
+{
+    use Mappers\TPrimaryKey;
+}
+
+
+class Fk
+{
+    use Mappers\TForeignKey;
+}
+
+
+class Relations
+{
+    use Mappers\TRelations;
+}
+
+
+class Source
+{
+    use Mappers\TSource;
 }

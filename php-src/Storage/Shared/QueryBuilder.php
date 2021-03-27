@@ -105,6 +105,11 @@ class QueryBuilder
         static::$uniqId++;
     }
 
+    /**
+     * @param string $tableName
+     * @param string|int $columnName
+     * @param mixed $value
+     */
     public function addProperty(string $tableName, $columnName, $value = null): void
     {
         $property = clone $this->property;
@@ -129,8 +134,19 @@ class QueryBuilder
         $this->joins[] = $join->setData($joinUnderAlias, $addTableName, $addColumnName, $knownTableName, $knownColumnName, $side, $tableAlias);
     }
 
+    /**
+     * @param string $tableName
+     * @param string|int $columnName
+     * @param string $direction
+     * @throws MapperException
+     */
     public function addOrderBy(string $tableName, $columnName, string $direction): void
     {
+        if (!empty($direction) && !in_array($direction, [
+                IQueryBuilder::ORDER_ASC, IQueryBuilder::ORDER_DESC,
+            ])) {
+            throw new MapperException(sprintf('Unknown direction *%s* !', $direction));
+        }
         $order = clone $this->order;
         $this->ordering[] = $order->setData($tableName, $columnName, $direction);
     }
@@ -262,5 +278,4 @@ class QueryBuilder
     {
         return $this->offset;
     }
-
 }

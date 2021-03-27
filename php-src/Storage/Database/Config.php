@@ -20,13 +20,14 @@ class Config
     protected $database = ''; // which database will be processed
     protected $timeout = 8600; // how long it will be connected
     protected $persistent = false; // it will try to live longer
+    protected $type = null; // special - type for connection
 
     public static function init()
     {
         return new static();
     }
 
-    public function setTarget(string $driver, string $sourceName, string $location, int $port, string $user, string $password, string $database): self
+    public function setTarget(string $driver, string $sourceName, string $location, int $port, ?string $user, ?string $password, string $database): self
     {
         $this->driver = $driver;
         $this->sourceName = $sourceName;
@@ -38,10 +39,11 @@ class Config
         return $this;
     }
 
-    public function setParams(int $timeout = 8600, bool $persistent = false): self
+    public function setParams(int $timeout = 8600, bool $persistent = false, $type = null): self
     {
         $this->timeout = $timeout;
         $this->persistent = $persistent;
+        $this->type = $type;
         return $this;
     }
 
@@ -65,12 +67,12 @@ class Config
         return $this->port;
     }
 
-    public function getUser(): string
+    public function getUser(): ?string
     {
         return $this->user;
     }
 
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -88,5 +90,10 @@ class Config
     public function isPersistent(): bool
     {
         return $this->persistent;
+    }
+
+    public function getType()
+    {
+        return $this->type;
     }
 }

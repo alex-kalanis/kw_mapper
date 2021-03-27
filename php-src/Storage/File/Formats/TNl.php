@@ -17,8 +17,9 @@ trait TNl
         return strtr($content, INl::NL_REPLACEMENT, "\r\n");
     }
 
-    public function nlToStr(string $content): string
+    public function nlToStr($content): string
     {
+        $content = strval($content);
         return strtr(
             strtr(
                 strtr(

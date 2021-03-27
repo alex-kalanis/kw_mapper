@@ -18,17 +18,13 @@ class Ini implements IFileFormat
 
     public function unpack(string $content): array
     {
-        $lines = parse_ini_string($content);
+        $lines = @parse_ini_string($content, true);
         if (false === $lines) {
             throw new MapperException('Cannot parse INI input');
         }
         $records = [];
-        foreach ($lines as &$line) {
-            if (empty($line)) {
-                continue;
-            }
-
-            $records[] = array_map([$this, 'strToNl'], $line);
+        foreach ($lines as $key => &$line) {
+            $records[$key] = array_map([$this, 'strToNl'], $line);
         }
         return $records;
     }
@@ -36,8 +32,8 @@ class Ini implements IFileFormat
     public function pack(array $records): string
     {
         $lines = [];
-        foreach ($records as &$record) {
-            $lines[] = array_map([$this, 'nlToStr'], $record);
+        foreach ($records as $key => &$record) {
+            $lines[$key] = array_map([$this, 'nlToStr'], $record);
         }
         return $this->write_ini_string($lines);
     }
@@ -47,6 +43,7 @@ class Ini implements IFileFormat
      * @param array $array
      * @return string
      * @link https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
+     * @codeCoverageIgnore I have zero morale to check this one
      */
     protected function write_ini_string(array $array): string
     {

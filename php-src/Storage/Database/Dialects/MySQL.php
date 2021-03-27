@@ -4,6 +4,7 @@ namespace kalanis\kw_mapper\Storage\Database\Dialects;
 
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
@@ -37,7 +38,7 @@ class MySQL extends AEscapedDialect
 
     public function update(QueryBuilder $builder): string
     {
-        return sprintf('UPDATE `%s` SET %s WHERE %s%s;',
+        return sprintf('UPDATE `%s` SET %s%s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
             $this->makeConditions($builder->getConditions(), $builder->getRelation()),
@@ -47,7 +48,7 @@ class MySQL extends AEscapedDialect
 
     public function delete(QueryBuilder $builder): string
     {
-        return sprintf('DELETE FROM `%s` WHERE %s%s;',
+        return sprintf('DELETE FROM `%s`%s%s;',
             $builder->getBaseTable(),
             $this->makeConditions($builder->getConditions(), $builder->getRelation()),
             $this->makeLimits($builder->getLimit(), null)
@@ -57,6 +58,46 @@ class MySQL extends AEscapedDialect
     public function describe(QueryBuilder $builder): string
     {
         return sprintf('DESCRIBE `%s`;', $builder->getBaseTable() );
+    }
+
+    /**
+     * @param string $operation
+     * @return string
+     * @throws MapperException
+     * @codeCoverageIgnore too many options
+     */
+    public function translateOperation(string $operation): string
+    {
+        switch ($operation) {
+            case IQueryBuilder::OPERATION_NULL:
+                return 'IS NULL';
+            case IQueryBuilder::OPERATION_NNULL:
+                return 'IS NOT NULL';
+            case IQueryBuilder::OPERATION_EQ:
+                return '<=>';
+            case IQueryBuilder::OPERATION_NEQ:
+                return '!=';
+            case IQueryBuilder::OPERATION_GT:
+                return '>';
+            case IQueryBuilder::OPERATION_GTE:
+                return '>=';
+            case IQueryBuilder::OPERATION_LT:
+                return '<';
+            case IQueryBuilder::OPERATION_LTE:
+                return '<=';
+            case IQueryBuilder::OPERATION_LIKE:
+                return 'LIKE';
+            case IQueryBuilder::OPERATION_NLIKE:
+                return 'NOT LIKE';
+            case IQueryBuilder::OPERATION_REXP:
+                return 'REGEX';
+            case IQueryBuilder::OPERATION_IN:
+                return 'IN';
+            case IQueryBuilder::OPERATION_NIN:
+                return 'NOT IN';
+            default:
+                throw new MapperException(sprintf('Unknown operation %s', $operation));
+        }
     }
 
     protected function makeLimits(?int $limit, ?int $offset): string

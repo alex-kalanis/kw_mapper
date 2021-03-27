@@ -23,7 +23,7 @@ abstract class ALdap extends AMapper
     protected $database = null;
     /** @var Storage\Shared\QueryBuilder|null */
     protected $queryBuilder = null;
-    /** @var Storage\Database\Dialects\Ldap */
+    /** @var Storage\Shared\Ldap\Queries */
     protected $dialect = null;
 
     /**
@@ -34,7 +34,7 @@ abstract class ALdap extends AMapper
         parent::__construct();
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($this->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
-        $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());
+        $this->dialect = new Storage\Shared\Ldap\Queries();
         $this->queryBuilder = new Storage\Shared\QueryBuilder();
     }
 

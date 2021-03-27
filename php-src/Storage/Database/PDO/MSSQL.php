@@ -8,12 +8,15 @@ use PDO;
 
 /**
  * Class MSSQL
- * @package kalanis\kw_mapper\Storage\Database
+ * @package kalanis\kw_mapper\Storage\Database\PDO
  * Connection to Microsoft SQL, they based it on TransactSQL
  * Can be also used for Sybase DB, because they have similar base
+ * @codeCoverageIgnore remote connection
  */
 class MSSQL extends APDO
 {
+    protected $extension = 'pdo-mssql';
+
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\TransactSQL';

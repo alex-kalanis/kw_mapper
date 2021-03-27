@@ -11,7 +11,7 @@ use kalanis\kw_mapper\Records\ARecord;
 /**
  * Class Factory
  * @package kalanis\kw_mapper\Search
- * Complex searching
+ * Complex searching - factory for access correct connecting classes
  */
 class Factory
 {
@@ -33,6 +33,8 @@ class Factory
             return new Database($record);
         } elseif ($mapper instanceof Mappers\Database\ALdap) {
             return new Ldap($record);
+        } elseif ($mapper instanceof Mappers\Database\WinRegistry) {
+            return new WinRegistry($record);
         } elseif ($mapper instanceof Mappers\File\ATable) {
             return new FileTable($record);
         } elseif (!empty($initialRecords)) {
@@ -40,7 +42,7 @@ class Factory
             $records->setInitialRecords($initialRecords);
             return $records;
         } else {
-            throw new MapperException('Invalid mapper.');
+            throw new MapperException('Invalid mapper for Search.');
         }
     }
 }

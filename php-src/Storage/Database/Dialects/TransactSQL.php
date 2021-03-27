@@ -53,7 +53,7 @@ class TransactSQL extends ADialect
      */
     public function update(QueryBuilder $builder): string
     {
-        return sprintf('UPDATE %s `%s` SET %s WHERE %s;',
+        return sprintf('UPDATE %s %s SET %s%s;',
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
@@ -68,7 +68,7 @@ class TransactSQL extends ADialect
      */
     public function delete(QueryBuilder $builder): string
     {
-        return sprintf('DELETE %s FROM %s WHERE %s;',
+        return sprintf('DELETE %s FROM %s%s;',
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
             $this->makeConditions($builder->getConditions(), $builder->getRelation())
@@ -82,7 +82,7 @@ class TransactSQL extends ADialect
 
     protected function makeLimit(?int $limit): string
     {
-        return is_null($limit) ? '' : sprintf(' TOP(%d) ', $limit);
+        return is_null($limit) ? '' : sprintf('TOP(%d)', $limit);
     }
 
     protected function makeOffset(?int $offset): string

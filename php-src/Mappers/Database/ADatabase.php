@@ -20,7 +20,7 @@ abstract class ADatabase extends AMapper
     use TFill;
     use TTable;
 
-    /** @var Storage\Database\ADatabase */
+    /** @var Storage\Database\ASQL */
     protected $database = null;
     /** @var Storage\Database\Dialects\ADialect */
     protected $dialect = null;

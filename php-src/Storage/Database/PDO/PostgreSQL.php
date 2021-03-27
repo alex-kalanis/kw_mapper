@@ -8,10 +8,13 @@ use PDO;
 
 /**
  * Class PostgreSQL
- * @package kalanis\kw_mapper\Storage\Database
+ * @package kalanis\kw_mapper\Storage\Database\PDO
+ * @codeCoverageIgnore remote connection
  */
 class PostgreSQL extends APDO
 {
+    protected $extension = 'pdo-postgresql';
+
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\PostgreSQL';

@@ -41,7 +41,7 @@ class Oracle extends AEscapedDialect
 
     public function update(QueryBuilder $builder): string
     {
-        return sprintf('UPDATE `%s` SET %s WHERE %s;',
+        return sprintf('UPDATE `%s` SET %s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
             $this->makeConditions($builder->getConditions(), $builder->getRelation())
@@ -50,7 +50,7 @@ class Oracle extends AEscapedDialect
 
     public function delete(QueryBuilder $builder): string
     {
-        return sprintf('DELETE FROM `%s` WHERE %s;',
+        return sprintf('DELETE FROM `%s`%s;',
             $builder->getBaseTable(),
             $this->makeConditions($builder->getConditions(), $builder->getRelation())
         );
@@ -67,6 +67,11 @@ class Oracle extends AEscapedDialect
             ? ''
             : sprintf(' OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', intval($offset), $limit)
         ;
+    }
+
+    public function singlePropertyListed(QueryBuilder\Property $column): string
+    {
+        return sprintf('`%s`', $column->getColumnName());
     }
 
     public function availableJoins(): array

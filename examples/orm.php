@@ -192,3 +192,5 @@ try {
 /// nahore (na abstrakci) bude jen setMap() a zakladni operace
 /// tedy veci jako beforeSave() a afterLoad() - to, co se ma s objektem pachat okolo (bezva pro audity)
 /// oddelovac typu v aplikaci (zatim tecka, dokazu si tam ale predstavit treba # nebo |) bude v searchi - do mapperu netreba, joiny resi builder
+///
+/// V budoucnu udelat reprezentaci tabulek - vcetne ColumnType; bez toho se nebudou dat inteligentne delat migrace

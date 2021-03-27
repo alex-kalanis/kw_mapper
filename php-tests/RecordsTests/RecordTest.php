@@ -4,6 +4,7 @@ namespace RecordsTests;
 
 
 use CommonTestClass;
+use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
@@ -175,6 +176,26 @@ class RecordTest extends CommonTestClass
     {
         $this->expectException(MapperException::class);
         new FailedUserRecord4();
+    }
+
+    public function testDataExchange()
+    {
+        $data = new UserSimpleRecord();
+        $data['id'] = '999';
+        $data['name'] = 321654897;
+        $data['password'] = 'lkjhgfdsa';
+        $data['enabled'] = true;
+
+        $ex = new DataExchange($data);
+        $ex->addExclude('password');
+        $ex->import(['id' => 888, 'password' => 'mnbvcxy']);
+        $ex->clearExclude();
+        $pack = $ex->export();
+
+        $this->assertEquals(888, $pack['id']);
+        $this->assertEquals(321654897, $pack['name']);
+        $this->assertEquals('lkjhgfdsa', $pack['password']);
+        $this->assertEquals(true, $pack['enabled']);
     }
 }
 

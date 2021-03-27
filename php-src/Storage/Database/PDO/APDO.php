@@ -10,9 +10,10 @@ use PDOStatement;
 
 /**
  * Class APDO
- * @package kalanis\kw_mapper\Storage\Database
+ * @package kalanis\kw_mapper\Storage\Database\PDO
  * PHP data object abstraction
  * Uses placeholders, not question marks
+ * @codeCoverageIgnore remote connection
  */
 abstract class APDO extends ASQL
 {
@@ -40,9 +41,11 @@ abstract class APDO extends ASQL
             return [];
         }
 
+        // @codeCoverageIgnoreStart
         if (!$this->isConnected()) {
             $this->connection = $this->connectToServer();
         }
+        // @codeCoverageIgnoreEnd
 
         $statement = $this->connection->prepare($query);
         foreach ($params as $key => $param) {
@@ -61,9 +64,11 @@ abstract class APDO extends ASQL
             return false;
         }
 
+        // @codeCoverageIgnoreStart
         if (!$this->isConnected()) {
             $this->connection = $this->connectToServer();
         }
+        // @codeCoverageIgnoreEnd
 
         $statement = $this->connection->prepare($query);
         foreach ($params as $key => $param) {
@@ -95,9 +100,11 @@ abstract class APDO extends ASQL
 
     public function beginTransaction(): bool
     {
+        // @codeCoverageIgnoreStart
         if (!$this->isConnected()) {
             $this->connection = $this->connectToServer();
         }
+        // @codeCoverageIgnoreEnd
 
         return (bool)$this->connection->beginTransaction();
     }

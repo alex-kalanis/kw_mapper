@@ -41,6 +41,7 @@ class PageRecordTest extends CommonTestClass
 
         $this->assertTrue($data->save(true));
         $this->assertTrue($data->load());
+        $this->assertEquals(1, $data->count());
         $this->assertEquals(1, count($data->loadMultiple()));
         $this->assertTrue(file_exists($this->mockFile()));
         $this->assertTrue($data->delete());

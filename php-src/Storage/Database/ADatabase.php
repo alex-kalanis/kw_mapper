@@ -3,6 +3,10 @@
 namespace kalanis\kw_mapper\Storage\Database;
 
 
+use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Storage\Shared\TCheckExt;
+
+
 /**
  * Class ADatabase
  * @package kalanis\kw_mapper\Storage\Database
@@ -10,13 +14,22 @@ namespace kalanis\kw_mapper\Storage\Database;
  */
 abstract class ADatabase
 {
+    use TCheckExt;
+
     /** @var Config */
     protected $config = null;
     /** @var string[]|int[] */
     protected $attributes = [];
+    /** @var string */
+    protected $extension = 'none';
 
+    /**
+     * @param Config $config
+     * @throws MapperException
+     */
     public function __construct(Config $config)
     {
+        $this->checkExtension($this->extension);
         $this->config = $config;
     }
 

@@ -29,42 +29,42 @@ abstract class ADialect
     /**
      * Create data by properties
      * @param QueryBuilder $builder
-     * @return string
+     * @return string|object
      * @throws MapperException
      */
-    abstract public function insert(QueryBuilder $builder): string;
+    abstract public function insert(QueryBuilder $builder);
 
     /**
      * Read data described by conditions
      * @param QueryBuilder $builder
-     * @return string
+     * @return string|object
      * @throws MapperException
      */
-    abstract public function select(QueryBuilder $builder): string;
+    abstract public function select(QueryBuilder $builder);
 
     /**
      * Update data properties described by conditions
      * @param QueryBuilder $builder
-     * @return string
+     * @return string|object
      * @throws MapperException
      */
-    abstract public function update(QueryBuilder $builder): string;
+    abstract public function update(QueryBuilder $builder);
 
     /**
      * Delete data by conditions
      * @param QueryBuilder $builder
-     * @return string
+     * @return string|object
      * @throws MapperException
      */
-    abstract public function delete(QueryBuilder $builder): string;
+    abstract public function delete(QueryBuilder $builder);
 
     /**
      * Get table structure
      * @param QueryBuilder $builder
-     * @return string
+     * @return string|object
      * @throws MapperException
      */
-    abstract public function describe(QueryBuilder $builder): string;
+    abstract public function describe(QueryBuilder $builder);
 
     /**
      * Get array of available join operations
@@ -77,7 +77,7 @@ abstract class ADialect
      * @return string
      * @throws MapperException
      */
-    protected function translateOperation(string $operation): string
+    public function translateOperation(string $operation): string
     {
         switch ($operation) {
             case IQueryBuilder::OPERATION_NULL:
@@ -85,7 +85,7 @@ abstract class ADialect
             case IQueryBuilder::OPERATION_NNULL:
                 return 'IS NOT NULL';
             case IQueryBuilder::OPERATION_EQ:
-                return '<=>';
+                return '=';
             case IQueryBuilder::OPERATION_NEQ:
                 return '!=';
             case IQueryBuilder::OPERATION_GT:
@@ -117,7 +117,7 @@ abstract class ADialect
      * @return string
      * @throws MapperException
      */
-    protected function translateKey(string $operation, $columnKey): string
+    public function translateKey(string $operation, $columnKey): string
     {
         switch ($operation) {
             case IQueryBuilder::OPERATION_NULL:
@@ -153,7 +153,7 @@ abstract class ADialect
      * @param QueryBuilder\Column[] $columns
      * @return string
      */
-    protected function makeColumns(array $columns): string
+    public function makeColumns(array $columns): string
     {
         if (empty($columns)) {
             return '';
@@ -165,12 +165,12 @@ abstract class ADialect
     {
         $alias = empty($column->getColumnAlias()) ? '' : sprintf(' AS %s', $column->getColumnAlias());
         return empty($column->getAggregate())
-            ? sprintf('%s.%s %s',
+            ? sprintf('%s.%s%s',
                 $column->getTableName(),
                 $column->getColumnName(),
                 $alias
             )
-            : sprintf('%s(%s.%s) %s',
+            : sprintf('%s(%s.%s)%s',
                 $column->getAggregate(),
                 $column->getTableName(),
                 $column->getColumnName(),
@@ -183,7 +183,7 @@ abstract class ADialect
      * @param QueryBuilder\Property[] $properties
      * @return string
      */
-    protected function makeProperty(array $properties): string
+    public function makeProperty(array $properties): string
     {
         if (empty($properties)) {
             return '';
@@ -193,8 +193,7 @@ abstract class ADialect
 
     public function singleProperty(QueryBuilder\Property $column): string
     {
-        return sprintf('%s.%s = %s',
-            $column->getTableName(),
+        return sprintf('%s = %s',
             $column->getColumnName(),
             $column->getColumnKey()
         );
@@ -205,7 +204,7 @@ abstract class ADialect
      * @return string
      * @throws MapperException
      */
-    protected function makePropertyList(array $properties): string
+    public function makePropertyList(array $properties): string
     {
         if (empty($properties)) {
             throw new MapperException('Empty property list!');
@@ -226,7 +225,7 @@ abstract class ADialect
      * @return string
      * @throws MapperException
      */
-    protected function makePropertyEntries(array $properties): string
+    public function makePropertyEntries(array $properties): string
     {
         if (empty($properties)) {
             throw new MapperException('Empty property list!');
@@ -244,12 +243,12 @@ abstract class ADialect
      * @param string $relation
      * @return string
      */
-    protected function makeConditions(array $conditions, string $relation): string
+    public function makeConditions(array $conditions, string $relation): string
     {
         if (empty($conditions)) {
             return '';
         }
-        return ' WHERE ' . implode($relation, array_map([$this, 'singleCondition'], $conditions));
+        return ' WHERE ' . implode(' ' . $relation . ' ', array_map([$this, 'singleCondition'], $conditions));
     }
 
     /**
@@ -259,7 +258,7 @@ abstract class ADialect
      */
     public function singleCondition(QueryBuilder\Condition $condition): string
     {
-        return sprintf(' %s.%s %s %s',
+        return sprintf('%s.%s %s %s',
             $condition->getTableName(),
             $condition->getColumnName(),
             $this->translateOperation($condition->getOperation()),
@@ -271,7 +270,7 @@ abstract class ADialect
      * @param QueryBuilder\Order[] $ordering
      * @return string
      */
-    protected function makeOrdering(array $ordering): string
+    public function makeOrdering(array $ordering): string
     {
         if (empty($ordering)) {
             return '';
@@ -290,7 +289,7 @@ abstract class ADialect
      * @param QueryBuilder\Group[] $groups
      * @return string
      */
-    protected function makeGrouping(array $groups): string
+    public function makeGrouping(array $groups): string
     {
         if (empty($groups)) {
             return '';
@@ -301,8 +300,8 @@ abstract class ADialect
     public function singleGroup(QueryBuilder\Group $group): string
     {
         return empty($group->getTableName())
-            ? sprintf(' %s', $group->getColumnName())
-            : sprintf(' %s.%s',
+            ? sprintf('%s', $group->getColumnName())
+            : sprintf('%s.%s',
                 $group->getTableName(),
                 $group->getColumnName()
             );
@@ -312,7 +311,7 @@ abstract class ADialect
      * @param QueryBuilder\Join[] $join
      * @return string
      */
-    protected function makeJoin(array $join): string
+    public function makeJoin(array $join): string
     {
         if (empty($join)) {
             return '';
@@ -331,5 +330,4 @@ abstract class ADialect
             $join->getNewColumnName()
         );
     }
-
 }

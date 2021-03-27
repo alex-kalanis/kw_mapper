@@ -20,7 +20,10 @@ class Factory
         IDriverSources::TYPE_PDO_POSTGRES => '\kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL',
         IDriverSources::TYPE_PDO_SQLITE => '\kalanis\kw_mapper\Storage\Database\PDO\SQLite',
         IDriverSources::TYPE_RAW_MYSQLI => '\kalanis\kw_mapper\Storage\Database\Raw\MySQLi',
+        IDriverSources::TYPE_RAW_MONGO => '\kalanis\kw_mapper\Storage\Database\Raw\MongoDb',
         IDriverSources::TYPE_RAW_LDAP => '\kalanis\kw_mapper\Storage\Database\Raw\Ldap',
+        IDriverSources::TYPE_RAW_WINREG => '\kalanis\kw_mapper\Storage\Database\Raw\WinRegistry',
+        IDriverSources::TYPE_RAW_DBA => '\kalanis\kw_mapper\Storage\Database\Raw\Dba',
     ];
 
     protected static $instances = [];
@@ -43,9 +46,11 @@ class Factory
             }
             $path = static::$map[$config->getDriver()];
             $instance = new $path($config);
+            // @codeCoverageIgnoreStart
             if (!$instance instanceof ADatabase) {
                 throw new MapperException(sprintf('Defined class %s is not instance of Storage\ADatabase!', $path));
             }
+            // @codeCoverageIgnoreEnd
             static::$instances[$config->getDriver()] = $instance;
         }
         return static::$instances[$config->getDriver()];

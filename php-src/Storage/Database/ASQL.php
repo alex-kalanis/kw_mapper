@@ -3,6 +3,9 @@
 namespace kalanis\kw_mapper\Storage\Database;
 
 
+use kalanis\kw_mapper\MapperException;
+
+
 /**
  * Class ASQL
  * @package kalanis\kw_mapper\Storage\Database
@@ -16,6 +19,7 @@ abstract class ASQL extends ADatabase
      * @param string $query
      * @param string[] $params
      * @return string[]
+     * @throws MapperException
      */
     abstract public function query(string $query, array $params): array;
 
@@ -25,6 +29,7 @@ abstract class ASQL extends ADatabase
      * @param string $query
      * @param string[] $params
      * @return bool
+     * @throws MapperException
      */
     abstract public function exec(string $query, array $params): bool;
 

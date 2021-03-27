@@ -9,15 +9,17 @@ use kalanis\kw_mapper\Storage\Database\ADatabase;
 
 /**
  * Class Ldap
- * @package kalanis\kw_mapper\Storage\Database
+ * @package kalanis\kw_mapper\Storage\Database\Raw
  * Lightweight directory access protocol
  * @link https://www.php.net/manual/en/function.ldap-bind
  * @link https://www.geekshangout.com/php-example-get-data-active-directory-via-ldap/
  * @link https://github.com/etianen/django-python3-ldap/blob/master/django_python3_ldap/ldap.py
  * @link https://github.com/django-auth-ldap/django-auth-ldap/blob/master/django_auth_ldap/backend.py
+ * @codeCoverageIgnore remote connection
  */
 class Ldap extends ADatabase
 {
+    protected $extension = 'ldap';
     /** @var resource|null */
     protected $connection = null;
 
@@ -30,7 +32,7 @@ class Ldap extends ADatabase
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\Ldap';
+        return '\kalanis\kw_mapper\Storage\Database\Dialects\EmptyDialect';
     }
 
     public function reconnect(): void

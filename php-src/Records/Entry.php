@@ -35,7 +35,7 @@ class Entry
     }
 
     /**
-     * @param null|int|string|ICanFill $data
+     * @param null|int|string|array|ICanFill $data
      * @param bool $isFromStorage
      * @return Entry
      */
@@ -47,7 +47,7 @@ class Entry
     }
 
     /**
-     * @return null|int|string|ICanFill
+     * @return null|int|string|array|ICanFill
      */
     public function getData()
     {

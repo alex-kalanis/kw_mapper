@@ -50,7 +50,7 @@ class SQLite extends AEscapedDialect
      */
     public function update(QueryBuilder $builder): string
     {
-        return sprintf('UPDATE `%s` SET %s WHERE %s;',
+        return sprintf('UPDATE `%s` SET %s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
             $this->makeConditions($builder->getConditions(), $builder->getRelation())
@@ -67,7 +67,7 @@ class SQLite extends AEscapedDialect
      */
     public function delete(QueryBuilder $builder): string
     {
-        return sprintf('DELETE FROM `%s` WHERE %s;',
+        return sprintf('DELETE FROM `%s`%s;',
             $builder->getBaseTable(),
             $this->makeConditions($builder->getConditions(), $builder->getRelation())
         );
@@ -84,7 +84,7 @@ class SQLite extends AEscapedDialect
             ? ''
             : (is_null($offset)
                 ? sprintf(' LIMIT %d', $limit)
-                : sprintf(' LIMIT %d OFFSET %d', $offset, $limit)
+                : sprintf(' LIMIT %d OFFSET %d', $limit, $offset)
             )
             ;
     }

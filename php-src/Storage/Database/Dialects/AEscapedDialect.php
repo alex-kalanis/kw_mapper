@@ -18,12 +18,12 @@ abstract class AEscapedDialect extends ADialect
     {
         $alias = empty($column->getColumnAlias()) ? '' : sprintf(' AS `%s`', $column->getColumnAlias());
         return empty($column->getAggregate())
-            ? sprintf('`%s`.`%s` %s',
+            ? sprintf('`%s`.`%s`%s',
                 $column->getTableName(),
                 $column->getColumnName(),
                 $alias
             )
-            : sprintf('%s(`%s`.`%s`) %s',
+            : sprintf('%s(`%s`.`%s`)%s',
                 $column->getAggregate(),
                 $column->getTableName(),
                 $column->getColumnName(),
@@ -34,8 +34,7 @@ abstract class AEscapedDialect extends ADialect
 
     public function singleProperty(QueryBuilder\Property $column): string
     {
-        return sprintf('`%s`.`%s` = %s',
-            $column->getTableName(),
+        return sprintf('`%s` = %s',
             $column->getColumnName(),
             $column->getColumnKey()
         );
@@ -56,7 +55,7 @@ abstract class AEscapedDialect extends ADialect
      */
     public function singleCondition(QueryBuilder\Condition $condition): string
     {
-        return sprintf(' `%s`.`%s` %s %s',
+        return sprintf('`%s`.`%s` %s %s',
             $condition->getTableName(),
             $condition->getColumnName(),
             $this->translateOperation($condition->getOperation()),
@@ -74,8 +73,8 @@ abstract class AEscapedDialect extends ADialect
     public function singleGroup(QueryBuilder\Group $group): string
     {
         return empty($group->getTableName())
-            ? sprintf(' `%s`', $group->getColumnName())
-            : sprintf(' `%s`.`%s`',
+            ? sprintf('`%s`', $group->getColumnName())
+            : sprintf('`%s`.`%s`',
                 $group->getTableName(),
                 $group->getColumnName()
             );

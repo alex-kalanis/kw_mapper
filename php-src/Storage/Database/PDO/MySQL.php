@@ -8,11 +8,14 @@ use PDO;
 
 /**
  * Class MySQL
- * @package kalanis\kw_mapper\Storage\Database
+ * @package kalanis\kw_mapper\Storage\Database\PDO
  * Can be also used for Sphinx search engine
+ * @codeCoverageIgnore remote connection
  */
 class MySQL extends APDO
 {
+    protected $extension = 'pdo-mysql';
+
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\MySQL';

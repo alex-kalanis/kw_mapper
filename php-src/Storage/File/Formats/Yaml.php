@@ -15,7 +15,7 @@ class Yaml implements IFileFormat
 {
     public function unpack(string $content): array
     {
-        $result = yaml_parse($content);
+        $result = @yaml_parse($content);
         if (false === $result) {
             throw new MapperException('Cannot parse YAML input');
         }

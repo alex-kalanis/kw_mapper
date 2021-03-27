@@ -69,7 +69,7 @@ class PageContent extends AFile
     protected function loadRecord(Records\ARecord $record): bool
     {
         $this->setFile($record->offsetGet($this->getPathFromPk($record)));
-        $record->offsetSet($this->getContentKey(), $this->loadFromRemoteSource());
+        $record->getEntry($this->getContentKey())->setData($this->loadFromRemoteSource(), true);
         return true;
     }
 
@@ -86,11 +86,12 @@ class PageContent extends AFile
                 return $this->getStorage()->remove($path);
             }
             // @codeCoverageIgnoreStart
+            // remote storage
         } catch (StorageException $ex) {
             return false;
-            // @codeCoverageIgnoreEnd
         }
         return true; // not found - operation successful
+        // @codeCoverageIgnoreEnd
     }
 
     public function loadMultiple(Records\ARecord $record): array

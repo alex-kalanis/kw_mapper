@@ -55,6 +55,7 @@ class Csv implements IFileFormat
      * @param string $terminator
      * @return string
      * @link https://www.php.net/manual/en/function.str-getcsv.php#88353
+     * @codeCoverageIgnore better try it live
      */
     protected function str_putcsv($array, $delimiter = ',', $enclosure = '"', $terminator = "\n") {
         # First convert associative array to numeric indexed array

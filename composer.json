@@ -12,6 +12,7 @@
         "oracle",
         "postgres",
         "sqlite",
+        "mongodb",
         "sql"
     ],
     "license": "BSD-3-Clause",
@@ -20,12 +21,12 @@
         "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "ext-pdo": "*",
         "php": ">=7.2.0"
     },
     "require-dev": {
         "ext-pdo": "*",
         "ext-yaml": "*",
+        "ext-mongodb": "*",
         "alex-kalanis/kw_storage": ">=1.0",
         "phpunit/phpunit": ">=7.2"
     },
@@ -34,8 +35,11 @@
         "ext-yaml": "Content encoded in YAML",
         "ext-ldap": "Access to LDAP database",
         "ext-mysqli": "Older connection to MySQL database",
-        "alex-kalanis/kw_storage": "Remote input for storing in resources",
-        "alex-kalanis/kw_input": "Remote input for storing in resources"
+        "ext-mongodb": "Content stored in MongoDB",
+        "ext-dba": "Content stored in DBA",
+        "ext-odbc": "Content accessible via ODBC",
+        "ext-win32std": "Connect to Win32 API",
+        "alex-kalanis/kw_storage": "Local storage for accessing resources"
     },
     "autoload": {
         "psr-4": {

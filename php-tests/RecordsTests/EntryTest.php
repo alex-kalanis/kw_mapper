@@ -4,7 +4,9 @@ namespace RecordsTests;
 
 
 use CommonTestClass;
+use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\Records\Entry;
+use kalanis\kw_mapper\Records\TFill;
 
 
 class EntryTest extends CommonTestClass
@@ -17,7 +19,7 @@ class EntryTest extends CommonTestClass
         $this->assertEmpty($data->getData());
         $this->assertFalse($data->isFromStorage());
 
-        $data->setData('different %s %s');
+        $data->setData('different %s %s', true);
         $this->assertEquals('different %s %s', $data->getData());
         $this->assertTrue($data->isFromStorage());
 
@@ -34,5 +36,42 @@ class EntryTest extends CommonTestClass
         $this->assertNotEquals('new test', $data->getData());
         $this->assertEquals('different %s %s', $data->getData());
         $this->assertTrue($data->isFromStorage());
+    }
+
+    /**
+     * @param int $type
+     * @param mixed $value
+     * @dataProvider fillsProvider
+     */
+    public function testFillTypes(int $type, $value)
+    {
+        $fill = new Fill();
+        $data = Entry::getInstance();
+        $data->setType($type);
+        $fill->xFill($data, $value);
+        $this->assertEquals($value, $data->getData());
+    }
+
+    public function fillsProvider(): array
+    {
+        return [
+            [IEntryType::TYPE_BOOLEAN, false],
+            [IEntryType::TYPE_BOOLEAN, true],
+            [IEntryType::TYPE_INTEGER, 15],
+            [IEntryType::TYPE_FLOAT, 18.8],
+            [IEntryType::TYPE_ARRAY, ['foo', 'bar']],
+            [IEntryType::TYPE_STRING, 'lkjhgdf'],
+        ];
+    }
+}
+
+
+class Fill
+{
+    use TFill;
+
+    public function xFill(Entry &$entry, $value)
+    {
+        $this->typedFill($entry, $value);
     }
 }

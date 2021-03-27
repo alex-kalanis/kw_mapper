@@ -1,6 +1,7 @@
 # kw_mapper
 
-Mapping records and their entries onto other object like tables or files 
+Mapping records and their entries onto other object like tables or files. you can choose
+from multiple sources - raw files, SQL and NoSQL databases.
 
 ## PHP Installation
 

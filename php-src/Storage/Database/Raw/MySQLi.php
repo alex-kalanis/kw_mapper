@@ -5,15 +5,20 @@ namespace kalanis\kw_mapper\Storage\Database\Raw;
 
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ASQL;
+use kalanis\kw_mapper\Storage\Database\TBindNames;
 
 
 /**
  * Class MySQLi
- * @package kalanis\kw_mapper\Storage\Database
+ * @package kalanis\kw_mapper\Storage\Database\Raw
  * Problematic connector to MySQL just for compatibility - USE PDO instead!!!
+ * @codeCoverageIgnore remote connection
  */
 class MySQLi extends ASQL
 {
+    use TBindNames;
+
+    protected $extension = 'mysqli';
     /** @var \mysqli|null */
     protected $connection = null;
     /** @var \mysqli_stmt|null */
@@ -81,6 +86,10 @@ class MySQLi extends ASQL
         return $statement->execute();
     }
 
+    /**
+     * @return \mysqli
+     * @throws MapperException
+     */
     protected function connectToServer(): \mysqli
     {
         $connection = new \mysqli(
@@ -91,7 +100,7 @@ class MySQLi extends ASQL
             $this->config->getPort()
         );
         if ($connection->connect_errno) {
-            throw new \RuntimeException('mysqli connection error: ' . $connection->connect_error);
+            throw new MapperException('mysqli connection error: ' . $connection->connect_error);
         }
 
 //        foreach ($this->attributes as $key => $value){
@@ -100,50 +109,11 @@ class MySQLi extends ASQL
 
         $connection->set_charset('utf8');
         if ($connection->errno) {
-            throw new \RuntimeException('mysqli error: ' . $connection->error);
+            throw new MapperException('mysqli error: ' . $connection->error);
         }
         $connection->query('SET NAMES utf8;');
 
         return $connection;
-    }
-
-    /**
-     * @param string $query
-     * @param array $params
-     * @return array
-     * @throws MapperException
-     */
-    protected function bindFromNamedToQuestions(string $query, array $params): array
-    {
-        $binds = [];
-        $types = [];
-        if (empty($params)) {
-            return [$query, $binds, $types];
-        }
-        while (false !== ($pos = strpos($query, ':'))) {
-            $nextSpace = strpos($query, ' ', $pos);
-            $key = ($nextSpace) ? substr($query, $pos, $nextSpace) : substr($query, $pos);
-            if (!isset($params[$key])) {
-                throw new MapperException(sprintf('Unknown bind for key *%s*', $key));
-            }
-            $binds[] = $params[$key];
-            $types[] = $this->getTypeOf($params[$key]);
-            $query = substr($query, 0, $pos) . '?' . ( $nextSpace ? substr($query, $nextSpace) : '' );
-        }
-        return [$query, $binds, $types];
-    }
-
-    protected function getTypeOf($var): string
-    {
-        if (is_bool($var)) {
-            return 'i';
-        } elseif (is_int($var)) {
-            return 'i';
-        } elseif (is_float($var)) {
-            return 'd';
-        } else {
-            return 's';
-        }
     }
 
     public function isConnected(): bool

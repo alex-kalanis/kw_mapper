@@ -38,7 +38,7 @@ class PostgreSQL extends ADialect
 
     public function update(QueryBuilder $builder): string
     {
-        return sprintf('UPDATE %s SET %s WHERE %s;',
+        return sprintf('UPDATE %s SET %s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
             $this->makeConditions($builder->getConditions(), $builder->getRelation())
@@ -47,7 +47,7 @@ class PostgreSQL extends ADialect
 
     public function delete(QueryBuilder $builder): string
     {
-        return sprintf('DELETE FROM %s WHERE %s;',
+        return sprintf('DELETE FROM %s%s;',
             $builder->getBaseTable(),
             $this->makeConditions($builder->getConditions(), $builder->getRelation())
         );
@@ -67,6 +67,11 @@ class PostgreSQL extends ADialect
                 : sprintf(' LIMIT %d OFFSET %d', $limit, $offset)
             )
         ;
+    }
+
+    public function singlePropertyListed(QueryBuilder\Property $column): string
+    {
+        return strval($column->getColumnName());
     }
 
     public function availableJoins(): array

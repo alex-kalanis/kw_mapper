@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\Database\Dialects;
+namespace kalanis\kw_mapper\Storage\Shared\Ldap;
 
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -10,15 +10,15 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
 /**
- * Class Ldap
- * @package kalanis\kw_mapper\Search\Connector\Ldap
+ * Class Queries
+ * @package kalanis\kw_mapper\Storage\Shared\Ldap
  * LDAP queries
  * @link https://ldap.com/ldap-dns-and-rdns/
  * @link https://docs.microsoft.com/cs-cz/windows/win32/adsi/search-filter-syntax?redirectedfrom=MSDN
  * @link https://www.php.net/manual/en/function.ldap-search.php#28593
  * @link https://docs.ldap.com/specs/rfc4514.txt
  */
-class Ldap extends ADialect
+class Queries
 {
     use TFill;
 
@@ -53,14 +53,15 @@ class Ldap extends ADialect
         $trailed = array_filter(explode('/', $parsed['path']));
 
         $locators = [];
-        if (2 > count($trailed)) {
+        $subs = count($trailed);
+        if (2 < $subs) {
             $locators[] = 'uid=' . $this->sanitizeDn(end($trailed));
             $locators[] = 'ou=' . $this->sanitizeDn(prev($trailed));
             $locators[] = 'cn=' . $this->sanitizeDn(prev($trailed));
-        } elseif (1 > count($trailed)) {
+        } elseif (1 < $subs) {
             $locators[] = 'ou=' . $this->sanitizeDn(end($trailed));
             $locators[] = 'cn=' . $this->sanitizeDn(prev($trailed));
-        } elseif (count($trailed)) {
+        } elseif ($subs) {
             $locators[] = 'cn=' . $this->sanitizeDn(end($trailed));
         }
         $locators[] = 'dc=' . $this->sanitizeDn(reset($domain));
@@ -79,10 +80,11 @@ class Ldap extends ADialect
 
         $locators = [];
         $locators[] = 'uid=' . $this->sanitizeDn($username);
-        if (1 > count($trailed)) {
+        $subs = count($trailed);
+        if (1 < $subs) {
             $locators[] = 'ou=' . $this->sanitizeDn(end($trailed));
             $locators[] = 'cn=' . $this->sanitizeDn(prev($trailed));
-        } elseif (count($trailed)) {
+        } elseif ($subs) {
             $locators[] = 'cn=' . $this->sanitizeDn(end($trailed));
         }
         $locators[] = 'dc=' . $this->sanitizeDn(reset($domain));
@@ -93,36 +95,6 @@ class Ldap extends ADialect
     protected function sanitizeDn(string $dn): string
     {
         return strtr($dn, $this->sanitizer);
-    }
-
-    public function insert(QueryBuilder $builder): string
-    {
-        return '';
-    }
-
-    public function select(QueryBuilder $builder): string
-    {
-        return '';
-    }
-
-    public function update(QueryBuilder $builder): string
-    {
-        return '';
-    }
-
-    public function delete(QueryBuilder $builder): string
-    {
-        return '';
-    }
-
-    public function describe(QueryBuilder $builder): string
-    {
-        return '';
-    }
-
-    public function availableJoins(): array
-    {
-        return [];
     }
 
     public function changed(QueryBuilder $builder): array

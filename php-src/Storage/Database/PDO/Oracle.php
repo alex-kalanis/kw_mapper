@@ -8,10 +8,13 @@ use PDO;
 
 /**
  * Class Oracle
- * @package kalanis\kw_mapper\Storage\Database
+ * @package kalanis\kw_mapper\Storage\Database\PDO
+ * @codeCoverageIgnore remote connection
  */
 class Oracle extends APDO
 {
+    protected $extension = 'pdo-oracle';
+
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\Oracle';
