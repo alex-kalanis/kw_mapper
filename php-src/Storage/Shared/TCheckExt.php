@@ -7,7 +7,7 @@ use kalanis\kw_mapper\MapperException;
 
 
 /**
- * trait TCheckModule
+ * trait TCheckExt
  * @package kalanis\kw_mapper\Storage\Shared
  */
 trait TCheckExt

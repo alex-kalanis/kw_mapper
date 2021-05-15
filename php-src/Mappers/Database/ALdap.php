@@ -23,7 +23,7 @@ abstract class ALdap extends AMapper
     protected $database = null;
     /** @var Storage\Shared\QueryBuilder|null */
     protected $queryBuilder = null;
-    /** @var Storage\Shared\Ldap\Queries */
+    /** @var Storage\Database\Dialects\LdapQueries */
     protected $dialect = null;
 
     /**
@@ -34,7 +34,7 @@ abstract class ALdap extends AMapper
         parent::__construct();
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($this->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
-        $this->dialect = new Storage\Shared\Ldap\Queries();
+        $this->dialect = new Storage\Database\Dialects\LdapQueries();
         $this->queryBuilder = new Storage\Shared\QueryBuilder();
     }
 
@@ -50,6 +50,7 @@ abstract class ALdap extends AMapper
         foreach ($record as $key => $item) {
             $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
         }
+        $this->database->connect();
         return ldap_add(
             $this->database->getConnection(),
             $this->dialect->domainDn($this->database->getDomain()),
@@ -66,6 +67,7 @@ abstract class ALdap extends AMapper
                 $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
             }
         }
+        $this->database->connect();
         return ldap_mod_replace(
             $this->database->getConnection(),
             $this->dialect->userDn($this->database->getDomain(), $this->getPk($record)),
@@ -75,6 +77,7 @@ abstract class ALdap extends AMapper
 
     protected function deleteRecord(ARecord $record): bool
     {
+        $this->database->connect();
         return ldap_delete(
             $this->database->getConnection(),
             $this->dialect->userDn($this->database->getDomain(), $this->getPk($record))
@@ -169,6 +172,7 @@ abstract class ALdap extends AMapper
      */
     protected function multiple(): array
     {
+        $this->database->connect();
         $result = ldap_search(
             $this->database->getConnection(),
             $this->dialect->domainDn($this->database->getDomain()),
@@ -193,7 +197,8 @@ abstract class ALdap extends AMapper
         if (empty($params['password'])) {
             throw new MapperException('Password not set!');
         }
-        $this->database->reconnect();
-        return ldap_bind($this->database->getConnection(false), $this->dialect->userDn($this->database->getDomain(), $params['user']), $params['password']);
+        $this->database->disconnect();
+        $this->database->connect(false);
+        return ldap_bind($this->database->getConnection(), $this->dialect->userDn($this->database->getDomain(), $params['user']), $params['password']);
     }
 }

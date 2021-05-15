@@ -3,9 +3,11 @@
 namespace kalanis\kw_mapper\Storage\Database\Odbc;
 
 
+use kalanis\kw_mapper\Interfaces\IPassConnection;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
 use kalanis\kw_mapper\Storage\Database\TBindNames;
+use kalanis\kw_mapper\Storage\Database\TConnection;
 
 
 /**
@@ -17,19 +19,15 @@ use kalanis\kw_mapper\Storage\Database\TBindNames;
  * @link https://www.php.net/manual/en/intro.uodbc.php
  * @codeCoverageIgnore remote connection
  */
-abstract class AOdbc extends ADatabase
+abstract class AOdbc extends ADatabase implements IPassConnection
 {
     use TBindNames;
+    use TConnection;
 
     /** @var resource|null */
     protected $connection = null;
 
-    public function __destruct()
-    {
-        $this->reconnect();
-    }
-
-    public function reconnect(): void
+    public function disconnect(): void
     {
         if ($this->isConnected()) {
             odbc_close($this->connection);
@@ -50,9 +48,7 @@ abstract class AOdbc extends ADatabase
             return [];
         }
 
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToSystem();
-        }
+        $this->connect();
 
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
         $statement = odbc_prepare($this->connection, $updQuery);
@@ -60,20 +56,18 @@ abstract class AOdbc extends ADatabase
         if (odbc_execute($statement, $binds)) {
             $row = [];
 
-            if(!odbc_fetch_row($statement)) {
+            if (!odbc_fetch_row($statement)) {
                 return $row;
             }
 
-            $numFields=odbc_num_fields($statement);
-            for($i=1; $i<=$numFields; $i++)
-            {
-                //odbc starts its indice at 1 but since I am
+            $numFields = odbc_num_fields($statement);
+            for ($i=1; $i<=$numFields; $i++) {
+                // odbc starts its indexes at 1 but since I am
                 // trying to emulate the functionality of *_fetch_array
                 // for other dbs (ie mysql)  I'm going to decrement my
-                // my numeric indice by 1.  This might not be what
+                // my numeric index by 1.  This might not be what
                 // you are after in which case get rid of the -1
-                $row[odbc_field_name($statement, $i)] = $row[$i-1] = odbc_result($statement, $i);
-
+                $row[odbc_field_name($statement, $i)] = $row[$i - 1] = odbc_result($statement, $i);
             }
             odbc_free_result($statement);
             return $row;
@@ -95,15 +89,23 @@ abstract class AOdbc extends ADatabase
             return false;
         }
 
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToSystem();
-        }
+        $this->connect();
 
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
         $statement = odbc_prepare($this->connection, $updQuery);
         $result = odbc_execute($statement, $binds);
         odbc_free_result($statement);
         return $result;
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function connect(): void
+    {
+        if (!$this->isConnected()) {
+            $this->connection = $this->connectToSystem();
+        }
     }
 
     /**
@@ -117,10 +119,5 @@ abstract class AOdbc extends ADatabase
             throw new MapperException('ODBC connection error: ' . odbc_errormsg());
         }
         return $odbc;
-    }
-
-    public function isConnected(): bool
-    {
-        return !empty($this->connection);
     }
 }

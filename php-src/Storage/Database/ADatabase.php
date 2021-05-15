@@ -48,15 +48,4 @@ abstract class ADatabase
      * @return string
      */
     abstract public function languageDialect(): string;
-
-    /**
-     * Check if system knows detail about connection
-     * @return bool
-     */
-    abstract public function isConnected(): bool;
-
-    /**
-     * Reset details about connection
-     */
-    abstract public function reconnect(): void;
 }

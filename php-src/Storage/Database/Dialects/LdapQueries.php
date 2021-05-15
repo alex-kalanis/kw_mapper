@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\Shared\Ldap;
+namespace kalanis\kw_mapper\Storage\Database\Dialects;
 
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
@@ -10,15 +10,15 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
 /**
- * Class Queries
- * @package kalanis\kw_mapper\Storage\Shared\Ldap
+ * Class LdapQueries
+ * @package kalanis\kw_mapper\Storage\Database\Dialects
  * LDAP queries
  * @link https://ldap.com/ldap-dns-and-rdns/
  * @link https://docs.microsoft.com/cs-cz/windows/win32/adsi/search-filter-syntax?redirectedfrom=MSDN
  * @link https://www.php.net/manual/en/function.ldap-search.php#28593
  * @link https://docs.ldap.com/specs/rfc4514.txt
  */
-class Queries
+class LdapQueries
 {
     use TFill;
 

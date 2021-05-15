@@ -3,8 +3,10 @@
 namespace kalanis\kw_mapper\Storage\Database\Raw;
 
 
+use kalanis\kw_mapper\Interfaces\IPassConnection;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
+use kalanis\kw_mapper\Storage\Database\TConnection;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 use MongoDB\Driver;
 
@@ -18,8 +20,10 @@ use MongoDB\Driver;
  * @link https://www.tutorialspoint.com/mongodb/mongodb_overview.htm
  * @codeCoverageIgnore remote connection
  */
-class MongoDb extends ADatabase
+class MongoDb extends ADatabase implements IPassConnection
 {
+    use TConnection;
+
     protected $extension = 'mongodb';
     /** @var Driver\Manager|null */
     protected $connection = null;
@@ -27,11 +31,6 @@ class MongoDb extends ADatabase
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\MongoDb';
-    }
-
-    public function reconnect(): void
-    {
-        $this->connection = null;
     }
 
     /**
@@ -42,10 +41,7 @@ class MongoDb extends ADatabase
      */
     public function query(QueryBuilder $builder, Driver\Query $query)
     {
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
-
+        $this->connect();
         try {
             return $this->connection->executeQuery($this->config->getDatabase() . '.' . $builder->getBaseTable(), $query);
         } catch (Driver\Exception\Exception $ex) {
@@ -55,10 +51,7 @@ class MongoDb extends ADatabase
 
     public function exec(QueryBuilder $builder, Driver\BulkWrite $write): bool
     {
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
-
+        $this->connect();
         $result = $this->connection->executeBulkWrite($this->config->getDatabase() . '.' . $builder->getBaseTable(), $write);
         return $result->isAcknowledged();
     }
@@ -76,8 +69,10 @@ class MongoDb extends ADatabase
         return $connection;
     }
 
-    public function isConnected(): bool
+    public function connect(): void
     {
-        return !empty($this->connection);
+        if (!$this->isConnected()) {
+            $this->connection = $this->connectToServer();
+        }
     }
 }

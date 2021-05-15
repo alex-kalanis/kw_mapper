@@ -22,30 +22,13 @@ abstract class APDO extends ASQL
     /** @var PDOStatement|null */
     protected $lastStatement;
 
-    public function __destruct()
-    {
-        if ($this->isConnected()) {
-            unset($this->connection);
-            $this->connection = null;
-        }
-    }
-
-    public function reconnect(): void
-    {
-        $this->connection = null;
-    }
-
     public function query(string $query, array $params, int $fetchType = PDO::FETCH_ASSOC): array
     {
         if (empty($query)) {
             return [];
         }
 
-        // @codeCoverageIgnoreStart
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
-        // @codeCoverageIgnoreEnd
+        $this->connect();
 
         $statement = $this->connection->prepare($query);
         foreach ($params as $key => $param) {
@@ -64,11 +47,7 @@ abstract class APDO extends ASQL
             return false;
         }
 
-        // @codeCoverageIgnoreStart
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
-        // @codeCoverageIgnoreEnd
+        $this->connect();
 
         $statement = $this->connection->prepare($query);
         foreach ($params as $key => $param) {
@@ -81,12 +60,14 @@ abstract class APDO extends ASQL
         return $statement->closeCursor();
     }
 
-    abstract protected function connectToServer(): PDO;
-
-    public function isConnected(): bool
+    public function connect(): void
     {
-        return !empty($this->connection);
+        if (!$this->isConnected()) {
+            $this->connection = $this->connectToServer();
+        }
     }
+
+    abstract protected function connectToServer(): PDO;
 
     public function lastInsertId(): ?string
     {

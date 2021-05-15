@@ -4,8 +4,10 @@ namespace kalanis\kw_mapper\Storage\Database\Raw;
 
 
 use kalanis\kw_mapper\Interfaces\IDriverSources;
+use kalanis\kw_mapper\Interfaces\IPassConnection;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
+use kalanis\kw_mapper\Storage\Database\TConnection;
 
 
 /**
@@ -14,23 +16,20 @@ use kalanis\kw_mapper\Storage\Database\ADatabase;
  * @link https://www.php.net/manual/en/book.dba.php
  * @codeCoverageIgnore remote connection
  */
-class Dba extends ADatabase
+class Dba extends ADatabase implements IPassConnection
 {
+    use TConnection;
+
     protected $extension = 'dba';
     /** @var resource|null */
     protected $connection = null;
-
-    public function __destruct()
-    {
-        $this->reconnect();
-    }
 
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\EmptyDialect';
     }
 
-    public function reconnect(): void
+    public function disconnect(): void
     {
         if ($this->isConnected()) {
             dba_close($this->connection);
@@ -49,9 +48,7 @@ class Dba extends ADatabase
             return [];
         }
 
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
+        $this->connect();
 
         $results = [];
         $key = dba_firstkey($this->connection);
@@ -77,9 +74,7 @@ class Dba extends ADatabase
             return false;
         }
 
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
+        $this->connect();
 
         if (dba_exists($key, $this->connection)) {
             if (IDriverSources::ACTION_UPDATE == $action) {
@@ -101,6 +96,16 @@ class Dba extends ADatabase
     }
 
     /**
+     * @throws MapperException
+     */
+    public function connect(): void
+    {
+        if (!$this->isConnected()) {
+            $this->connection = $this->connectToServer();
+        }
+    }
+
+    /**
      * @return resource
      * @throws MapperException
      */
@@ -116,10 +121,5 @@ class Dba extends ADatabase
         }
 
         return $connection;
-    }
-
-    public function isConnected(): bool
-    {
-        return !empty($this->connection);
     }
 }

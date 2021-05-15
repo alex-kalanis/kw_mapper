@@ -19,6 +19,7 @@ interface IDriverSources
     const TYPE_RAW_MONGO = 'mongodb';
     const TYPE_RAW_LDAP = 'ldap';
     const TYPE_RAW_WINREG = 'win-registry';
+    const TYPE_RAW_WINREG2 = 'win-registry-net';
     const TYPE_RAW_DBA = 'dba';
     const TYPE_ODBC = 'odbc';
 

@@ -23,6 +23,7 @@ class Factory
         IDriverSources::TYPE_RAW_MONGO => '\kalanis\kw_mapper\Storage\Database\Raw\MongoDb',
         IDriverSources::TYPE_RAW_LDAP => '\kalanis\kw_mapper\Storage\Database\Raw\Ldap',
         IDriverSources::TYPE_RAW_WINREG => '\kalanis\kw_mapper\Storage\Database\Raw\WinRegistry',
+        IDriverSources::TYPE_RAW_WINREG2 => '\kalanis\kw_mapper\Storage\Database\Raw\WinRegistry2',
         IDriverSources::TYPE_RAW_DBA => '\kalanis\kw_mapper\Storage\Database\Raw\Dba',
     ];
 

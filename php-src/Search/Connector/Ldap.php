@@ -22,7 +22,7 @@ class Ldap extends AConnector
 
     /** @var Storage\Database\Raw\Ldap */
     protected $database = null;
-    /** @var Storage\Shared\Ldap\Queries */
+    /** @var Storage\Shared\Ldap\LdapQueries */
     protected $dialect = null;
 
     /**
@@ -37,7 +37,7 @@ class Ldap extends AConnector
         $this->childTree[$alias] = [$alias => $alias];
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
-        $this->dialect = new Storage\Shared\Ldap\Queries();
+        $this->dialect = new Storage\Shared\Ldap\LdapQueries();
         $this->queryBuilder = new Storage\Shared\QueryBuilder();
         $this->queryBuilder->setBaseTable($alias);
     }

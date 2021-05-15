@@ -3,8 +3,10 @@
 namespace kalanis\kw_mapper\Storage\Database\Raw;
 
 
+use kalanis\kw_mapper\Interfaces\IPassConnection;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
+use kalanis\kw_mapper\Storage\Database\TConnection;
 
 
 /**
@@ -17,27 +19,22 @@ use kalanis\kw_mapper\Storage\Database\ADatabase;
  * @link https://github.com/django-auth-ldap/django-auth-ldap/blob/master/django_auth_ldap/backend.py
  * @codeCoverageIgnore remote connection
  */
-class Ldap extends ADatabase
+class Ldap extends ADatabase implements IPassConnection
 {
+    use TConnection;
+
     protected $extension = 'ldap';
     /** @var resource|null */
     protected $connection = null;
-
-    public function __destruct()
-    {
-        if ($this->isConnected()) {
-            $this->reconnect();
-        }
-    }
 
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\EmptyDialect';
     }
 
-    public function reconnect(): void
+    public function disconnect(): void
     {
-        if ($this->connection) {
+        if ($this->isConnected()) {
             ldap_unbind($this->connection);
         }
         $this->connection = null;
@@ -45,15 +42,11 @@ class Ldap extends ADatabase
 
     /**
      * @param bool $withBind
-     * @return resource|null
      * @throws MapperException
      */
-    public function getConnection(bool $withBind = true)
+    public function connect(bool $withBind = true): void
     {
-        if (!$this->isConnected()) {
-            $this->connectToServer($withBind);
-        }
-        return $this->connection;
+        $this->connection = $this->connectToServer($withBind);
     }
 
     /**
@@ -89,11 +82,6 @@ class Ldap extends ADatabase
         }
 
         return $connection;
-    }
-
-    public function isConnected(): bool
-    {
-        return !empty($this->connection);
     }
 
     /**

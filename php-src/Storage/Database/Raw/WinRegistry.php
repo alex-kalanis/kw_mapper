@@ -16,11 +16,7 @@ use kalanis\kw_mapper\Storage\Database\Config;
  *
  * We are not crazy enough - let's work with Windows Registry! In PHP.
  * Seriously... Just the existence of this class is a pure heresy.
- * - the path is tree and there is bunch of keys
- * - the difference with registry and normal file is simple - there is also content type, not just path and content
- * -> it's similar to flags in *nix or app rights in OS9
  * @link https://www.sitepoint.com/access-the-windows-registry-from-php/
- * @link https://www.codeproject.com/Tips/418527/Registry-Key-Handling-Through-PHP
  * Dependency: win32std.dll or win32std.so
  * @link http://pecl.php.net/package/win32std
  * @link https://github.com/RDashINC/win32std
@@ -58,10 +54,6 @@ class WinRegistry extends ADatabase
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\EmptyDialect';
-    }
-
-    public function reconnect(): void
-    {
     }
 
     /**
@@ -127,12 +119,12 @@ class WinRegistry extends ADatabase
      * @param string $action
      * @param int $part
      * @param string $key
-     * @param int $type content type flag
+     * @param string $type content type flag
      * @param mixed $content content itself
      * @return bool
      * @throws MapperException
      */
-    public function exec(string $action, int $part, string $key, int $type = REG_NONE, $content = ''): bool
+    public function exec(string $action, int $part, string $key, string $type = IRegistry::REG_NONE, $content = ''): bool
     {
         if (empty($key)) {
             return false;
@@ -164,10 +156,5 @@ class WinRegistry extends ADatabase
 
         @reg_close_key($resource);
         return true;
-    }
-
-    public function isConnected(): bool
-    {
-        throw new MapperException('The connection is only available per key');
     }
 }

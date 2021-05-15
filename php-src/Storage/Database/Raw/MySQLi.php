@@ -24,21 +24,17 @@ class MySQLi extends ASQL
     /** @var \mysqli_stmt|null */
     protected $lastStatement;
 
-    public function __destruct()
+    public function disconnect()
     {
         if ($this->isConnected()) {
             $this->connection->close();
         }
+        $this->connection = null;
     }
 
     public function languageDialect(): string
     {
         return '\kalanis\kw_mapper\Storage\Database\Dialects\MySQL';
-    }
-
-    public function reconnect(): void
-    {
-        $this->connection = null;
     }
 
     public function query(string $query, array $params, int $fetchType = MYSQLI_ASSOC): array
@@ -47,9 +43,7 @@ class MySQLi extends ASQL
             return [];
         }
 
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
+        $this->connect();
 
         $statement = $this->connection->stmt_init();
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
@@ -71,9 +65,7 @@ class MySQLi extends ASQL
             return false;
         }
 
-        if (!$this->isConnected()) {
-            $this->connection = $this->connectToServer();
-        }
+        $this->connect();
 
         $statement = $this->connection->stmt_init();
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
@@ -84,6 +76,16 @@ class MySQLi extends ASQL
         $this->lastStatement = $statement;
 
         return $statement->execute();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function connect(): void
+    {
+        if (!$this->isConnected()) {
+            $this->connection = $this->connectToServer();
+        }
     }
 
     /**
@@ -114,11 +116,6 @@ class MySQLi extends ASQL
         $connection->query('SET NAMES utf8;');
 
         return $connection;
-    }
-
-    public function isConnected(): bool
-    {
-        return !empty($this->connection);
     }
 
     public function lastInsertId(): ?string

@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Storage\Database;
 
 
+use kalanis\kw_mapper\Interfaces\IPassConnection;
 use kalanis\kw_mapper\MapperException;
 
 
@@ -11,8 +12,10 @@ use kalanis\kw_mapper\MapperException;
  * @package kalanis\kw_mapper\Storage\Database
  * Dummy connector to any SQL database which implements following requirements
  */
-abstract class ASQL extends ADatabase
+abstract class ASQL extends ADatabase implements IPassConnection
 {
+    use TConnection;
+
     /**
      * Get content from DB
      * SELECT ...

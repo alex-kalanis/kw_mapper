@@ -14,7 +14,7 @@ use kalanis\kw_mapper\Storage;
 
 
 /**
- * Class WinRegistry
+ * Class WinRegistry2
  * @package kalanis\kw_mapper\Mappers\Database
  * We are not crazy enough - let's work with Windows Registry! In PHP.
  * - the path is tree and there is bunch of keys; it's composed primary key - part (HK*_*) and path
@@ -22,18 +22,17 @@ use kalanis\kw_mapper\Storage;
  * -> it's similar to flags in *nix or app rights in OS9
  *
  * The registry is hybrid between usual database and filesystem - storing values in tree nodes like FS and with type
- * control like DB. That means there is specific query set.
- * This class uses external library added into php which allows most of operations over registry.
- *
+ * control like DB. That means there is specific query set
+ * This class uses .Net platform to access data in registry.
  * @codeCoverageIgnore cannot check this on *nix
  */
-class WinRegistry extends AMapper
+class WinRegistry2 extends AMapper
 {
     use TContent;
     use TFill;
 
     protected $typeKey = '';
-    /** @var Storage\Database\Raw\WinRegistry */
+    /** @var Storage\Database\Raw\WinRegistry2 */
     protected $database = null;
 
     /**
@@ -48,7 +47,7 @@ class WinRegistry extends AMapper
 
     public function getAlias(): string
     {
-        return 'win_registry';
+        return 'win_registry2';
     }
 
     protected function setMap(): void
@@ -135,40 +134,11 @@ class WinRegistry extends AMapper
 
     public function countRecord(ARecord $record): int
     {
-        $pks = $this->getPrimaryKeys();
-        $values = $this->database->values(
-            $record->offsetGet(reset($pks)),
-            $record->offsetGet(next($pks))
-        );
-        return count($values);
+        throw new MapperException('You cannot count keys in registry!');
     }
 
     public function loadMultiple(ARecord $record): array
     {
-        $pks = $this->getPrimaryKeys();
-        $values = $this->database->values(
-            $record->offsetGet(reset($pks)),
-            $record->offsetGet(next($pks))
-        );
-
-        if (empty($values)) { // nothing found
-            return [];
-        }
-
-        $result = [];
-
-        foreach ($values as $value) {
-            $rec = clone $record;
-
-            // fill entries in record
-            $entry = $rec->getEntry($this->getTypeKey());
-            $entry->setData($this->typedFillSelection($entry, reset($value)), true);
-            $entry = $rec->getEntry($this->getContentKey());
-            $entry->setData($this->typedFillSelection($entry, next($value)), true);
-
-            $result[] = $rec;
-        }
-
-        return $result;
+        throw new MapperException('You cannot get multiple keys from registry!');
     }
 }

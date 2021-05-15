@@ -38,7 +38,8 @@
         "ext-mongodb": "Content stored in MongoDB",
         "ext-dba": "Content stored in DBA",
         "ext-odbc": "Content accessible via ODBC",
-        "ext-win32std": "Connect to Win32 API",
+        "ext-win32std": "Connect to Win32 API via external library",
+        "ext-com_dotnet": "Connect to Win API via .Net platform",
         "alex-kalanis/kw_storage": "Local storage for accessing resources"
     },
     "autoload": {
