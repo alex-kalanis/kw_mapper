@@ -55,6 +55,18 @@ abstract class ARecord implements ArrayAccess, Iterator
     }
 
     /**
+     * @param iterable $data
+     */
+    public function loadWithData(iterable $data): void
+    {
+        foreach ($data as $key => $value) {
+            if ($this->offsetExists($key)) {
+                $this->offsetSet($key, $value);
+            }
+        }
+    }
+
+    /**
      * @param string $name
      * @return Entry
      * @throws MapperException

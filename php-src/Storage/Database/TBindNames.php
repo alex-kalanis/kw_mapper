@@ -38,7 +38,7 @@ trait TBindNames
         return [$query, $binds, $types];
     }
 
-    public function getTypeOf($var): string
+    protected function getTypeOf($var): string
     {
         if (is_bool($var)) {
             return 'i';

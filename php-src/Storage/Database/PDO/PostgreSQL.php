@@ -13,7 +13,7 @@ use PDO;
  */
 class PostgreSQL extends APDO
 {
-    protected $extension = 'pdo-postgresql';
+    protected $extension = 'pdo_pgsql';
 
     public function languageDialect(): string
     {

@@ -57,6 +57,10 @@ class RecordTest extends CommonTestClass
 
         $data->details = 'another piece';
         $this->assertEquals('another piece', $data->details);
+
+        $data->loadWithData(['name' => 'okmijn', 'id' => '555', 'unset' => 'asdfghj']);
+        $this->assertEquals('okmijn', $data->name);
+        $this->assertEquals('555', $data->id);
     }
 
     public function testStrict()

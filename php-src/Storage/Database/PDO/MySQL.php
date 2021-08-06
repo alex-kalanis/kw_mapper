@@ -14,7 +14,7 @@ use PDO;
  */
 class MySQL extends APDO
 {
-    protected $extension = 'pdo-mysql';
+    protected $extension = 'pdo_mysql';
 
     public function languageDialect(): string
     {

@@ -199,6 +199,8 @@ abstract class ALdap extends AMapper
         }
         $this->database->disconnect();
         $this->database->connect(false);
-        return ldap_bind($this->database->getConnection(), $this->dialect->userDn($this->database->getDomain(), $params['user']), $params['password']);
+        $result = ldap_bind($this->database->getConnection(), $this->dialect->userDn($this->database->getDomain(), $params['user']), $params['password']);
+        $this->database->disconnect();
+        return $result;
     }
 }

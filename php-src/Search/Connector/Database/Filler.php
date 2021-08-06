@@ -87,7 +87,9 @@ class Filler
      */
     public function fillResults(array &$records, array $joins, iterable $rows, $parent = null): array
     {
-        $this->setAsFromDatabase($parent);
+        if ($parent) {
+            $this->setAsFromDatabase($parent);
+        }
         $soloRecords = [];
         $whatTablesInRow = [];
 
@@ -96,12 +98,11 @@ class Filler
             $byTables = $this->splitByTables($row);
             foreach ($byTables as $table => &$columns) {
                 $hash = md5(implode($this->hashDelimiter, $columns));
-                if (!isset($soloRecords[$table])) { // new one
+                if (!isset($soloRecords[$hash])) { // new one
                     if (!isset($records[$table])) {
                         throw new MapperException(sprintf('Alias of table *%s* cannot been found within available records', $table));
                     }
                     $soloRecords[$hash] = $this->fillTableRecord(clone $records[$table], $columns);
-
                 }
                 $whatTablesInRow[$rowId][$table] = $hash;
             }
@@ -124,10 +125,9 @@ class Filler
                         $tableHasChildren[$parentHash] = [];
                     }
                     if (!in_array($hash, $tableHasChildren[$parentHash])) { // connect it only once
-                        $parent = $soloRecords[$parentHash];
-                        $parent->{$relations->getJoinUnderAlias()} = $this->addChild(
-                            $soloRecords[$parentHash],
+                        $this->addChild(
                             $relations->getJoinUnderAlias(),
+                            $soloRecords[$parentHash],
                             $soloRecords[$hash]
                         );
                         $tableHasChildren[$parentHash][] = $hash;
@@ -139,9 +139,9 @@ class Filler
         return $results;
     }
 
-    protected function addChild(&$parent, $joinAlias, &$current)
+    protected function addChild(string $joinAlias, &$parent, &$current)
     {
-        return empty($parent->{$joinAlias})
+        $parent->{$joinAlias} = empty($parent->{$joinAlias})
             ? [$current]
             : $parent->{$joinAlias} + [$current]
         ;

@@ -16,7 +16,7 @@ use kalanis\kw_mapper\Storage;
  */
 class Database extends AConnector
 {
-    /** @var Storage\Database\ADatabase */
+    /** @var Storage\Database\ASQL */
     protected $database = null;
     /** @var Storage\Database\Dialects\ADialect */
     protected $dialect = null;
