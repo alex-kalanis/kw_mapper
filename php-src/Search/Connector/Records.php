@@ -66,7 +66,7 @@ class Records extends AConnector
     protected function correctColumn(string $table, string $column)
     {
         $relations = $this->basicRecord->getMapper()->getRelations();
-        if (empty($relations[$column])) {
+        if (!isset($relations[$column])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for table *%s*', $column, $this->basicRecord->getMapper()->getAlias()));
         }
         return $column;
