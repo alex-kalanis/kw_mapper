@@ -16,6 +16,7 @@ use COM;
  * @link https://docs.microsoft.com/en-us/windows/win32/winprog64/accessing-an-alternate-registry-view
  * @link https://docs.microsoft.com/en-us/powershell/scripting/samples/working-with-registry-entries?view=powershell-7.1
  * @link https://ss64.com/vb/shell.html
+ * @codeCoverageIgnore do not know for now how to check that
  */
 class ComRegistry extends COM
 {

@@ -9,6 +9,7 @@ use kalanis\kw_mapper\MapperException;
 /**
  * trait TCheckExt
  * @package kalanis\kw_mapper\Storage\Shared
+ * @codeCoverageIgnore better when not run!
  */
 trait TCheckExt
 {

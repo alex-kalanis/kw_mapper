@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Mappers\File;
 
 
+use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records;
@@ -41,16 +42,25 @@ abstract class ATable extends AFile
         }
 
         // pks
+        $records = array_map([$this, 'toArray'], $this->records);
         foreach ($this->primaryKeys as $primaryKey) {
             $entry = $record->getEntry($primaryKey);
             if (in_array($entry->getType(), [IEntryType::TYPE_INTEGER, IEntryType::TYPE_FLOAT])) {
-                $data = max(array_column($this->records, $primaryKey)) + 1;
-                $entry->setData($data);
+                if (empty($entry->getData())) {
+                    $data = empty($records) ? 1 : max(array_column($records, $primaryKey)) + 1 ;
+                    $entry->setData($data);
+                }
             }
         }
 
-        $this->records = $this->orderFromFirst ? $this->records + [$record] : [$record] + $this->records;
+        $this->records = $this->orderFromFirst ? array_merge($this->records, [$record]) : array_merge([$record], $this->records);
         return $this->saveSource();
+    }
+
+    public function toArray($object)
+    {
+        $ex = new DataExchange($object);
+        return $ex->export();
     }
 
     /**
@@ -157,21 +167,22 @@ abstract class ATable extends AFile
 
         // through relations
         foreach ($this->relations as $objectKey => $recordKey) {
-            if ($usePks && !in_array($objectKey, $this->primaryKeys)) { // is not PK
-                continue;
-            }
-
             if (!$record->offsetExists($objectKey)) { // nothing with unknown data
                 continue;
             }
             if (empty($record->offsetGet($objectKey))) { // nothing with empty data
                 continue;
             }
+
             foreach ($this->records as $knownKey => $knownRecord) {
                 if ( !isset($toProcess[$knownKey]) ) { // not twice
                     continue;
                 }
-                if ( !$knownRecord->offsetExists($objectKey) ) { // empty is not need to compare
+                if ($usePks && !in_array($objectKey, $this->primaryKeys)) { // is not PK
+                    unset($toProcess[$knownKey]);
+                    continue;
+                }
+                if ( !$knownRecord->offsetExists($objectKey) ) { // unknown is not need to compare
                     unset($toProcess[$knownKey]);
                     continue;
                 }
@@ -179,7 +190,7 @@ abstract class ATable extends AFile
                     unset($toProcess[$knownKey]);
                     continue;
                 }
-                if ( $knownRecord->offsetGet($objectKey) != $record->offsetGet($objectKey) ) {
+                if ( strval($knownRecord->offsetGet($objectKey)) != strval($record->offsetGet($objectKey)) ) {
                     unset($toProcess[$knownKey]);
                 }
             }

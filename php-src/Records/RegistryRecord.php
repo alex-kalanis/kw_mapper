@@ -23,6 +23,6 @@ class RegistryRecord extends AStrictRecord
         $this->addEntry('path', IEntryType::TYPE_STRING, 1024);
         $this->addEntry('type', IEntryType::TYPE_SET, [IRegistry::REG_BINARY, IRegistry::REG_DWORD, IRegistry::REG_EXPAND_SZ, IRegistry::REG_MULTI_SZ, IRegistry::REG_NONE, IRegistry::REG_SZ, ]);
         $this->addEntry('content', IEntryType::TYPE_STRING, PHP_INT_MAX);
-        $this->setMapper('\kalanis\kw_mapper\Mappers\File\PageContent');
+        $this->setMapper('\kalanis\kw_mapper\Mappers\Database\WinRegistry');
     }
 }

@@ -40,10 +40,10 @@ class DataExchange
 
     /**
      * Import data into record
-     * @param array $data
+     * @param iterable $data
      * @throws MapperException
      */
-    public function import(array $data): void
+    public function import(iterable $data): void
     {
         foreach ($data as $property => $value) {
             if (!$this->isExcluded($property)

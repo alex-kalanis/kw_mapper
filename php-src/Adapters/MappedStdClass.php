@@ -19,10 +19,12 @@ class MappedStdClass extends stdClass implements ICanFill
     public function fillData($data): void
     {
         if (is_iterable($data)) {
+            if (isset($this->{self::SIMPLE})) {
+                unset($this->{self::SIMPLE});
+            }
             foreach ($data as $key => $value) {
                 $this->$key = $value;
             }
-            unset($this->{self::SIMPLE});
         } else {
             $this->{self::SIMPLE} = $data;
         }

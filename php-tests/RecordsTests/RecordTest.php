@@ -76,6 +76,7 @@ class RecordTest extends CommonTestClass
         $data['name'] = 'plokmijnuhb';
         $data['password'] = 'lkjhgfdsa';
         $data['enabled'] = true;
+        $data['details'] = 'simply';
         $data['details'] = ['auth' => 'ldap', 'rights' => 'limited'];
 
         $this->assertEquals(999, $data['id']);
