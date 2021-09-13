@@ -99,10 +99,7 @@ class QueryBuilder
             throw new MapperException(sprintf('Unknown operation *%s* !', $operation));
         }
         $condition = clone $this->condition;
-        $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
-        $this->conditions[] = $condition->setData($tableName, $columnName, $operation, $columnKey);
-        $this->params[$columnKey] = $value;
-        static::$uniqId++;
+        $this->conditions[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
     }
 
     /**
@@ -113,10 +110,7 @@ class QueryBuilder
     public function addProperty(string $tableName, $columnName, $value = null): void
     {
         $property = clone $this->property;
-        $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
-        $this->properties[] = $property->setData($tableName, $columnName, $columnKey);
-        $this->params[$columnKey] = $value;
-        static::$uniqId++;
+        $this->properties[] = $property->setData($tableName, $columnName, $this->multipleByValue($columnName, $value));
     }
 
     /**
@@ -132,6 +126,25 @@ class QueryBuilder
     {
         $join = clone $this->join;
         $this->joins[] = $join->setData($joinUnderAlias, $addTableName, $addColumnName, $knownTableName, $knownColumnName, $side, $tableAlias);
+    }
+
+    protected function multipleByValue(string $columnName, $value)
+    {
+        if (is_array($value)) {
+            $keys = [];
+            foreach ($value as $item) {
+                $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
+                static::$uniqId++;
+                $this->params[$columnKey] = strval($item);
+                $keys[] = $columnKey;
+            }
+            return $keys;
+        } else {
+            $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
+            static::$uniqId++;
+            $this->params[$columnKey] = strval($value);
+            return $columnKey;
+        }
     }
 
     /**

@@ -44,12 +44,12 @@ class Database extends AConnector
     public function getCount(): int
     {
         $this->queryBuilder->clearColumns();
+        $relations = $this->basicRecord->getMapper()->getRelations();
         if (empty($this->basicRecord->getMapper()->getPrimaryKeys())) {
-            $relations = $this->basicRecord->getMapper()->getRelations();
             $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), reset($relations), 'count', IQueryBuilder::AGGREGATE_COUNT);
         } else {
             $pks = $this->basicRecord->getMapper()->getPrimaryKeys();
-            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), reset($pks), 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), $relations[reset($pks)], 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
         $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
