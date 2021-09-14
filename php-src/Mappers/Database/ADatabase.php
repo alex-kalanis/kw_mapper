@@ -49,7 +49,9 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->clear();
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
-            $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($this->relations[$key])) {
+                $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            }
         }
         return $this->database->exec($this->dialect->insert($this->queryBuilder), $this->queryBuilder->getParams());
     }
@@ -62,10 +64,12 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->clear();
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
-            if ($record->getEntry($key)->isFromStorage()) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
-            } else {
-                $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($this->relations[$key])) {
+                if ($record->getEntry($key)->isFromStorage()) {
+                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                } else {
+                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                }
             }
         }
         return $this->database->exec($this->dialect->update($this->queryBuilder), $this->queryBuilder->getParams());
@@ -86,9 +90,11 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($this->primaryKeys as $key) {
             try {
-                $item = $record->offsetGet($key);
-                if (!empty($item) && $record->getEntry($key)->isFromStorage()) {
-                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                if (isset($this->relations[$key])) {
+                    $item = $record->offsetGet($key);
+                    if (!empty($item) && $record->getEntry($key)->isFromStorage()) {
+                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    }
                 }
             } catch (MapperException $ex) {
                 return false;
@@ -100,8 +106,10 @@ abstract class ADatabase extends AMapper
         }
 
         foreach ($record as $key => $item) {
-            if (!in_array($key, $this->primaryKeys)) {
-                $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($this->relations[$key])) {
+                if (!in_array($key, $this->primaryKeys)) {
+                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                }
             }
         }
         return $this->database->exec($this->dialect->update($this->queryBuilder), $this->queryBuilder->getParams());
@@ -118,7 +126,7 @@ abstract class ADatabase extends AMapper
 
         // conditions - must be equal
         foreach ($record as $key => $item) {
-            if (!empty($item)) {
+            if (isset($this->relations[$key]) && !empty($item)) {
                 $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
@@ -161,9 +169,11 @@ abstract class ADatabase extends AMapper
         // conditions - everything must be equal
         foreach ($this->primaryKeys as $key) {
             try {
-                $item = $record->offsetGet($key);
-                if (!empty($item)) {
-                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                if (isset($this->relations[$key])) {
+                    $item = $record->offsetGet($key);
+                    if (!empty($item)) {
+                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    }
                 }
             } catch (MapperException $ex) {
                 return false;
@@ -200,7 +210,7 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->clear();
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
-            if (!empty($item)) {
+            if (isset($this->relations[$key]) && !empty($item)) {
                 $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
@@ -231,7 +241,7 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->clear();
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
-            if (!empty($item)) {
+            if (isset($this->relations[$key]) && !empty($item)) {
                 $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], $item);
             }
         }
@@ -253,9 +263,11 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($this->primaryKeys as $key) {
             try {
-                $item = $record->offsetGet($key);
-                if (!empty($item)) {
-                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                if (isset($this->relations[$key])) {
+                    $item = $record->offsetGet($key);
+                    if (!empty($item)) {
+                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    }
                 }
             } catch (MapperException $ex) {
                 return false;
@@ -274,7 +286,7 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->clear();
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
-            if (!empty($item)) {
+            if (isset($this->relations[$key]) && !empty($item)) {
                 $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }

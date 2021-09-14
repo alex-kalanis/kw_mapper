@@ -49,7 +49,7 @@ class MySQLi extends ASQL
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
         $statement->prepare($updQuery);
         if (!empty($binds)) {
-            $statement->bind_param(str_repeat('s', count($binds)), ...$binds);
+            $statement->bind_param(implode('', $types), ...$binds);
         }
         $statement->execute();
         $result = $statement->get_result();

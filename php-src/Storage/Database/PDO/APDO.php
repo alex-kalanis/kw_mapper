@@ -31,10 +31,7 @@ abstract class APDO extends ASQL
         $this->connect();
 
         $statement = $this->connection->prepare($query);
-        foreach ($params as $key => $param) {
-            $statement->bindParam($key, $param);
-        }
-        $statement->execute();
+        $statement->execute($params);
 
         $this->lastStatement = $statement;
 
@@ -50,10 +47,7 @@ abstract class APDO extends ASQL
         $this->connect();
 
         $statement = $this->connection->prepare($query);
-        foreach ($params as $key => $param) {
-            $statement->bindParam($key, $param);
-        }
-        $statement->execute();
+        $statement->execute($params);
 
         $this->lastStatement = $statement;
 
