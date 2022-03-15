@@ -14,6 +14,7 @@ use kalanis\kw_mapper\Interfaces\IRegistry;
  * @property string path
  * @property string type
  * @property string content
+ * @codeCoverageIgnore cannot check this on *nix
  */
 class RegistryRecord extends AStrictRecord
 {

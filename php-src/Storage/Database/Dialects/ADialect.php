@@ -156,26 +156,26 @@ abstract class ADialect
     public function makeColumns(array $columns): string
     {
         if (empty($columns)) {
-            return '';
+            return $this->selectAllColumns();
         }
         return implode(', ', array_map([$this, 'singleColumn'], $columns));
+    }
+
+    protected function selectAllColumns(): string
+    {
+        return '*';
     }
 
     public function singleColumn(QueryBuilder\Column $column): string
     {
         $alias = empty($column->getColumnAlias()) ? '' : sprintf(' AS %s', $column->getColumnAlias());
+        $where = empty($column->getTableName())
+            ? sprintf('%s', $column->getColumnName() )
+            : sprintf('%s.%s', $column->getTableName(), $column->getColumnName())
+        ;
         return empty($column->getAggregate())
-            ? sprintf('%s.%s%s',
-                $column->getTableName(),
-                $column->getColumnName(),
-                $alias
-            )
-            : sprintf('%s(%s.%s)%s',
-                $column->getAggregate(),
-                $column->getTableName(),
-                $column->getColumnName(),
-                $alias
-            )
+            ? sprintf('%s%s', $where, $alias )
+            : sprintf('%s(%s)%s', $column->getAggregate(), $where, $alias )
         ;
     }
 
@@ -186,16 +186,21 @@ abstract class ADialect
     public function makeProperty(array $properties): string
     {
         if (empty($properties)) {
-            return '';
+            return $this->selectAllProperties();
         }
         return implode(', ', array_map([$this, 'singleProperty'], $properties));
+    }
+
+    protected function selectAllProperties(): string
+    {
+        return '1=1';
     }
 
     public function singleProperty(QueryBuilder\Property $column): string
     {
         return sprintf('%s = %s',
             $column->getColumnName(),
-            $column->getColumnKey()
+            $column->getColumnKey() // PDO key in behalf of value
         );
     }
 
@@ -214,10 +219,10 @@ abstract class ADialect
 
     public function singlePropertyListed(QueryBuilder\Property $column): string
     {
-        return sprintf('%s.%s',
-            $column->getTableName(),
-            $column->getColumnName()
-        );
+        return empty($column->getTableName())
+            ? sprintf('%s', $column->getColumnName() )
+            : sprintf('%s.%s', $column->getTableName(), $column->getColumnName() )
+        ;
     }
 
     /**
@@ -258,12 +263,19 @@ abstract class ADialect
      */
     public function singleCondition(QueryBuilder\Condition $condition): string
     {
-        return sprintf('%s.%s %s %s',
-            $condition->getTableName(),
-            $condition->getColumnName(),
-            $this->translateOperation($condition->getOperation()),
-            $this->translateKey($condition->getOperation(), $condition->getColumnKey())
-        );
+        return empty($condition->getTableName())
+            ? sprintf('%s %s %s',
+                $condition->getColumnName(),
+                $this->translateOperation($condition->getOperation()),
+                $this->translateKey($condition->getOperation(), $condition->getColumnKey())
+            )
+            : sprintf('%s.%s %s %s',
+                $condition->getTableName(),
+                $condition->getColumnName(),
+                $this->translateOperation($condition->getOperation()),
+                $this->translateKey($condition->getOperation(), $condition->getColumnKey())
+            )
+        ;
     }
 
     /**
@@ -282,7 +294,8 @@ abstract class ADialect
     {
         return empty($order->getTableName())
             ? sprintf('%s %s', $order->getColumnName(), $order->getDirection() )
-            : sprintf('%s.%s %s', $order->getTableName(), $order->getColumnName(), $order->getDirection() );
+            : sprintf('%s.%s %s', $order->getTableName(), $order->getColumnName(), $order->getDirection() )
+        ;
     }
 
     /**
@@ -304,7 +317,8 @@ abstract class ADialect
             : sprintf('%s.%s',
                 $group->getTableName(),
                 $group->getColumnName()
-            );
+            )
+        ;
     }
 
     /**
@@ -325,7 +339,8 @@ abstract class ADialect
             $join->getSide(),
             $join->getNewTableName(),
             empty($join->getTableAlias()) ? '' : sprintf(' AS %s', $join->getTableAlias()),
-            $join->getKnownTableName(), $join->getKnownColumnName(),
+            $join->getKnownTableName(),
+            $join->getKnownColumnName(),
             empty($join->getTableAlias()) ? $join->getNewTableName() : $join->getTableAlias(),
             $join->getNewColumnName()
         );

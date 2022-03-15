@@ -156,9 +156,9 @@ class LdapQueries
             case IQueryBuilder::OPERATION_NLIKE:
                 return sprintf('(!(%s=%s))', $condition->getColumnName(), $this->changePercents($params[$condition->getColumnKey()]));
             case IQueryBuilder::OPERATION_IN:
-                return sprintf('(|%s)', $this->changeIn($condition->getColumnName(), $params[$condition->getColumnKey()]));
+                return sprintf('(|%s)', $this->changeIn($condition->getColumnName(), $condition->getColumnKey(), $params));
             case IQueryBuilder::OPERATION_NIN:
-                return sprintf('(!(|%s))', $this->changeIn($condition->getColumnName(), $params[$condition->getColumnKey()]));
+                return sprintf('(!(|%s))', $this->changeIn($condition->getColumnName(), $condition->getColumnKey(), $params));
             case IQueryBuilder::OPERATION_REXP:
             default:
                 throw new MapperException(sprintf('Unknown operation *%s*!', $condition->getOperation()));
@@ -170,14 +170,15 @@ class LdapQueries
         return strtr($in, ['%' => '*']);
     }
 
-    protected function changeIn(string $columnName, array $params): string
+    protected function changeIn(string $columnName, array $keys, array $params): string
     {
-        if (empty($params)) {
+        if (empty($keys)) {
             return sprintf('(%s=0)', $columnName);
         }
         $vars = [];
-        foreach ($params as $param) {
-            $vars[] = sprintf('(%s=%s)', $columnName, $param);
+        foreach ($keys as $key) {
+            $val = isset($params[$key]) ? $params[$key] : '0';
+            $vars[] = sprintf('(%s=%s)', $columnName, $val);
         }
         return implode('', $vars);
     }

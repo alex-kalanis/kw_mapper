@@ -1,6 +1,7 @@
 <?php
 
-use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
+use kalanis\kw_mapper\Storage\Database;
+use kalanis\kw_mapper\Storage\Shared;
 use PHPUnit\Framework\TestCase;
 
 
@@ -13,7 +14,16 @@ class CommonTestClass extends TestCase
 }
 
 
-class Builder extends QueryBuilder
+class Builder extends Shared\QueryBuilder
+{
+    public function resetCounter(): void
+    {
+        static::$uniqId = 0;
+    }
+}
+
+
+class Builder2 extends Database\QueryBuilder
 {
     public function resetCounter(): void
     {

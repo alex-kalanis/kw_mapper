@@ -27,7 +27,7 @@ trait TBindNames
         }
         while (false !== ($pos = strpos($query, ':'))) {
             $nextSpace = strpos($query, ' ', $pos);
-            $key = ($nextSpace) ? substr($query, $pos, $nextSpace) : substr($query, $pos);
+            $key = ($nextSpace) ? substr($query, $pos, $nextSpace - $pos) : substr($query, $pos);
             if (!isset($params[$key])) {
                 throw new MapperException(sprintf('Unknown bind for key *%s*', $key));
             }

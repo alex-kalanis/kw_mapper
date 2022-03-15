@@ -22,6 +22,8 @@ class RecordTest extends CommonTestClass
         $this->assertEmpty($data['password']);
         $this->assertEmpty($data['enabled']);
         $this->assertEmpty($data['details']);
+        $this->assertNotEmpty($data->getMapper());
+        $this->assertInstanceOf('\kalanis\kw_mapper\Mappers\AMapper', $data->getMapper());
 
         $data['id'] = '999';
         $data['name'] = 321654897;
@@ -183,6 +185,30 @@ class RecordTest extends CommonTestClass
         new FailedUserRecord4();
     }
 
+    public function testInvalidPreset()
+    {
+        $data = new FailedUserRecord5();
+        $data->status = null;
+        $data->status = 'fail';
+        $this->expectException(MapperException::class);
+        $data->status = 'not-set';
+    }
+
+    public function testInsertInvalidInputArray1()
+    {
+        $data = new FailedUserRecord6();
+        $this->expectException(MapperException::class);
+        $data->others = 'okmijn';
+    }
+
+    public function testInsertInvalidInputArray2()
+    {
+        $data = new FailedUserRecord6();
+        $data->others = [new UserStrictRecord(), new UserSimpleRecord()];
+        $this->expectException(MapperException::class);
+        $data->others = ['okmijn'];
+    }
+
     public function testDataExchange()
     {
         $data = new UserSimpleRecord();
@@ -221,7 +247,9 @@ class UserStrictRecord extends AStrictRecord
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 8888); // max size of inner number is 8888
         $this->addEntry('name', IEntryType::TYPE_STRING, 128);
         $this->addEntry('password', IEntryType::TYPE_STRING, 16); // max length of string is 16 chars
+        $this->addEntry('status', IEntryType::TYPE_SET, ['ok', 'fail', 'error']);
         $this->addEntry('enabled', IEntryType::TYPE_BOOLEAN);
+        $this->addEntry('others', IEntryType::TYPE_ARRAY);
         $this->addEntry('details', IEntryType::TYPE_OBJECT, '\kalanis\kw_mapper\Adapters\MappedStdClass');
         $this->setMapper('\RecordsTests\UserFileMapper');
     }
@@ -283,6 +311,24 @@ class FailedUserRecord4 extends ASimpleRecord
     protected function addEntries(): void
     {
         $this->addEntry('details', IEntryType::TYPE_OBJECT, '\stdClass');
+    }
+}
+
+
+class FailedUserRecord5 extends AStrictRecord
+{
+    protected function addEntries(): void
+    {
+        $this->addEntry('status', IEntryType::TYPE_SET, ['ok', 'fail', 'error']);
+    }
+}
+
+
+class FailedUserRecord6 extends AStrictRecord
+{
+    protected function addEntries(): void
+    {
+        $this->addEntry('others', IEntryType::TYPE_ARRAY);
     }
 }
 

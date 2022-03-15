@@ -8,6 +8,7 @@ use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\Config;
 use kalanis\kw_mapper\Storage\Database\Factory;
+use kalanis\kw_mapper\Storage\Database\TConnection;
 
 
 class DatabasesTest extends CommonTestClass
@@ -50,4 +51,29 @@ class DatabasesTest extends CommonTestClass
         $this->assertInstanceOf('\kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL', $class);
     }
 
+    /**
+     * @throws MapperException
+     */
+    public function testConnectionRun()
+    {
+        $lib = new XConnect();
+        $this->assertFalse($lib->isConnected());
+        $this->assertEmpty($lib->getConnection());
+        $lib->connect();
+        $this->assertTrue($lib->isConnected());
+        $this->assertEquals('resource somewhere', $lib->getConnection());
+        $lib->reconnect();
+        $this->assertTrue($lib->isConnected());
+    }
+}
+
+
+class XConnect
+{
+    use TConnection;
+
+    public function connect(): void
+    {
+        $this->connection = 'resource somewhere';
+    }
 }

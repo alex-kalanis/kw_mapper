@@ -110,7 +110,7 @@ class QueryBuilder
     public function addProperty(string $tableName, $columnName, $value = null): void
     {
         $property = clone $this->property;
-        $this->properties[] = $property->setData($tableName, $columnName, $this->multipleByValue($columnName, $value));
+        $this->properties[] = $property->setData($tableName, $columnName, $this->simpleByValue($columnName, $value));
     }
 
     /**
@@ -133,18 +133,20 @@ class QueryBuilder
         if (is_array($value)) {
             $keys = [];
             foreach ($value as $item) {
-                $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
-                static::$uniqId++;
-                $this->params[$columnKey] = strval($item);
-                $keys[] = $columnKey;
+                $keys[] = $this->simpleByValue($columnName, $item);
             }
             return $keys;
         } else {
-            $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
-            static::$uniqId++;
-            $this->params[$columnKey] = strval($value);
-            return $columnKey;
+            return $this->simpleByValue($columnName, $value);
         }
+    }
+
+    protected function simpleByValue(string $columnName, $value): string
+    {
+        $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
+        static::$uniqId++;
+        $this->params[$columnKey] = is_null($value) ? null : strval($value);
+        return $columnKey;
     }
 
     /**

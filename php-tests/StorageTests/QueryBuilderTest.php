@@ -4,9 +4,12 @@ namespace StorageTests;
 
 
 use Builder;
+use Builder2;
 use CommonTestClass;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Storage\Database\Dialects\EmptyDialect;
+use kalanis\kw_mapper\Storage\Database\Dialects\MySQL;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
@@ -205,5 +208,30 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals(IQueryBuilder::RELATION_OR, $builder->getRelation());
         $builder->clearColumns();
         $builder->clear();
+    }
+
+    public function testJoins()
+    {
+        $builder = new Builder2(new MySQL());
+        $builder->addJoin('foo', 'bar', 'baz', 'anf', 'bvt', 'CROSS', 'xdh');
+        $data = $builder->getJoins();
+        $data = reset($data);
+        $this->assertEquals('foo', $data->getJoinUnderAlias());
+        $this->assertEquals('bar', $data->getNewTableName());
+        $this->assertEquals('baz', $data->getNewColumnName());
+        $this->assertEquals('anf', $data->getKnownTableName());
+        $this->assertEquals('bvt', $data->getKnownColumnName());
+        $this->assertEquals('CROSS', $data->getSide());
+        $this->assertEquals('xdh', $data->getTableAlias());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testJoinsFail()
+    {
+        $builder = new Builder2(new EmptyDialect());
+        $this->expectException(MapperException::class);
+        $builder->addJoin('foo', 'bar', 'baz', 'anf', 'bvt', 'xcu', 'xdh');
     }
 }

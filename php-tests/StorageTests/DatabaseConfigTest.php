@@ -32,5 +32,11 @@ class DatabaseConfigTest extends CommonTestClass
         $this->assertEquals('baz', $conf->getDatabase());
         $this->assertFalse($conf->isPersistent());
         $this->assertEquals(3600, $conf->getTimeout());
+        $this->assertEquals(null, $conf->getType());
+
+        $conf->setParams(22, true, 'edcrfvtgb');
+        $this->assertTrue($conf->isPersistent());
+        $this->assertEquals(22, $conf->getTimeout());
+        $this->assertEquals('edcrfvtgb', $conf->getType());
     }
 }
