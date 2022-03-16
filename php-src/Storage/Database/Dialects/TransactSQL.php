@@ -19,7 +19,7 @@ class TransactSQL extends ADialect
      * @return string
      * @link https://docs.microsoft.com/en-us/sql/t-sql/statements/insert-transact-sql?view=sql-server-ver15
      */
-    public function insert(QueryBuilder $builder): string
+    public function insert(QueryBuilder $builder)
     {
         return sprintf('INSERT INTO %s SET %s;',
             $builder->getBaseTable(),
@@ -32,7 +32,7 @@ class TransactSQL extends ADialect
      * @return string
      * @link https://docs.microsoft.com/en-us/sql/t-sql/queries/select-transact-sql?view=sql-server-ver15
      */
-    public function select(QueryBuilder $builder): string
+    public function select(QueryBuilder $builder)
     {
         return sprintf('SELECT %s %s FROM %s %s %s%s%s%s;',
             $this->makeLimit($builder->getLimit()),
@@ -51,7 +51,7 @@ class TransactSQL extends ADialect
      * @return string
      * @link https://docs.microsoft.com/en-us/sql/t-sql/queries/update-transact-sql?view=sql-server-ver15
      */
-    public function update(QueryBuilder $builder): string
+    public function update(QueryBuilder $builder)
     {
         return sprintf('UPDATE %s %s SET %s%s;',
             $this->makeLimit($builder->getLimit()),
@@ -66,7 +66,7 @@ class TransactSQL extends ADialect
      * @return string
      * @link https://docs.microsoft.com/en-us/sql/t-sql/statements/delete-transact-sql?view=sql-server-ver15
      */
-    public function delete(QueryBuilder $builder): string
+    public function delete(QueryBuilder $builder)
     {
         return sprintf('DELETE %s FROM %s%s;',
             $this->makeLimit($builder->getLimit()),
@@ -75,7 +75,7 @@ class TransactSQL extends ADialect
         );
     }
 
-    public function describe(QueryBuilder $builder): string
+    public function describe(QueryBuilder $builder)
     {
         return sprintf('SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \'%s\';', $builder->getBaseTable() );
     }

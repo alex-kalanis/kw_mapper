@@ -30,3 +30,12 @@ class Builder2 extends Database\QueryBuilder
         static::$uniqId = 0;
     }
 }
+
+
+class StrObjMock
+{
+    public function __toString()
+    {
+        return 'strObj';
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace StorageTests;
+namespace StorageTests\Database\Dialects;
 
 
 use Builder;
@@ -10,7 +10,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\Dialects\LdapQueries;
 
 
-class DatabaseDialectLdapTest extends CommonTestClass
+class LdapTest extends CommonTestClass
 {
     public function testDomain()
     {

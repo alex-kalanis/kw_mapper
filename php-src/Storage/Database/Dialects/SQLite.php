@@ -19,7 +19,7 @@ class SQLite extends AEscapedDialect
      * @return string
      * @link https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
      */
-    public function insert(QueryBuilder $builder): string
+    public function insert(QueryBuilder $builder)
     {
         return sprintf('INSERT INTO `%s` SET %s;',
             $builder->getBaseTable(),
@@ -27,7 +27,7 @@ class SQLite extends AEscapedDialect
         );
     }
 
-    public function select(QueryBuilder $builder): string
+    public function select(QueryBuilder $builder)
     {
         return sprintf('SELECT %s FROM `%s` %s %s%s%s%s;',
             $this->makeColumns($builder->getColumns()),
@@ -48,7 +48,7 @@ class SQLite extends AEscapedDialect
      * @link https://www.tutorialspoint.com/sqlite/sqlite_update_query.htm
      * @link https://stackoverflow.com/questions/17823018/sqlite-update-limit-case
      */
-    public function update(QueryBuilder $builder): string
+    public function update(QueryBuilder $builder)
     {
         return sprintf('UPDATE `%s` SET %s%s;',
             $builder->getBaseTable(),
@@ -65,7 +65,7 @@ class SQLite extends AEscapedDialect
      * @link https://www.tutorialspoint.com/sqlite/sqlite_delete_query.htm
      * @link https://stackoverflow.com/questions/1824490/how-do-you-enable-limit-for-delete-in-sqlite
      */
-    public function delete(QueryBuilder $builder): string
+    public function delete(QueryBuilder $builder)
     {
         return sprintf('DELETE FROM `%s`%s;',
             $builder->getBaseTable(),
@@ -73,7 +73,7 @@ class SQLite extends AEscapedDialect
         );
     }
 
-    public function describe(QueryBuilder $builder): string
+    public function describe(QueryBuilder $builder)
     {
         return sprintf('SELECT `sql` FROM `sqlite_master` WHERE `name` = \'%s\';', $builder->getBaseTable() );
     }

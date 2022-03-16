@@ -1,6 +1,6 @@
 <?php
 
-namespace StorageTests;
+namespace StorageTests\Database;
 
 
 use Builder;

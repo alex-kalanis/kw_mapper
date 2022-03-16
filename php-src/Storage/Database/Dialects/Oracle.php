@@ -17,7 +17,7 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 class Oracle extends AEscapedDialect
 {
-    public function insert(QueryBuilder $builder): string
+    public function insert(QueryBuilder $builder)
     {
         return sprintf('INSERT INTO `%s` (%s) VALUES (%s);',
             $builder->getBaseTable(),
@@ -26,7 +26,7 @@ class Oracle extends AEscapedDialect
         );
     }
 
-    public function select(QueryBuilder $builder): string
+    public function select(QueryBuilder $builder)
     {
         return sprintf('SELECT %s FROM `%s` %s %s%s%s%s;',
             $this->makeColumns($builder->getColumns()),
@@ -39,7 +39,7 @@ class Oracle extends AEscapedDialect
         );
     }
 
-    public function update(QueryBuilder $builder): string
+    public function update(QueryBuilder $builder)
     {
         return sprintf('UPDATE `%s` SET %s%s;',
             $builder->getBaseTable(),
@@ -48,7 +48,7 @@ class Oracle extends AEscapedDialect
         );
     }
 
-    public function delete(QueryBuilder $builder): string
+    public function delete(QueryBuilder $builder)
     {
         return sprintf('DELETE FROM `%s`%s;',
             $builder->getBaseTable(),
@@ -56,7 +56,7 @@ class Oracle extends AEscapedDialect
         );
     }
 
-    public function describe(QueryBuilder $builder): string
+    public function describe(QueryBuilder $builder)
     {
         return sprintf('DESCRIBE `%s`;', $builder->getBaseTable() );
     }

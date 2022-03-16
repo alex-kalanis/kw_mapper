@@ -1,6 +1,6 @@
 <?php
 
-namespace StorageTests;
+namespace StorageTests\Database;
 
 
 use CommonTestClass;
@@ -22,7 +22,7 @@ class DialectTest extends CommonTestClass
      */
     public function testOperations(string $operation, $key, string $expectedOper, string $expectedKey): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals($expectedOper, $lib->translateOperation($operation));
     }
 
@@ -36,13 +36,12 @@ class DialectTest extends CommonTestClass
      */
     public function testKeys(string $operation, $key, string $expectedOper, string $expectedKey): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals($expectedKey, $lib->translateKey($operation, $key));
     }
 
     public function operationsProvider(): array
     {
-        $strObj = new StrObjMock();
         return [
             [IQueryBuilder::OPERATION_NULL, 'abc', 'IS NULL', ''],
             [IQueryBuilder::OPERATION_NNULL, 123, 'IS NOT NULL', ''],
@@ -51,7 +50,7 @@ class DialectTest extends CommonTestClass
             [IQueryBuilder::OPERATION_GT, 'ghi', '>', 'ghi'],
             [IQueryBuilder::OPERATION_GTE, 789.01, '>=', '789.01'],
             [IQueryBuilder::OPERATION_LT, 'jkl', '<', 'jkl'],
-            [IQueryBuilder::OPERATION_LTE, $strObj, '<=', 'strObj'],
+            [IQueryBuilder::OPERATION_LTE, new \StrObjMock(), '<=', 'strObj'],
             [IQueryBuilder::OPERATION_LIKE, 'mno', 'LIKE', 'mno'],
             [IQueryBuilder::OPERATION_NLIKE, 'pqr', 'NOT LIKE', 'pqr'],
             [IQueryBuilder::OPERATION_REXP, 'stu', 'REGEX', 'stu'],
@@ -62,21 +61,21 @@ class DialectTest extends CommonTestClass
 
     public function testOperationsFailed(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->expectException(MapperException::class);
         $lib->translateOperation('undefined one');
     }
 
     public function testKeysFailed(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->expectException(MapperException::class);
         $lib->translateKey('undefined one', 'with failed');
     }
 
     public function testAllColumns(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('*', $lib->makeColumns([]));
     }
 
@@ -92,13 +91,13 @@ class DialectTest extends CommonTestClass
         $columns[] = $column1;
         $columns[] = $column2;
 
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('jkl(abc.def) AS ghi, pqr AS stu', $lib->makeColumns($columns));
     }
 
     public function testAllProperties(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('1=1', $lib->makeProperty([]));
     }
 
@@ -114,7 +113,7 @@ class DialectTest extends CommonTestClass
         $properties[] = $property1;
         $properties[] = $property2;
 
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('def = ghi, mno = pqr', $lib->makeProperty($properties));
     }
 
@@ -123,7 +122,7 @@ class DialectTest extends CommonTestClass
      */
     public function testAllPropertiesAsList(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->expectException(MapperException::class);
         $lib->makePropertyList([]);
     }
@@ -133,7 +132,7 @@ class DialectTest extends CommonTestClass
      */
     public function testAllPropertiesAsEntries(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->expectException(MapperException::class);
         $lib->makePropertyEntries([]);
     }
@@ -153,14 +152,14 @@ class DialectTest extends CommonTestClass
         $properties[] = $property1;
         $properties[] = $property2;
 
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('abc.def, mno', $lib->makePropertyList($properties));
         $this->assertEquals('ghi, pqr', $lib->makePropertyEntries($properties));
     }
 
     public function testAllConditions(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('', $lib->makeConditions([], 'not need for this'));
     }
 
@@ -176,13 +175,13 @@ class DialectTest extends CommonTestClass
         $conditions[] = $condition1;
         $conditions[] = $condition2;
 
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals(' WHERE abc.def = ghi UNIONED BY mno != pqr', $lib->makeConditions($conditions, 'UNIONED BY'));
     }
 
     public function testAllOrdering(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('', $lib->makeOrdering([]));
     }
 
@@ -198,13 +197,13 @@ class DialectTest extends CommonTestClass
         $ordering[] = $order1;
         $ordering[] = $order2;
 
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals(' ORDER BY abc.def ghi, mno pqr', $lib->makeOrdering($ordering));
     }
 
     public function testAllGrouping(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('', $lib->makeGrouping([]));
     }
 
@@ -220,13 +219,13 @@ class DialectTest extends CommonTestClass
         $grouping[] = $group1;
         $grouping[] = $group2;
 
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals(' GROUP BY abc.def, ghi', $lib->makeGrouping($grouping));
     }
 
     public function testAllJoins(): void
     {
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals('', $lib->makeJoin([]));
     }
 
@@ -242,50 +241,7 @@ class DialectTest extends CommonTestClass
         $grouping[] = $group1;
         $grouping[] = $group2;
 
-        $lib = new XDialect();
+        $lib = new Dialects\EmptyDialect();
         $this->assertEquals(' pqr JOIN def AS stu ON (jkl.mno = stu.ghi)  klm JOIN yza ON (efg.hij = yza.bcd)', $lib->makeJoin($grouping));
-    }
-}
-
-
-class XDialect extends Dialects\ADialect
-{
-    public function insert(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function select(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function update(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function delete(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function describe(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function availableJoins(): array
-    {
-        return ['test1', 'test2'];
-    }
-}
-
-
-class StrObjMock
-{
-    public function __toString()
-    {
-        return 'strObj';
     }
 }

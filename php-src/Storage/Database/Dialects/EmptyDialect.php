@@ -13,27 +13,27 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 class EmptyDialect extends ADialect
 {
-    public function insert(QueryBuilder $builder): string
+    public function insert(QueryBuilder $builder)
     {
         return '';
     }
 
-    public function select(QueryBuilder $builder): string
+    public function select(QueryBuilder $builder)
     {
         return '';
     }
 
-    public function update(QueryBuilder $builder): string
+    public function update(QueryBuilder $builder)
     {
         return '';
     }
 
-    public function delete(QueryBuilder $builder): string
+    public function delete(QueryBuilder $builder)
     {
         return '';
     }
 
-    public function describe(QueryBuilder $builder): string
+    public function describe(QueryBuilder $builder)
     {
         return '';
     }

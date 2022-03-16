@@ -1,6 +1,6 @@
 <?php
 
-namespace StorageTests;
+namespace StorageTests\Database\Dialects;
 
 
 use CommonTestClass;
@@ -8,7 +8,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\Dialects;
 
 
-class DatabaseDialectsTest extends CommonTestClass
+class FactoryTest extends CommonTestClass
 {
     /**
      * @throws MapperException

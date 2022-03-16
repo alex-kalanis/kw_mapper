@@ -1,6 +1,6 @@
 <?php
 
-namespace StorageTests;
+namespace StorageTests\Database;
 
 
 use CommonTestClass;
@@ -8,7 +8,7 @@ use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\Storage\Database\Config;
 
 
-class DatabaseConfigTest extends CommonTestClass
+class ConfigTest extends CommonTestClass
 {
     public function testProcess()
     {
