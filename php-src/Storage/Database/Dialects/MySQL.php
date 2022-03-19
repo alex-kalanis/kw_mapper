@@ -96,7 +96,7 @@ class MySQL extends AEscapedDialect
             case IQueryBuilder::OPERATION_NIN:
                 return 'NOT IN';
             default:
-                throw new MapperException(sprintf('Unknown operation %s', $operation));
+                throw new MapperException(sprintf('Unknown operation *%s*', $operation));
         }
     }
 

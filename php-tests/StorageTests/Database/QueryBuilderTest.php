@@ -15,7 +15,7 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 class QueryBuilderTest extends CommonTestClass
 {
-    public function testBuilderColumn()
+    public function testBuilderColumn(): void
     {
         $data = new QueryBuilder\Column();
         $data->setData('foo', 'bar', 'baz', 'anf');
@@ -25,7 +25,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('anf', $data->getAggregate());
     }
 
-    public function testBuilderCondition()
+    public function testBuilderCondition(): void
     {
         $data = new QueryBuilder\Condition();
         $data->setData('foo', 'bar', 'baz', 'anf');
@@ -35,7 +35,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('anf', $data->getColumnKey());
     }
 
-    public function testBuilderGroup()
+    public function testBuilderGroup(): void
     {
         $data = new QueryBuilder\Group();
         $data->setData('foo', 'bar');
@@ -43,7 +43,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('bar', $data->getColumnName());
     }
 
-    public function testBuilderJoin()
+    public function testBuilderJoin(): void
     {
         $data = new QueryBuilder\Join();
         $data->setData('foo', 'bar', 'baz', 'anf', 'bvt', 'xcu', 'xdh');
@@ -56,7 +56,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('xdh', $data->getTableAlias());
     }
 
-    public function testBuilderOrder()
+    public function testBuilderOrder(): void
     {
         $data = new QueryBuilder\Order();
         $data->setData('foo', 'bar', 'baz');
@@ -65,7 +65,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('baz', $data->getDirection());
     }
 
-    public function testBuilderProperty()
+    public function testBuilderProperty(): void
     {
         $data = new QueryBuilder\Property();
         $data->setData('foo', 'bar', 'baz');
@@ -77,7 +77,7 @@ class QueryBuilderTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testColumnFail()
+    public function testColumnFail(): void
     {
         $builder = new Builder();
         $this->expectException(MapperException::class);
@@ -87,7 +87,7 @@ class QueryBuilderTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testColumnPass()
+    public function testColumnPass(): void
     {
         $builder = new Builder();
         $builder->addColumn('foo', 'bar', 'baz');
@@ -101,7 +101,7 @@ class QueryBuilderTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testConditionFail()
+    public function testConditionFail(): void
     {
         $builder = new Builder();
         $this->expectException(MapperException::class);
@@ -111,7 +111,7 @@ class QueryBuilderTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testConditionPass()
+    public function testConditionPass(): void
     {
         $builder = new Builder();
         $builder->addCondition('foo', 'bar', IQueryBuilder::OPERATION_EQ, 'anf');
@@ -124,7 +124,7 @@ class QueryBuilderTest extends CommonTestClass
         $builder->resetCounter();
     }
 
-    public function testProperty()
+    public function testProperty(): void
     {
         $builder = new Builder();
         $builder->addProperty('foo', 'bar', 'baz');
@@ -136,7 +136,7 @@ class QueryBuilderTest extends CommonTestClass
         $builder->resetCounter();
     }
 
-    public function testJoin()
+    public function testJoin(): void
     {
         $builder = new Builder();
         $builder->addJoin('foo', 'bar', 'baz', 'anf', 'bvt', 'xcu', 'xdh');
@@ -154,7 +154,7 @@ class QueryBuilderTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testOrderFail()
+    public function testOrderFail(): void
     {
         $builder = new Builder();
         $this->expectException(MapperException::class);
@@ -164,7 +164,7 @@ class QueryBuilderTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testOrderPass()
+    public function testOrderPass(): void
     {
         $builder = new Builder();
         $builder->addOrderBy('foo', 'bar', IQueryBuilder::ORDER_DESC);
@@ -175,7 +175,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals(IQueryBuilder::ORDER_DESC, $data->getDirection());
     }
 
-    public function testGroup()
+    public function testGroup(): void
     {
         $builder = new Builder();
         $builder->addGroupBy('foo', 'bar');
@@ -185,7 +185,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('bar', $data->getColumnName());
     }
 
-    public function testLimits()
+    public function testLimits(): void
     {
         $builder = new Builder();
         $builder->setLimits(75, 12);
@@ -197,7 +197,7 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEmpty($builder->getOffset());
     }
 
-    public function testBasics()
+    public function testBasics(): void
     {
         $builder = new Builder();
         $builder->setBaseTable('foo');
@@ -210,7 +210,7 @@ class QueryBuilderTest extends CommonTestClass
         $builder->clear();
     }
 
-    public function testJoins()
+    public function testJoins(): void
     {
         $builder = new Builder2(new MySQL());
         $builder->addJoin('foo', 'bar', 'baz', 'anf', 'bvt', 'CROSS', 'xdh');
@@ -228,7 +228,7 @@ class QueryBuilderTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testJoinsFail()
+    public function testJoinsFail(): void
     {
         $builder = new Builder2(new EmptyDialect());
         $this->expectException(MapperException::class);

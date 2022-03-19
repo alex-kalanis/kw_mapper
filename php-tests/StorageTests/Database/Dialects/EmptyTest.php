@@ -14,7 +14,7 @@ class EmptyTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testAll()
+    public function testAll(): void
     {
         $qb = new Builder();
         $sql = new EmptyDialect();

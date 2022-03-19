@@ -25,11 +25,11 @@ class Factory
     {
         if (!isset(static::$instances[$path])) {
             if (!class_exists($path)) {
-                throw new MapperException(sprintf('Wanted class %s not exists!', $path));
+                throw new MapperException(sprintf('Wanted class *%s* not exists!', $path));
             }
             $instance = new $path();
             if (!$instance instanceof AMapper) {
-                throw new MapperException(sprintf('Defined class %s is not instance of AMapper!', $path));
+                throw new MapperException(sprintf('Defined class *%s* is not instance of AMapper!', $path));
             }
             static::$instances[$path] = $instance;
         }

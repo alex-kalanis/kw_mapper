@@ -12,7 +12,7 @@ use kalanis\kw_mapper\Storage\Database\Dialects\LdapQueries;
 
 class LdapTest extends CommonTestClass
 {
-    public function testDomain()
+    public function testDomain(): void
     {
         $sql = new LdapQueries();
         $this->assertEquals('uid=name,ou=organization,cn=on,dc=server,dc=tld', $sql->domainDn('ldaps://someone:logged@server.tld:136/on/organization/name/'));
@@ -20,7 +20,7 @@ class LdapTest extends CommonTestClass
         $this->assertEquals('cn=on,dc=server,dc=tld', $sql->domainDn('ldaps://someone:logged@server.tld:136/on/'));
     }
 
-    public function testUser()
+    public function testUser(): void
     {
         $sql = new LdapQueries();
         $this->assertEquals('uid=\23myself,ou=name,cn=organization,dc=server,dc=tld', $sql->userDn('ldaps://someone:logged@server.tld:136/on/organization/name/', '#myself'));
@@ -31,7 +31,7 @@ class LdapTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');
@@ -46,7 +46,7 @@ class LdapTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFilter()
+    public function testFilter(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');

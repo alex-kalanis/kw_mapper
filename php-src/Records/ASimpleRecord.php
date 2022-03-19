@@ -40,7 +40,7 @@ abstract class ASimpleRecord extends ARecord
             default:
                 // @codeCoverageIgnoreStart
                 // happens only when someone is evil enough and change type directly on entry
-                throw new MapperException(sprintf('Unknown type %d', $data->getType()));
+                throw new MapperException(sprintf('Unknown type *%d*', $data->getType()));
                 // @codeCoverageIgnoreEnd
         }
     }

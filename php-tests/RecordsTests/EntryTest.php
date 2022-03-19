@@ -11,7 +11,7 @@ use kalanis\kw_mapper\Records\TFill;
 
 class EntryTest extends CommonTestClass
 {
-    public function testSimple()
+    public function testSimple(): void
     {
         $data = Entry::getInstance();
         $this->assertEmpty($data->getType());
@@ -43,7 +43,7 @@ class EntryTest extends CommonTestClass
      * @param mixed $value
      * @dataProvider fillsProvider
      */
-    public function testFillTypes(int $type, $value)
+    public function testFillTypes(int $type, $value): void
     {
         $fill = new Fill();
         $data = Entry::getInstance();

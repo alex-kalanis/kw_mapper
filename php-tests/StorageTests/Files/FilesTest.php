@@ -14,7 +14,7 @@ class FilesTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testStoredFails()
+    public function testStoredFails(): void
     {
         $content = ContentMultiton::getInstance();
         $this->expectException(MapperException::class);
@@ -24,7 +24,7 @@ class FilesTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testStoredPass()
+    public function testStoredPass(): void
     {
         $factory = Formats\Factory::getInstance();
         $content = ContentMultiton::getInstance();

@@ -52,7 +52,7 @@ abstract class AStrictRecord extends ARecord
             default:
                 // @codeCoverageIgnoreStart
                 // happens only when someone is evil enough and change type directly on entry
-                throw new MapperException(sprintf('Unknown type %d', $data->getType()));
+                throw new MapperException(sprintf('Unknown type *%d*', $data->getType()));
                 // @codeCoverageIgnoreEnd
         }
         $data->setData($value);
@@ -69,7 +69,7 @@ abstract class AStrictRecord extends ARecord
             return;
         }
         if (!is_bool($value)) {
-            throw new MapperException(sprintf('Try to set something other than number into key %s', $key));
+            throw new MapperException(sprintf('Try to set something other than number into key *%s*', $key));
         }
     }
 
@@ -84,7 +84,7 @@ abstract class AStrictRecord extends ARecord
             return;
         }
         if (!is_numeric($value)) {
-            throw new MapperException(sprintf('Try to set something other than number into key %s', $key));
+            throw new MapperException(sprintf('Try to set something other than number into key *%s*', $key));
         }
     }
 
@@ -99,7 +99,7 @@ abstract class AStrictRecord extends ARecord
             return;
         }
         if (!is_string($value)) {
-            throw new MapperException(sprintf('Try to set something other than string into key %s', $key));
+            throw new MapperException(sprintf('Try to set something other than string into key *%s*', $key));
         }
     }
 
@@ -114,7 +114,7 @@ abstract class AStrictRecord extends ARecord
             return;
         }
         if ($value > $limit) {
-            throw new MapperException(sprintf('Try to set number larger than allowed size (%.4f > %.4f)', $value, $limit));
+            throw new MapperException(sprintf('Try to set number larger than allowed size (*%.4f* > *%.4f*)', $value, $limit));
         }
     }
 
@@ -130,7 +130,7 @@ abstract class AStrictRecord extends ARecord
         }
         $size = mb_strlen($value);
         if ($size > $limit) {
-            throw new MapperException(sprintf('Try to set string longer than allowed size (%d > %d)', $size, $limit));
+            throw new MapperException(sprintf('Try to set string longer than allowed size (*%d* > *%d*)', $size, $limit));
         }
     }
 
@@ -157,11 +157,11 @@ abstract class AStrictRecord extends ARecord
     final private function checkArrayForNotEntries($value, string $key)
     {
         if (!is_array($value)) {
-            throw new MapperException(sprintf('You must set array into key %s', $key));
+            throw new MapperException(sprintf('You must set array into key *%s*', $key));
         }
         foreach ($value as $item) {
             if (!$item instanceof ARecord) {
-                throw new MapperException(sprintf('Array in key %s contains something that is not link to another mapper', $key));
+                throw new MapperException(sprintf('Array in key *%s* contains something that is not link to another mapper', $key));
             }
         }
     }

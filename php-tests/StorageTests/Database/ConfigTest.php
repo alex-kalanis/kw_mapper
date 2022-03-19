@@ -10,7 +10,7 @@ use kalanis\kw_mapper\Storage\Database\Config;
 
 class ConfigTest extends CommonTestClass
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $conf = Config::init()->setTarget(
             IDriverSources::TYPE_PDO_MSSQL,

@@ -13,7 +13,7 @@ use kalanis\kw_mapper\Storage;
 
 class TraitTest extends CommonTestClass
 {
-    public function testStoragePkFail()
+    public function testStoragePkFail(): void
     {
         $data = new StoragePage();
         $data->noPks();
@@ -21,7 +21,7 @@ class TraitTest extends CommonTestClass
         $data->load(new PageRecord());
     }
 
-    public function testStorageInstances()
+    public function testStorageInstances(): void
     {
         // set once, propagate everywhere
         $data1 = new CStorage();
@@ -31,7 +31,7 @@ class TraitTest extends CommonTestClass
         $this->assertEquals($data1->getStore(), $data2->getStore());
     }
 
-    public function testNewLines()
+    public function testNewLines(): void
     {
         $content = implode(INl::NL_REPLACEMENT, ['adsfghjk', 'yxcvbnml', 'qwertzui', 'op']);
         $data = new Nl();

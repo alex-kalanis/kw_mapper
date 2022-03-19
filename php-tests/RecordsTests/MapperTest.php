@@ -32,28 +32,40 @@ class MapperTest extends CommonTestClass
         parent::tearDown();
     }
 
-    public function testFactory()
+    /**
+     * @throws MapperException
+     */
+    public function testFactory(): void
     {
         $data = new Mappers\Factory();
         $instance = $data->getInstance('\kalanis\kw_mapper\Mappers\File\PageContent');
         $this->assertInstanceOf('\kalanis\kw_mapper\Mappers\AMapper', $instance);
     }
 
-    public function testFactoryFail1()
+    /**
+     * @throws MapperException
+     */
+    public function testFactoryFail1(): void
     {
         $data = new Mappers\Factory();
         $this->expectException(MapperException::class);
         $data->getInstance('no class');
     }
 
-    public function testFactoryFail2()
+    /**
+     * @throws MapperException
+     */
+    public function testFactoryFail2(): void
     {
         $data = new Mappers\Factory();
         $this->expectException(MapperException::class);
         $data->getInstance('\stdClass');
     }
 
-    public function testSimple()
+    /**
+     * @throws MapperException
+     */
+    public function testSimple(): void
     {
         $data = new RecordForMapper();
         $data->setExternalEntries();
@@ -66,7 +78,10 @@ class MapperTest extends CommonTestClass
         $this->assertEquals(1, count($multi));
     }
 
-    public function testUnavailable()
+    /**
+     * @throws MapperException
+     */
+    public function testUnavailable(): void
     {
         $data = new RecordForMapper();
         $this->expectException(MapperException::class);
@@ -78,7 +93,10 @@ class MapperTest extends CommonTestClass
         return implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'data', 'testing_one.txt']);
     }
 
-    public function testNoBefore()
+    /**
+     * @throws MapperException
+     */
+    public function testNoBefore(): void
     {
         $data = new RecordForMapper();
         $data->setExternalEntries();
@@ -93,7 +111,10 @@ class MapperTest extends CommonTestClass
         $this->assertFalse($mapper->delete($data));
     }
 
-    public function testNoDuring()
+    /**
+     * @throws MapperException
+     */
+    public function testNoDuring(): void
     {
         $data = new RecordForMapper();
         $data->setExternalEntries();
@@ -108,7 +129,10 @@ class MapperTest extends CommonTestClass
         $this->assertFalse($mapper->delete($data));
     }
 
-    public function testNoAfter()
+    /**
+     * @throws MapperException
+     */
+    public function testNoAfter(): void
     {
         $data = new RecordForMapper();
         $data->setExternalEntries();

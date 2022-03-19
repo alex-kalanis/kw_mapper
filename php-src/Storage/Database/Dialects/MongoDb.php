@@ -140,7 +140,7 @@ class MongoDb extends ADialect
             case IQueryBuilder::OPERATION_NIN:
                 return ['$nin' => [$this->notEmptyArray($values[$condition->getColumnKey()])]];
             default:
-                throw new MapperException(sprintf('Unknown operation %s', $condition->getOperation()));
+                throw new MapperException(sprintf('Unknown operation *%s*', $condition->getOperation()));
         }
     }
 }

@@ -43,15 +43,13 @@ class Factory
     {
         if (empty(static::$instances[$config->getDriver()])) {
             if (empty(static::$map[$config->getDriver()])) {
-                throw new MapperException(sprintf('Wanted source %s not exists!', $config->getDriver()));
+                throw new MapperException(sprintf('Wanted source *%s* not exists!', $config->getDriver()));
             }
             $path = static::$map[$config->getDriver()];
             $instance = new $path($config);
-            // @codeCoverageIgnoreStart
             if (!$instance instanceof ADatabase) {
-                throw new MapperException(sprintf('Defined class %s is not instance of Storage\ADatabase!', $path));
+                throw new MapperException(sprintf('Defined class *%s* is not instance of Storage\ADatabase!', $path));
             }
-            // @codeCoverageIgnoreEnd
             static::$instances[$config->getDriver()] = $instance;
         }
         return static::$instances[$config->getDriver()];

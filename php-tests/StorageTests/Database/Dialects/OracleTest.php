@@ -15,7 +15,7 @@ class OracleTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testDescribe()
+    public function testDescribe(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');
@@ -28,7 +28,7 @@ class OracleTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testInsert()
+    public function testInsert(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');
@@ -44,7 +44,7 @@ class OracleTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testDelete()
+    public function testDelete(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');
@@ -59,7 +59,7 @@ class OracleTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');
@@ -77,7 +77,7 @@ class OracleTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testSelect()
+    public function testSelect(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');

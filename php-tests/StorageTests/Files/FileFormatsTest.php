@@ -14,7 +14,7 @@ class FileFormatsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFactoryNoClass()
+    public function testFactoryNoClass(): void
     {
         $factory = Formats\Factory::getInstance();
         $this->expectException(MapperException::class);
@@ -24,7 +24,7 @@ class FileFormatsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFactoryWrongClass()
+    public function testFactoryWrongClass(): void
     {
         $factory = Formats\Factory::getInstance();
         $this->expectException(MapperException::class);
@@ -34,17 +34,19 @@ class FileFormatsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFactoryRun()
+    public function testFactoryRun(): void
     {
         $factory = Formats\Factory::getInstance();
-        $class = $factory->getFormatClass('\kalanis\kw_mapper\Storage\File\Formats\SinglePage');
+        $className = '\kalanis\kw_mapper\Storage\File\Formats\SinglePage';
+        $class = $factory->getFormatClass($className);
         $this->assertInstanceOf('\kalanis\kw_mapper\Interfaces\IFileFormat', $class);
+        $this->assertEquals($class, $factory->getFormatClass($className));
     }
 
     /**
      * @throws MapperException
      */
-    public function testSinglePage()
+    public function testSinglePage(): void
     {
         $data = ['foo-bar-baz-anf-bvt-xcu-xdh'];
         $format = new Formats\SinglePage();
@@ -54,7 +56,7 @@ class FileFormatsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testSeparated()
+    public function testSeparated(): void
     {
         $data = $this->typesToProvider();
         $format = new Formats\SeparatedElements();
@@ -72,7 +74,7 @@ class FileFormatsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testYaml()
+    public function testYaml(): void
     {
         $data = $this->typesToProvider();
         $format = new Formats\Yaml();
@@ -84,7 +86,7 @@ class FileFormatsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testIni()
+    public function testIni(): void
     {
         $data = $this->typesToProvider();
         $format = new Formats\Ini();
@@ -96,7 +98,7 @@ class FileFormatsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testCsv()
+    public function testCsv(): void
     {
         $data = $this->typesToProvider();
         $format = new Formats\Csv();

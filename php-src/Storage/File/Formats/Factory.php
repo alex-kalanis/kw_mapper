@@ -26,11 +26,11 @@ class Factory
     public function getFormatClass(string $path): IFileFormat
     {
         if (!class_exists($path)) {
-            throw new MapperException(sprintf('Wanted class %s not exists!', $path));
+            throw new MapperException(sprintf('Wanted class *%s* not exists!', $path));
         }
         $instance = new $path();
         if (!$instance instanceof IFileFormat) {
-            throw new MapperException(sprintf('Defined class %s is not instance of IFilePacker!', $path));
+            throw new MapperException(sprintf('Defined class *%s* is not instance of IFilePacker!', $path));
         }
         return $instance;
     }

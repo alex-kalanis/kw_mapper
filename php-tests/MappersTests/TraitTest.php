@@ -12,14 +12,14 @@ use kalanis\kw_mapper\Storage;
 
 class TraitTest extends CommonTestClass
 {
-    public function testContentOk()
+    public function testContentOk(): void
     {
         $data = new Content();
         $data->setContentKey('lkjhgfd');
         $this->assertEquals('lkjhgfd', $data->getKey());
     }
 
-    public function testContentFail()
+    public function testContentFail(): void
     {
         $data = new Content();
         $this->expectException(MapperException::class);
@@ -32,7 +32,7 @@ class TraitTest extends CommonTestClass
      * @param mixed $input
      * @dataProvider typesFromProvider
      */
-    public function testTypesFrom($want, int $type, $input)
+    public function testTypesFrom($want, int $type, $input): void
     {
         $data = new Translate();
         $this->assertEquals($want, $data->from($type, $input));
@@ -60,7 +60,7 @@ class TraitTest extends CommonTestClass
      * @param $input
      * @dataProvider typesToProvider
      */
-    public function testTypesTo($want, int $type, $input)
+    public function testTypesTo($want, int $type, $input): void
     {
         $data = new Translate();
         $this->assertEquals($want, $data->to($type, $input));
@@ -78,7 +78,7 @@ class TraitTest extends CommonTestClass
         ];
     }
 
-    public function testPks()
+    public function testPks(): void
     {
         $pk = new Pk();
         $pk->addPrimaryKey('foo');
@@ -93,7 +93,7 @@ class TraitTest extends CommonTestClass
         $this->assertFalse($pk->filterPrimary('uhb', ''));
     }
 
-    public function testFks()
+    public function testFks(): void
     {
         $fk = new Fk();
         $fk->addForeignKey('foo', '\Record', 'local', 'remote');
@@ -112,7 +112,7 @@ class TraitTest extends CommonTestClass
         $this->assertEquals('remote', $entry->getRemoteEntryKey());
     }
 
-    public function testRelations()
+    public function testRelations(): void
     {
         $relations = new Relations();
         $relations->setRelation('foo', 'local');
@@ -125,7 +125,7 @@ class TraitTest extends CommonTestClass
         $this->assertEquals('bar', key($contains));
     }
 
-    public function testSource()
+    public function testSource(): void
     {
         $source = new Source();
         $source->setSource('foo');

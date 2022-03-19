@@ -49,7 +49,7 @@ class ConfigStorage
     final public function getConfig(string $sourceName): Config
     {
         if (empty($this->configs[$sourceName])) {
-            throw new MapperException(sprintf('Unknown source %s', $sourceName));
+            throw new MapperException(sprintf('Unknown source *%s*', $sourceName));
         }
         return $this->configs[$sourceName];
     }

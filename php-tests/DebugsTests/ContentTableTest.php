@@ -11,7 +11,7 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
 
 class ContentTableTest extends CommonTestClass
 {
-    public function testSimple()
+    public function testSimple(): void
     {
         $data = new ShortMessage();
 
@@ -23,7 +23,7 @@ class ContentTableTest extends CommonTestClass
         $this->assertEquals(1383158961, $data->date);
     }
 
-    public function testLoadMultiple()
+    public function testLoadMultiple(): void
     {
         $data = new ShortMessage();
         $data->title = 'Karuma z Gilanu';

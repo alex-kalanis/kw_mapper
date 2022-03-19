@@ -14,7 +14,7 @@ class ConfigStorageTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testBasicStore()
+    public function testBasicStore(): void
     {
         $conf1 = new Config();
         $conf1->setTarget('abc', 'def', 'ghi', 123, 'jkl', 'mno', 'pqr');
@@ -33,7 +33,7 @@ class ConfigStorageTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testColumnFail()
+    public function testColumnFail(): void
     {
         $lib = XConfStorage::getInstance();
         $this->expectException(MapperException::class);

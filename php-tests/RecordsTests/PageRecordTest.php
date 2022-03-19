@@ -4,6 +4,7 @@ namespace RecordsTests;
 
 
 use CommonTestClass;
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\PageRecord;
 
 
@@ -28,7 +29,10 @@ class PageRecordTest extends CommonTestClass
         parent::tearDown();
     }
 
-    public function testSimple()
+    /**
+     * @throws MapperException
+     */
+    public function testSimple(): void
     {
         $data = new PageRecordMock();
         $this->assertEmpty($data->path);

@@ -14,7 +14,7 @@ use kalanis\kw_mapper\Storage;
 
 class DebugTest extends CommonTestClass
 {
-    public function testContentOk()
+    public function testContentOk(): void
     {
 //        $record = new PedigreeRecord();
 //        $record->kennel = 'von Arlett';

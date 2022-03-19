@@ -13,7 +13,7 @@ class FactoryTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFactoryNoClass()
+    public function testFactoryNoClass(): void
     {
         $factory = Dialects\Factory::getInstance();
         $this->expectException(MapperException::class);
@@ -23,7 +23,7 @@ class FactoryTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFactoryWrongClass()
+    public function testFactoryWrongClass(): void
     {
         $factory = Dialects\Factory::getInstance();
         $this->expectException(MapperException::class);
@@ -33,11 +33,13 @@ class FactoryTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFactoryRun()
+    public function testFactoryRun(): void
     {
         $factory = Dialects\Factory::getInstance();
-        $class = $factory->getDialectClass('\kalanis\kw_mapper\Storage\Database\Dialects\SQLite');
+        $className = '\kalanis\kw_mapper\Storage\Database\Dialects\SQLite';
+        $class = $factory->getDialectClass($className);
         $this->assertInstanceOf('\kalanis\kw_mapper\Storage\Database\Dialects\ADialect', $class);
+        // multiple times - one instance
+        $this->assertEquals($class, $factory->getDialectClass($className));
     }
-
 }

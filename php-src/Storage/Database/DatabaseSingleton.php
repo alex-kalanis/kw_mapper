@@ -37,7 +37,7 @@ class DatabaseSingleton
     }
 
     /**
-     * @param string $sourceName
+     * @param Config $config
      * @return ADatabase
      * @throws MapperException
      */

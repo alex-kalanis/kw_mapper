@@ -14,7 +14,10 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
 
 class RecordTest extends CommonTestClass
 {
-    public function testSimple()
+    /**
+     * @throws MapperException
+     */
+    public function testSimple(): void
     {
         $data = new UserSimpleRecord();
         $this->assertEmpty($data['id']);
@@ -65,7 +68,10 @@ class RecordTest extends CommonTestClass
         $this->assertEquals('555', $data->id);
     }
 
-    public function testStrict()
+    /**
+     * @throws MapperException
+     */
+    public function testStrict(): void
     {
         $data = new UserStrictRecord();
         $this->assertEmpty($data['id']);
@@ -87,21 +93,30 @@ class RecordTest extends CommonTestClass
         $this->assertEquals('ldap', $data['details']['auth']);
     }
 
-    public function testCannotAddLater()
+    /**
+     * @throws MapperException
+     */
+    public function testCannotAddLater(): void
     {
         $data = new UserStrictRecord();
         $this->expectException(MapperException::class);
         $data['expect'] = 'nothing';
     }
 
-    public function testCannotRemove()
+    /**
+     * @throws MapperException
+     */
+    public function testCannotRemove(): void
     {
         $data = new UserStrictRecord();
         $this->expectException(MapperException::class);
         unset($data['password']);
     }
 
-    public function testLimitBoolType()
+    /**
+     * @throws MapperException
+     */
+    public function testLimitBoolType(): void
     {
         $data1 = new UserSimpleRecord();
         $data1->enabled = null;
@@ -113,7 +128,10 @@ class RecordTest extends CommonTestClass
         $data2->enabled = 'yes';
     }
 
-    public function testLimitIntType()
+    /**
+     * @throws MapperException
+     */
+    public function testLimitIntType(): void
     {
         $data1 = new UserSimpleRecord();
         $data1['id'] = null;
@@ -125,7 +143,10 @@ class RecordTest extends CommonTestClass
         $data2['id'] = 'yes';
     }
 
-    public function testLimitIntSize()
+    /**
+     * @throws MapperException
+     */
+    public function testLimitIntSize(): void
     {
         $data1 = new UserSimpleRecord();
         $data1['id'] = 8888;
@@ -137,7 +158,10 @@ class RecordTest extends CommonTestClass
         $data2['id'] = 8889;
     }
 
-    public function testLimitStringType()
+    /**
+     * @throws MapperException
+     */
+    public function testLimitStringType(): void
     {
         $data1 = new UserSimpleRecord();
         $data1['password'] = null;
@@ -149,7 +173,10 @@ class RecordTest extends CommonTestClass
         $data2['password'] = new \stdClass();
     }
 
-    public function testLimitStringSize()
+    /**
+     * @throws MapperException
+     */
+    public function testLimitStringSize(): void
     {
         $data1 = new UserSimpleRecord();
         $data1['password'] = 'poiuztrelkjhgfds';
@@ -161,31 +188,46 @@ class RecordTest extends CommonTestClass
         $data2['password'] = 'poiuztrelkjhgfdsa';
     }
 
-    public function testInvalidLimit()
+    /**
+     * @throws MapperException
+     */
+    public function testInvalidLimit(): void
     {
         $this->expectException(MapperException::class);
         new FailedUserRecord1();
     }
 
-    public function testInvalidSize()
+    /**
+     * @throws MapperException
+     */
+    public function testInvalidSize(): void
     {
         $this->expectException(MapperException::class);
         new FailedUserRecord2();
     }
 
-    public function testInvalidObject()
+    /**
+     * @throws MapperException
+     */
+    public function testInvalidObject(): void
     {
         $this->expectException(MapperException::class);
         new FailedUserRecord3();
     }
 
-    public function testInvalidObjectDef()
+    /**
+     * @throws MapperException
+     */
+    public function testInvalidObjectDef(): void
     {
         $this->expectException(MapperException::class);
         new FailedUserRecord4();
     }
 
-    public function testInvalidPreset()
+    /**
+     * @throws MapperException
+     */
+    public function testInvalidPreset(): void
     {
         $data = new FailedUserRecord5();
         $data->status = null;
@@ -194,14 +236,20 @@ class RecordTest extends CommonTestClass
         $data->status = 'not-set';
     }
 
-    public function testInsertInvalidInputArray1()
+    /**
+     * @throws MapperException
+     */
+    public function testInsertInvalidInputArray1(): void
     {
         $data = new FailedUserRecord6();
         $this->expectException(MapperException::class);
         $data->others = 'okmijn';
     }
 
-    public function testInsertInvalidInputArray2()
+    /**
+     * @throws MapperException
+     */
+    public function testInsertInvalidInputArray2(): void
     {
         $data = new FailedUserRecord6();
         $data->others = [new UserStrictRecord(), new UserSimpleRecord()];
@@ -209,7 +257,10 @@ class RecordTest extends CommonTestClass
         $data->others = ['okmijn'];
     }
 
-    public function testDataExchange()
+    /**
+     * @throws MapperException
+     */
+    public function testDataExchange(): void
     {
         $data = new UserSimpleRecord();
         $data['id'] = '999';
