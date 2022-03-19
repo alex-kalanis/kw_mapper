@@ -47,11 +47,11 @@ abstract class APDO extends ASQL
         $this->connect();
 
         $statement = $this->connection->prepare($query);
-        $statement->execute($params);
+        $result = $statement->execute($params);
 
         $this->lastStatement = $statement;
 
-        return $statement->closeCursor();
+        return $result && $statement->closeCursor();
     }
 
     public function connect(): void

@@ -8,7 +8,7 @@ use kalanis\kw_storage\Storage\Storage;
 
 /**
  * Trait TStorage
- * @package kalanis\kw_mapper\Storage\File§
+ * @package kalanis\kw_mapper\Storage\File
  */
 trait TStorage
 {

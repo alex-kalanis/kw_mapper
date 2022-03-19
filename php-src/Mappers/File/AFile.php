@@ -3,116 +3,101 @@
 namespace kalanis\kw_mapper\Mappers\File;
 
 
-use kalanis\kw_mapper\Interfaces\IFileFormat;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\AMapper;
-use kalanis\kw_mapper\Storage\File;
+use kalanis\kw_mapper\Records\ARecord;
+use kalanis\kw_mapper\Records\PageRecord;
 use kalanis\kw_storage\StorageException;
 
 
 /**
  * Class AFile
  * @package kalanis\kw_mapper\Mappers\Database
- * The path is separated
- * - storage has first half which is usually static
- * - content has second half which can be changed by circumstances
+ * Abstract layer for working with single files as content source
  */
-abstract class AFile extends AMapper
+abstract class AFile extends AStorage
 {
-    use File\TStorage;
+    use TContent;
 
-    protected $processPath = '';
-
-    protected $format = '';
-
-    public function getAlias(): string
+    public function setPathKey(string $pathKey): self
     {
-        return $this->getFile();
-    }
-
-    public function setFile(string $file): self
-    {
-        $this->processPath = $file;
+        $this->addPrimaryKey($pathKey);
         return $this;
     }
 
-    public function getFile(): string
-    {
-        return $this->processPath;
-    }
-
-    public function setFormat(string $formatClass): self
-    {
-        $this->format = $formatClass;
-        return $this;
-    }
-
-    public function getFormat(): string
-    {
-        return $this->format;
-    }
-
     /**
-     * @throws MapperException
-     */
-    protected function loadCached(): void
-    {
-        $storage = File\ContentMultiton::getInstance();
-        $this->initLocalStorage($storage);
-        $storage->setContent($this->getFile(), $this->loadFromRemoteSource($storage->getFormatClass($this->getFile())));
-    }
-
-    /**
-     * @param IFileFormat|null $format
-     * @return array
-     * @throws MapperException
-     */
-    protected function loadFromRemoteSource(?IFileFormat $format = null): array
-    {
-        try {
-            $format = $format ?? File\Formats\Factory::getInstance()->getFormatClass($this->getFormat());
-            return $format->unpack($this->getStorage()->read($this->getFile()));
-        } catch (StorageException $ex) {
-            throw new MapperException('Unable to read source', 0, $ex);
-        }
-    }
-
-    /**
+     * @param ARecord $record
      * @return bool
      * @throws MapperException
      */
-    protected function saveCached(): bool
+    protected function insertRecord(ARecord $record): bool
     {
-        $storage = File\ContentMultiton::getInstance();
-        $this->initLocalStorage($storage);
-        return $this->saveToRemoteSource($storage->getContent($this->getFile()), $storage->getFormatClass($this->getFile()));
+        return $this->updateRecord($record);
     }
 
     /**
-     * @param array $content
-     * @param IFileFormat|null $format
+     * @param ARecord $record
      * @return bool
      * @throws MapperException
      */
-    protected function saveToRemoteSource(array $content, ?IFileFormat $format = null): bool
+    protected function updateRecord(ARecord $record): bool
     {
-        try {
-            $format = $format ?? File\Formats\Factory::getInstance()->getFormatClass($this->getFormat());
-            return $this->getStorage()->write($this->getFile(), $format->pack($content));
-        } catch (StorageException $ex) {
-            throw new MapperException('Unable to write into source', 0, $ex);
-        }
+        $this->setSource($record->offsetGet($this->getPathFromPk($record)));
+        return $this->saveToStorage([$record->offsetGet($this->getContentKey())]);
     }
 
     /**
-     * @param File\ContentMultiton $storage
+     * @param ARecord $record
+     * @return int
      * @throws MapperException
      */
-    protected function initLocalStorage(File\ContentMultiton $storage): void
+    public function countRecord(ARecord $record): int
     {
-        if (!$storage->known($this->getFile())) {
-            $pack = File\Formats\Factory::getInstance();
-            $storage->init($this->getFile(), $pack->getFormatClass($this->getFormat()));
+        $this->setSource($record->offsetGet($this->getPathFromPk($record)));
+        return intval(!empty($this->loadFromStorage()));
+    }
+
+    /**
+     * @param ARecord $record
+     * @return bool
+     * @throws MapperException
+     */
+    protected function loadRecord(ARecord $record): bool
+    {
+        $this->setSource($record->offsetGet($this->getPathFromPk($record)));
+        $stored = $this->loadFromStorage();
+        $record->getEntry($this->getContentKey())->setData(reset($stored), true);
+        return true;
+    }
+
+    /**
+     * @param ARecord|PageRecord $record
+     * @return bool
+     * @throws MapperException
+     */
+    protected function deleteRecord(ARecord $record): bool
+    {
+        $path = $record->offsetGet($this->getPathFromPk($record));
+        try {
+            if ($this->getStorage()->exists($path)) {
+                return $this->getStorage()->remove($path);
+            }
+        } catch (StorageException $ex) {
+            return false;
         }
+        return true; // not found - operation successful
+    }
+
+    /**
+     * @param ARecord $record
+     * @return string
+     * @throws MapperException
+     */
+    protected function getPathFromPk(ARecord $record): string
+    {
+        $pk = reset($this->primaryKeys);
+        if (!$pk || empty($record->offsetGet($pk))) {
+            throw new MapperException('Cannot manipulate content without primary key - path!');
+        }
+        return $pk;
     }
 }

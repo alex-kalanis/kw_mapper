@@ -37,6 +37,14 @@ class TraitTest extends CommonTestClass
         $data = new Nl();
         $this->assertEquals($content, $data->nlToStr($data->strToNl($content)));
     }
+
+    public function testFormatData(): void
+    {
+        $data = new XFormat();
+        $this->assertEmpty($data->getFormat());
+        $data->setFormat('qaywsxedc');
+        $this->assertEquals('qaywsxedc', $data->getFormat());
+    }
 }
 
 
@@ -54,6 +62,12 @@ class CStorage
     {
         return $this->getStorage();
     }
+}
+
+
+class XFormat
+{
+    use Storage\File\TFormat;
 }
 
 

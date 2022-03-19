@@ -388,7 +388,7 @@ class UserFileMapper extends Mappers\File\ATable
 {
     protected function setMap(): void
     {
-        $this->setFile(__DIR__ . DIRECTORY_SEPARATOR . 'users.txt');
+        $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'users.txt');
         $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
         $this->setRelation('id', 0);
         $this->setRelation('name', 1);

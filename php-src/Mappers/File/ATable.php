@@ -14,7 +14,7 @@ use kalanis\kw_mapper\Records;
  * @package kalanis\kw_mapper\Mappers\File
  * Abstract for manipulation with file content as table
  */
-abstract class ATable extends AFile
+abstract class ATable extends AStorage
 {
     use TTranslate;
 
@@ -227,7 +227,7 @@ abstract class ATable extends AFile
      */
     private function loadSource(Records\ARecord $record): void
     {
-        $lines = $this->loadFromRemoteSource();
+        $lines = $this->loadFromStorage();
         $records = [];
         foreach ($lines as &$line) {
 
@@ -279,7 +279,7 @@ abstract class ATable extends AFile
                 $lines[] = $dataLine;
             }
         }
-        return $this->saveToRemoteSource($lines);
+        return $this->saveToStorage($lines);
     }
 
     /**

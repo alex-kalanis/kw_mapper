@@ -133,6 +133,15 @@ class TraitTest extends CommonTestClass
         $source->setSource('bar');
         $this->assertEquals('bar', $source->getSource());
     }
+
+    public function testDbTable(): void
+    {
+        $source = new Table();
+        $source->setTable('foo');
+        $this->assertEquals('foo', $source->getTable());
+        $source->setTable('bar');
+        $this->assertEquals('bar', $source->getTable());
+    }
 }
 
 
@@ -160,6 +169,12 @@ class Translate
     {
         return $this->translateTypeTo($type, $content);
     }
+}
+
+
+class Table
+{
+    use Mappers\Database\TTable;
 }
 
 

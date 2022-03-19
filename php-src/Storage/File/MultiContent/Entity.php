@@ -1,16 +1,16 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\File;
+namespace kalanis\kw_mapper\Storage\File\MultiContent;
 
 
 use kalanis\kw_mapper\Interfaces\IFileFormat;
 
 
 /**
- * Class ContentEntity
- * @package kalanis\kw_mapper\Storage\File
+ * Class Entity
+ * @package kalanis\kw_mapper\Storage\File\MultiContent
  */
-class ContentEntity
+class Entity
 {
     /** @var IFileFormat|null */
     protected $formatClass = null;

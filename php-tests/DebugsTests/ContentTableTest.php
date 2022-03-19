@@ -58,7 +58,7 @@ class ShortMessageMapper extends Mappers\File\ATable
 {
     protected function setMap(): void
     {
-        $this->setFile(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' .  DIRECTORY_SEPARATOR . 'index.short');
+        $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' .  DIRECTORY_SEPARATOR . 'index.short');
         $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
         $this->orderFromFirst(false);
         $this->setRelation('id', 0);

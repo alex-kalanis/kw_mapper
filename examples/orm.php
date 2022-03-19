@@ -89,7 +89,7 @@ class UserFileMapper extends Mappers\File\ATable
 {
     protected function setMap(): void
     {
-        $this->setFile('users.txt');
+        $this->setSource('users.txt');
         $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
         $this->setRelation('id', 0);
         $this->setRelation('name', 1);
