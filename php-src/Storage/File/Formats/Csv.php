@@ -32,7 +32,7 @@ class Csv implements IFileFormat
                 continue;
             }
 
-            $records[] = array_map([$this, 'strToNl'], str_getcsv($line));
+            $records[] = array_map([$this, 'unescapeNl'], str_getcsv($line));
         }
         return $records;
     }
@@ -43,7 +43,7 @@ class Csv implements IFileFormat
         foreach ($records as &$record) {
             ksort($record);
             $record[] = ''; // separator on end
-            $lines[] = $this->str_putcsv(array_map([$this, 'nlToStr'], $record));
+            $lines[] = $this->str_putcsv(array_map([$this, 'escapeNl'], $record));
         }
         return implode($this->delimitLines, $lines);
     }

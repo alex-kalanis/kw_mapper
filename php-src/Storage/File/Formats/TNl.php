@@ -12,21 +12,23 @@ use kalanis\kw_mapper\Interfaces\INl;
  */
 trait TNl
 {
-    public function strToNl(string $content): string
+    protected $delimitElements = '|';
+
+    protected static $escapeNlTr = [
+        "\r\n" => INl::CRLF_REPLACEMENT,
+        "\r" => INl::CR_REPLACEMENT,
+        "\n" => INl::LF_REPLACEMENT,
+    ];
+
+    public function unescapeNl(string $content): string
     {
-        return strtr($content, INl::NL_REPLACEMENT, "\r\n");
+        static::$escapeNlTr[$this->delimitElements] = INl::SEP_REPLACEMENT;
+        return strtr($content, array_flip(static::$escapeNlTr));
     }
 
-    public function nlToStr($content): string
+    public function escapeNl($content): string
     {
-        $content = strval($content);
-        return strtr(
-            strtr(
-                strtr(
-                    strtr($content, "\r\n", INl::NL_REPLACEMENT),
-                    "\n\r", INl::NL_REPLACEMENT),
-                "\r", INl::NL_REPLACEMENT),
-            "\n", INl::NL_REPLACEMENT
-        );
+        static::$escapeNlTr[$this->delimitElements] = INl::SEP_REPLACEMENT;
+        return strtr(strval($content), static::$escapeNlTr);
     }
 }

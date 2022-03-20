@@ -10,5 +10,8 @@ namespace kalanis\kw_mapper\Interfaces;
  */
 interface INl
 {
-    const NL_REPLACEMENT = '---!xCRLFx!---';
+    const CR_REPLACEMENT = '---!!::CR::!!---';
+    const LF_REPLACEMENT = '---!!::NL::!!---';
+    const CRLF_REPLACEMENT = '---!!::CRLF::!!---';
+    const SEP_REPLACEMENT = '---!!::SEP::!!---';
 }

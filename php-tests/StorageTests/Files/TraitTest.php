@@ -4,7 +4,6 @@ namespace StorageTests\Files;
 
 
 use CommonTestClass;
-use kalanis\kw_mapper\Interfaces\INl;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\File;
 use kalanis\kw_mapper\Records\PageRecord;
@@ -33,9 +32,9 @@ class TraitTest extends CommonTestClass
 
     public function testNewLines(): void
     {
-        $content = implode(INl::NL_REPLACEMENT, ['adsfghjk', 'yxcvbnml', 'qwertzui', 'op']);
+        $content = 'adsfghjk' . "\r" . 'yxcvbnml' . "\n" . 'qwertzui' . "\r\n" . 'op';
         $data = new Nl();
-        $this->assertEquals($content, $data->nlToStr($data->strToNl($content)));
+        $this->assertEquals($content, $data->unescapeNl($data->escapeNl($content)));
     }
 
     public function testFormatData(): void

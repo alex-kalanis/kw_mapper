@@ -24,7 +24,7 @@ class Ini implements IFileFormat
         }
         $records = [];
         foreach ($lines as $key => &$line) {
-            $records[$key] = array_map([$this, 'strToNl'], $line);
+            $records[$key] = array_map([$this, 'unescapeNl'], $line);
         }
         return $records;
     }
@@ -33,7 +33,7 @@ class Ini implements IFileFormat
     {
         $lines = [];
         foreach ($records as $key => &$record) {
-            $lines[$key] = array_map([$this, 'nlToStr'], $record);
+            $lines[$key] = array_map([$this, 'escapeNl'], $record);
         }
         return $this->write_ini_string($lines);
     }

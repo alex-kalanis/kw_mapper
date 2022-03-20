@@ -92,7 +92,7 @@ abstract class ATable extends AStorage
      */
     public function countRecord(Records\ARecord $record): int
     {
-        $matches = $this->findMatched($record, true);
+        $matches = $this->findMatched($record);
         return count($matches);
     }
 
@@ -206,6 +206,7 @@ abstract class ATable extends AStorage
     }
 
     /**
+     * More records on one mapper - reload with correct one
      * @param Records\ARecord $record
      * @throws MapperException
      */
@@ -232,18 +233,11 @@ abstract class ATable extends AStorage
         foreach ($lines as &$line) {
 
             $item = clone $record;
-            if (!$this->beforeLoad($item)) {
-                continue;
-            }
 
             foreach ($this->relations as $objectKey => $recordKey) {
                 $entry = $item->getEntry($objectKey);
                 $entry->setData($this->translateTypeFrom($entry->getType(), $line[$recordKey]), true);
             }
-            if (!$this->afterLoad($item)) {
-                continue;
-            }
-
             $records[] = $item;
         }
         $this->records = $records;
@@ -259,22 +253,14 @@ abstract class ATable extends AStorage
         foreach ($this->records as &$record) {
             $dataLine = [];
 
-            if (!$this->beforeSave($record)) {
-                continue;
-            }
-
             foreach ($this->relations as $objectKey => $recordKey) {
                 $entry = $record->getEntry($objectKey);
                 $dataLine[$recordKey] = $this->translateTypeTo($entry->getType(), $entry->getData());
             }
 
-            if (!$this->afterSave($record)) {
-                continue;
-            }
-
-            $pk_key = $this->generateKeyFromPks($record);
-            if ($pk_key) {
-                $lines[$pk_key] = $dataLine;
+            $linePk = $this->generateKeyFromPks($record);
+            if ($linePk) {
+                $lines[$linePk] = $dataLine;
             } else {
                 $lines[] = $dataLine;
             }

@@ -34,7 +34,7 @@ class SeparatedElements implements IFileFormat
                 continue;
             }
 
-            $records[] = array_map([$this, 'strToNl'], explode($this->delimitElements, $line));
+            $records[] = array_map([$this, 'unescapeNl'], explode($this->delimitElements, $line));
         }
         return $records;
     }
@@ -45,7 +45,7 @@ class SeparatedElements implements IFileFormat
         foreach ($records as &$record) {
             ksort($record);
             $record[] = ''; // separator on end
-            $lines[] = implode($this->delimitElements, array_map([$this, 'nlToStr'], $record));
+            $lines[] = implode($this->delimitElements, array_map([$this, 'escapeNl'], $record));
         }
         return implode($this->delimitLines, $lines);
     }
