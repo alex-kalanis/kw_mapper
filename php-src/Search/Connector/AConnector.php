@@ -415,7 +415,7 @@ abstract class AConnector
      */
     protected function correctColumn(string $table, string $column)
     {
-        $record = $this->recordLookup($table);
+        $record = !empty($table) ? $this->recordLookup($table) : $this->basicRecord ;
         $relations = $record->getMapper()->getRelations();
         if (empty($relations[$column])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for table *%s*', $column, $table));

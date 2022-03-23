@@ -49,12 +49,13 @@ class Records extends AConnector
     /**
      * @param string $table
      * @return string
-     * The table represents a file, in which it's saved - so it's redundant
-     * In fact on some SQL engines it's also real file on volume
+     * The table here represents a unknown entity, in which it's saved - can even be no storage and the whole can be
+     * initialized on-the-fly. So return no table. Also good for files where the storage points to the whole file path.
+     * In fact in some SQL engines it's also real file on volume.
      */
     protected function correctTable(string $table): string
     {
-        return $this->basicRecord->getMapper()->getAlias();
+        return '';
     }
 
     /**
@@ -127,12 +128,41 @@ class Records extends AConnector
      * @return bool
      * @throws MapperException
      */
-    public function filterCondition($result)
+    public function filterCondition(ARecord $result)
+    {
+        return is_array($this->condition->getColumnKey())
+            ? $this->filterManyValues($result, $this->condition->getColumnKey())
+            : $this->filterOneCondition($result, $this->queryBuilder->getParams()[$this->condition->getColumnKey()])
+        ;
+    }
+
+    /**
+     * @param ARecord $result
+     * @param string[] $columnKeys
+     * @return bool
+     * @throws MapperException
+     */
+    protected function filterManyValues(ARecord $result, array $columnKeys): bool
+    {
+        $values = [];
+        foreach ($columnKeys as $columnKey) {
+            $values[$columnKey] = $this->queryBuilder->getParams()[$columnKey];
+        }
+        return $this->filterOneCondition($result, $values);
+    }
+
+    /**
+     * @param ARecord $result
+     * @param string|string[] $expectedValue
+     * @return bool
+     * @throws MapperException
+     */
+    protected function filterOneCondition(ARecord $result, $expectedValue): bool
     {
         return $this->checkCondition(
             $this->condition->getOperation(),
             $result->offsetGet($this->condition->getColumnName()),
-            $this->queryBuilder->getParams()[$this->condition->getColumnKey()]
+            $expectedValue
         );
     }
 
@@ -183,15 +213,12 @@ class Records extends AConnector
      * @return int
      * @throws MapperException
      */
-    public function sortOrder($resultA, $resultB): int
+    public function sortOrder(ARecord $resultA, ARecord $resultB): int
     {
         $sortingDirection = empty($this->sortingOrder->getDirection()) ? IQueryBuilder::ORDER_ASC : $this->sortingOrder->getDirection();
         $a = $resultA->offsetGet($this->sortingOrder->getColumnName());
         $b = $resultB->offsetGet($this->sortingOrder->getColumnName());
 
-        if ($a == $b) {
-            return 0;
-        }
-        return (IQueryBuilder::ORDER_ASC == $sortingDirection) ? (($a < $b) ? -1 : 1) : (($a > $b) ? -1 : 1);
+        return (IQueryBuilder::ORDER_ASC == $sortingDirection) ? $a <=> $b : $b <=> $a ;
     }
 }

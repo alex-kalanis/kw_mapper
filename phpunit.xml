@@ -44,6 +44,7 @@
             <directory>php-tests/MappersTests</directory>
             <directory>php-tests/RecordsTests</directory>
             <directory>php-tests/StorageTests</directory>
+            <directory>php-tests/SearchTests</directory>
         </testsuite>
         <testsuite name="debugs">
             <directory>php-tests/DebugsTests</directory>
