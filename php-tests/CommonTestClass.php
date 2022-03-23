@@ -81,3 +81,59 @@ class TableMapper extends ATable
         $this->addPrimaryKey('file');
     }
 }
+
+/**
+ * Class TableRecord
+ * Source file dumped from kw_menu
+ * @property int id
+ * @property string file
+ * @property string title
+ * @property string desc
+ * @property bool enabled
+ */
+class TableIdRecord extends ASimpleRecord
+{
+    protected function addEntries(): void
+    {
+        $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
+        $this->addEntry('file', IEntryType::TYPE_STRING, 512);
+        $this->addEntry('title', IEntryType::TYPE_STRING, 512);
+        $this->addEntry('desc', IEntryType::TYPE_STRING, 512);
+        $this->addEntry('enabled', IEntryType::TYPE_BOOLEAN);
+    }
+
+    public function useIdAsMapper(): void
+    {
+        $this->setMapper('\TableIdMapper');
+    }
+
+    public function useNoKeyMapper(): void
+    {
+        $this->setMapper('\TableNoPkMapper');
+    }
+}
+
+
+class TableNoPkMapper extends ATable
+{
+    protected function setMap(): void
+    {
+        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.data');
+        $this->setRelation('id', 0);
+        $this->setRelation('file', 1);
+        $this->setRelation('title', 2);
+        $this->setRelation('desc', 3);
+        $this->setRelation('enabled', 4);
+    }
+}
+
+
+class TableIdMapper extends TableNoPkMapper
+{
+    protected function setMap(): void
+    {
+        parent::setMap();
+        $this->addPrimaryKey('id');
+    }
+}

@@ -55,7 +55,7 @@ class TableTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testOperations(): void
+    public function testOperationsOnMeta(): void
     {
         $data = new \TableRecord();
         $this->initSource($data);
@@ -92,6 +92,101 @@ class TableTest extends CommonTestClass
         // delete by PK
         $data = new \TableRecord();
         $data->file = 'another';
+        $this->assertTrue($data->delete());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testOperationsOnPk(): void
+    {
+        $data = new \TableIdRecord();
+        $data->useIdAsMapper();
+        $this->initSource($data, $this->getSourceFileClassic());
+        $data->getMapper()->orderFromFirst(true);
+
+        // clear insert
+        $data->file = 'another';
+        $data->title = 'file';
+        $data->desc = 'to load';
+        $data->enabled = false;
+        $this->assertTrue($data->save()); // insert without PK into table with PK
+
+        // find by PK
+        $data = new \TableIdRecord();
+        $data->useIdAsMapper();
+        $this->assertEquals($this->getTestFile(), $data->getMapper()->getSource()); // just check between set
+
+        $data->id = 6;
+        $this->assertTrue($data->load());
+        $this->assertEquals('to load', $data->desc);
+
+        // update by PK
+        $data = new \TableIdRecord();
+        $data->useIdAsMapper();
+        $data->id = 6;
+        $this->assertTrue($data->load());
+        $data->title = 'experiment';
+        $this->assertTrue($data->save());
+
+        $data = new \TableIdRecord();
+        $data->useIdAsMapper();
+        $data->id = 6;
+        $this->assertTrue($data->load());
+        $this->assertEquals('experiment', $data->title);
+
+        // delete by PK
+        $data = new \TableIdRecord();
+        $data->useIdAsMapper();
+        $data->id = 6;
+        $this->assertTrue($data->delete());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testOperationsNoPk(): void
+    {
+        $data = new \TableIdRecord();
+        $data->useNoKeyMapper();
+        $this->initSource($data, $this->getSourceFileClassic());
+        $data->getMapper()->orderFromFirst(false);
+
+        // clear insert
+        $data->id = 6;
+        $data->file = 'another';
+        $data->title = 'file';
+        $data->desc = 'to load';
+        $data->enabled = false;
+        $this->assertTrue($data->save(true)); // insert into table without PK - you must set own id
+
+        // find by PK
+        $data = new \TableIdRecord();
+        $data->useNoKeyMapper();
+        $this->assertEquals($this->getTestFile(), $data->getMapper()->getSource()); // just check between set
+
+        $data->id = 6;
+        $this->assertTrue($data->load());
+        $this->assertEquals('to load', $data->desc);
+
+        // update by PK
+        $data = new \TableIdRecord();
+        $data->useNoKeyMapper();
+        $data->id = 6;
+        $this->assertTrue($data->load());
+        $data->title = 'experiment';
+        $this->assertTrue($data->save());
+
+        $data = new \TableIdRecord();
+        $data->useNoKeyMapper();
+        $data->id = 6;
+        $this->assertTrue($data->load());
+        $this->assertEquals('experiment', $data->title);
+
+        // delete by PK
+        $data = new \TableIdRecord();
+        $data->useNoKeyMapper();
+        $data->id = 6;
         $this->assertTrue($data->delete());
     }
 
@@ -171,16 +266,22 @@ class TableTest extends CommonTestClass
         $this->assertFalse($data->load()); // load with failing after
     }
 
-    protected function initSource(ARecord $record): void
+    protected function initSource(ARecord $record, string $source = ''): void
     {
+        $source = empty($source) ? $this->getSourceFileMeta() : $source ;
         $target = $this->getTestFile();
-        copy($this->getSourceFile(), $target);
+        copy($source, $target);
         $record->getMapper()->setSource($target);
     }
 
-    protected function getSourceFile(): string
+    protected function getSourceFileMeta(): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.meta';
+    }
+
+    protected function getSourceFileClassic(): string
+    {
+        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.data';
     }
 
     protected function getTestFile(): string

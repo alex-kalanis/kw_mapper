@@ -36,7 +36,7 @@ abstract class ATable extends AStorage
      */
     protected function insertRecord(Records\ARecord $record): bool
     {
-        $matches = $this->findMatched($record, true);
+        $matches = $this->findMatched($record, !empty($this->primaryKeys));
         if (!empty($matches)) { // found!!!
             return false;
         }
@@ -70,7 +70,7 @@ abstract class ATable extends AStorage
      */
     protected function updateRecord(Records\ARecord $record): bool
     {
-        $matches = $this->findMatched($record, true);
+        $matches = $this->findMatched($record, !empty($this->primaryKeys), true);
         if (empty($matches)) { // nothing found
             return false;
         }
@@ -155,10 +155,11 @@ abstract class ATable extends AStorage
     /**
      * @param Records\ARecord $record
      * @param bool $usePks
+     * @param bool $wantFromStorage
      * @return string[]|int[]
      * @throws MapperException
      */
-    private function findMatched(Records\ARecord $record, bool $usePks = false): array
+    private function findMatched(Records\ARecord $record, bool $usePks = false, bool $wantFromStorage = false): array
     {
         $this->loadOnDemand($record);
 
@@ -167,11 +168,13 @@ abstract class ATable extends AStorage
 
         // through relations
         foreach ($this->relations as $objectKey => $recordKey) {
-            if (!$record->offsetExists($objectKey)) { // nothing with unknown data
+            if (!$record->offsetExists($objectKey)) { // nothing with unknown relation key in record
+                // @codeCoverageIgnoreStart
                 if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
                     return []; // probably error?
                 }
                 continue;
+                // @codeCoverageIgnoreEnd
             }
             if (empty($record->offsetGet($objectKey))) { // nothing with empty data
                 if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
@@ -187,11 +190,16 @@ abstract class ATable extends AStorage
                 if ($usePks && !in_array($objectKey, $this->primaryKeys)) { // is not PK
                     continue;
                 }
-                if ( !$knownRecord->offsetExists($objectKey) ) { // unknown is not need to compare
+                if ($wantFromStorage && !$knownRecord->getEntry($objectKey)->isFromStorage()) { // look through only values known in storage
+                    continue;
+                }
+                if ( !$knownRecord->offsetExists($objectKey) ) { // unknown relation key in record is not allowed into compare
+                    // @codeCoverageIgnoreStart
                     unset($toProcess[$knownKey]);
                     continue;
                 }
-                if ( empty($knownRecord->offsetGet($objectKey)) ) { // empty is not need to compare
+                // @codeCoverageIgnoreEnd
+                if ( empty($knownRecord->offsetGet($objectKey)) ) { // empty input is not need to compare
                     unset($toProcess[$knownKey]);
                     continue;
                 }
@@ -216,9 +224,11 @@ abstract class ATable extends AStorage
             $this->loadSource($record);
         } else {
             $test = reset($this->records);
-            if (get_class($test) != get_class($record)) { // reload other data
+            if (get_class($test) != get_class($record)) { // reload other data - changed record
+                // @codeCoverageIgnoreStart
                 $this->loadSource($record);
             }
+            // @codeCoverageIgnoreEnd
         }
     }
 
