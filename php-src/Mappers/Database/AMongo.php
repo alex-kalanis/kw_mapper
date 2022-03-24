@@ -14,6 +14,7 @@ use kalanis\kw_mapper\Storage;
  * Class AMongo
  * @package kalanis\kw_mapper\Mappers\Database
  * Mapper to NoSQL database MongoDB
+ * @codeCoverageIgnore for now - external source
  */
 abstract class AMongo extends AMapper
 {

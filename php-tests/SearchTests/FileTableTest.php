@@ -5,6 +5,7 @@ namespace SearchTests;
 
 use CommonTestClass;
 use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Search\Connector\Records;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_mapper\Storage;
 
@@ -199,5 +200,140 @@ class FileTableTest extends CommonTestClass
         $lib = new Search($record);
         $lib->notIn('desc', ['jkl', 'pqr', 'z12']);
         $this->assertEquals(3, $lib->getCount());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchGrouping(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useIdAsMapper();
+        $lib = new Search($record);
+        $lib->groupBy('enabled');
+        $this->assertEquals(2, $lib->getCount());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchChild(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useIdAsMapper();
+        $lib = new Search($record);
+        $this->expectException(MapperException::class);
+        $lib->child('any');
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchUnknownChild(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useIdAsMapper();
+        $lib = new Search($record);
+        $this->expectException(MapperException::class);
+        $lib->childNotExist('any', 'where');
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchChildTree(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useIdAsMapper();
+        $lib = new Search($record);
+        $this->expectException(MapperException::class);
+        $lib->childTree('any');
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchInitial(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useIdAsMapper();
+        $lib = new Records($record);
+        $this->assertEquals(0, $lib->getCount());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchChildRecord(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useNoKeyMapper();
+        $lib = new Records($record);
+        $this->expectException(MapperException::class);
+        $lib->child('any');
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchUnknownChildRecord(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useNoKeyMapper();
+        $lib = new Records($record);
+        $this->expectException(MapperException::class);
+        $lib->childNotExist('any', 'where', 'for');
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchChildTreeRecord(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useNoKeyMapper();
+        $lib = new Records($record);
+        $this->expectException(MapperException::class);
+        $lib->childTree('any');
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchShittyConditionRecord(): void
+    {
+        $record1 = new \XSimpleRecord();
+        $record1->useMock();
+        $record1->id = 1;
+        $record1->title = 'abc';
+
+        $record2 = new \XSimpleRecord();
+        $record2->useMock();
+        $record2->id = 2;
+        $record2->title = 'def';
+
+        $record3 = new \XSimpleRecord();
+        $record3->useMock();
+        $record3->id = 3;
+        $record3->title = 'ghi';
+
+        $record4 = new \XSimpleRecord();
+        $record4->useMock();
+        $record4->id = 4;
+        $record4->title = 'jkl';
+
+        $lib = new XRecords($record1);
+        $lib->setInitialRecords([$record1, $record2, $record3, $record4]);
+        $this->expectException(MapperException::class);
+        $lib->checkConditionExt('gh....', ':file__', 'something');
+    }
+}
+
+
+class XRecords extends Records
+{
+    public function checkConditionExt(string $operation, $value, $expected): bool
+    {
+        return $this->checkCondition($operation, $value, $expected);
     }
 }

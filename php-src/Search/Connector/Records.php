@@ -10,7 +10,7 @@ use kalanis\kw_mapper\Storage;
 
 
 /**
- * Class FileTable
+ * Class Records
  * @package kalanis\kw_mapper\Search
  * Connect records behaving as datasource
  * Behave only as advanced filtering
@@ -28,8 +28,13 @@ class Records extends AConnector
     {
         $this->basicRecord = $record;
         $this->records[$record->getMapper()->getAlias()] = $record; // correct column
-        $this->queryBuilder = new Storage\Shared\QueryBuilder();
+        $this->queryBuilder = $this->initQueryBuilder();
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+    }
+
+    protected function initQueryBuilder(): Storage\Shared\QueryBuilder
+    {
+        return new Storage\Shared\QueryBuilder();
     }
 
     /**
@@ -101,17 +106,23 @@ class Records extends AConnector
     {
         $results = $this->getInitialRecords();
 
+        // filtering
         foreach ($this->queryBuilder->getConditions() as $condition) {
             $this->condition = $condition;
             $results = array_filter($results, [$this, 'filterCondition']);
         }
         $this->condition = null;
 
+        // sorting
         foreach ($this->queryBuilder->getOrdering() as $order) {
             $this->sortingOrder = $order;
             usort($results, [$this, 'sortOrder']);
         }
         $this->sortingOrder = null;
+
+        // grouping
+//        $group = $this->queryBuilder->getGrouping();
+        // musi byt vsechny v grupe stejne - jedna jina a je to jina grupa
 
         return $limited
             ? array_slice($results, intval($this->queryBuilder->getOffset()), $this->queryBuilder->getLimit())
@@ -128,42 +139,30 @@ class Records extends AConnector
      * @return bool
      * @throws MapperException
      */
-    public function filterCondition(ARecord $result)
+    public function filterCondition(ARecord $result): bool
     {
-        return is_array($this->condition->getColumnKey())
-            ? $this->filterManyValues($result, $this->condition->getColumnKey())
-            : $this->filterOneCondition($result, $this->queryBuilder->getParams()[$this->condition->getColumnKey()])
+        $columnKey = $this->condition->getColumnKey();
+        return is_array($columnKey)
+            ? $this->filterFromManyValues($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams(), $columnKey)
+            : $this->checkCondition($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams()[$columnKey] )
         ;
     }
 
     /**
-     * @param ARecord $result
+     * @param string $operation
+     * @param mixed $value
+     * @param string[] $params
      * @param string[] $columnKeys
      * @return bool
      * @throws MapperException
      */
-    protected function filterManyValues(ARecord $result, array $columnKeys): bool
+    protected function filterFromManyValues(string $operation, $value, array $params, array $columnKeys): bool
     {
         $values = [];
         foreach ($columnKeys as $columnKey) {
-            $values[$columnKey] = $this->queryBuilder->getParams()[$columnKey];
+            $values[$columnKey] = $params[$columnKey];
         }
-        return $this->filterOneCondition($result, $values);
-    }
-
-    /**
-     * @param ARecord $result
-     * @param string|string[] $expectedValue
-     * @return bool
-     * @throws MapperException
-     */
-    protected function filterOneCondition(ARecord $result, $expectedValue): bool
-    {
-        return $this->checkCondition(
-            $this->condition->getOperation(),
-            $result->offsetGet($this->condition->getColumnName()),
-            $expectedValue
-        );
+        return $this->checkCondition($operation, $value, $values);
     }
 
     /**

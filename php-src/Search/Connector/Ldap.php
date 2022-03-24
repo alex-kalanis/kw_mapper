@@ -15,6 +15,7 @@ use kalanis\kw_mapper\Storage;
  * Connect LDAP as datasource
  * Lightweight Directory Access Protocol
  * LDAP is in reality a tree. So it's similar to normal volume and its content. The key is path and value is content.
+ * @codeCoverageIgnore for now - external source
  */
 class Ldap extends AConnector
 {

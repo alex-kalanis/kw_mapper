@@ -32,9 +32,13 @@ class Factory
         if ($mapper instanceof Mappers\Database\ADatabase) {
             return new Database($record);
         } elseif ($mapper instanceof Mappers\Database\ALdap) {
+            // @codeCoverageIgnoreStart
             return new Ldap($record);
+            // @codeCoverageIgnoreEnd
         } elseif ($mapper instanceof Mappers\Database\WinRegistry) {
+            // @codeCoverageIgnoreStart
             return new WinRegistry($record);
+            // @codeCoverageIgnoreEnd
         } elseif ($mapper instanceof Mappers\File\ATable) {
             return new FileTable($record);
         } elseif (!empty($initialRecords)) {

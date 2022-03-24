@@ -16,6 +16,7 @@ use kalanis\kw_mapper\Storage;
  * Allow to walk through the registry tree
  * @todo:
  * Operations with QueryBuilder
+ * @codeCoverageIgnore for now - external source
  */
 class WinRegistry extends AConnector
 {

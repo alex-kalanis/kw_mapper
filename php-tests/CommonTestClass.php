@@ -1,7 +1,10 @@
 <?php
 
 use kalanis\kw_mapper\Interfaces\IEntryType;
+use kalanis\kw_mapper\Mappers\AMapper;
+use kalanis\kw_mapper\Mappers\Database\ADatabase;
 use kalanis\kw_mapper\Mappers\File\ATable;
+use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\ASimpleRecord;
 use kalanis\kw_mapper\Storage\Database;
 use kalanis\kw_mapper\Storage\Shared;
@@ -111,6 +114,11 @@ class TableIdRecord extends ASimpleRecord
     {
         $this->setMapper('\TableNoPkMapper');
     }
+
+    public function setAnotherMapper(string $name): void
+    {
+        $this->setMapper($name);
+    }
 }
 
 
@@ -135,5 +143,106 @@ class TableIdMapper extends TableNoPkMapper
     {
         parent::setMap();
         $this->addPrimaryKey('id');
+    }
+}
+
+/**
+ * Class XSimpleRecord
+ * Simple record for testing factory
+ * @property int id
+ * @property string title
+ */
+class XSimpleRecord extends ASimpleRecord
+{
+    protected function addEntries(): void
+    {
+        $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
+        $this->addEntry('title', IEntryType::TYPE_STRING, 512);
+    }
+
+    public function useDatabase(): void
+    {
+        $this->setMapper('\XDatabaseMapper');
+    }
+
+    public function useFile(): void
+    {
+        $this->setMapper('\XFileMapper');
+    }
+
+    public function useMock(): void
+    {
+        $this->setMapper('\XMockMapper');
+    }
+}
+
+
+class XDatabaseMapper extends ADatabase
+{
+    protected function setMap(): void
+    {
+        $this->setSource('dummy');
+        $this->setRelation('id', 'id');
+        $this->setRelation('title', 'title');
+        $this->addPrimaryKey('id');
+    }
+}
+
+
+class XFileMapper extends ATable
+{
+    protected function setMap(): void
+    {
+        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setSource('dummy');
+        $this->setRelation('id', 'id');
+        $this->setRelation('title', 'title');
+        $this->addPrimaryKey('id');
+    }
+}
+
+
+class XMockMapper extends AMapper
+{
+    protected function setMap(): void
+    {
+        $this->setSource('dummy');
+        $this->setRelation('id', 'id');
+        $this->setRelation('title', 'title');
+    }
+
+    public function getAlias(): string
+    {
+        return $this->getSource();
+    }
+
+    protected function insertRecord(ARecord $record): bool
+    {
+        return false;
+    }
+
+    protected function updateRecord(ARecord $record): bool
+    {
+        return false;
+    }
+
+    public function countRecord(ARecord $record): int
+    {
+        return 0;
+    }
+
+    public function loadMultiple(ARecord $record): array
+    {
+        return [];
+    }
+
+    protected function loadRecord(ARecord $record): bool
+    {
+        return false;
+    }
+
+    protected function deleteRecord(ARecord $record): bool
+    {
+        return false;
     }
 }

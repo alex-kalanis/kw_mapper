@@ -4,6 +4,7 @@ namespace RecordsTests;
 
 
 use CommonTestClass;
+use kalanis\kw_mapper\Adapters\MappedStdClass;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\Records\Entry;
 use kalanis\kw_mapper\Records\TFill;
@@ -61,6 +62,7 @@ class EntryTest extends CommonTestClass
             [IEntryType::TYPE_FLOAT, 18.8],
             [IEntryType::TYPE_ARRAY, ['foo', 'bar']],
             [IEntryType::TYPE_STRING, 'lkjhgdf'],
+            [IEntryType::TYPE_OBJECT, new MappedStdClass()],
         ];
     }
 }

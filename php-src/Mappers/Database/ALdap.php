@@ -13,6 +13,7 @@ use kalanis\kw_mapper\Storage;
 /**
  * Class ALdap
  * @package kalanis\kw_mapper\Mappers\Database
+ * @codeCoverageIgnore for now - external source
  */
 abstract class ALdap extends AMapper
 {
