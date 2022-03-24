@@ -223,6 +223,28 @@ class DialectTest extends CommonTestClass
         $this->assertEquals(' GROUP BY abc.def, ghi', $lib->makeGrouping($grouping));
     }
 
+    public function testAllHaving(): void
+    {
+        $lib = new Dialects\EmptyDialect();
+        $this->assertEquals('', $lib->makeHaving([], 'not need for this case'));
+    }
+
+    public function testSelectedHaving(): void
+    {
+        $condition1 = new QueryBuilder\Condition();
+        $condition1->setData('abc', 'def', IQueryBuilder::OPERATION_EQ, 'ghi');
+
+        $condition2 = new QueryBuilder\Condition();
+        $condition2->setData('', 'mno', IQueryBuilder::OPERATION_NEQ, 'pqr');
+
+        $conditions = [];
+        $conditions[] = $condition1;
+        $conditions[] = $condition2;
+
+        $lib = new Dialects\EmptyDialect();
+        $this->assertEquals(' HAVING abc.def = ghi KNOWN BY mno != pqr', $lib->makeHaving($conditions, 'KNOWN BY'));
+    }
+
     public function testAllJoins(): void
     {
         $lib = new Dialects\EmptyDialect();

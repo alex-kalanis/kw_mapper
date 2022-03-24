@@ -29,12 +29,13 @@ class SQLite extends AEscapedDialect
 
     public function select(QueryBuilder $builder)
     {
-        return sprintf('SELECT %s FROM `%s` %s %s%s%s%s;',
+        return sprintf('SELECT %s FROM `%s` %s %s%s%s%s%s;',
             $this->makeColumns($builder->getColumns()),
             $builder->getBaseTable(),
             $this->makeJoin($builder->getJoins()),
             $this->makeConditions($builder->getConditions(), $builder->getRelation()),
             $this->makeGrouping($builder->getGrouping()),
+            $this->makeHaving($builder->getHavingCondition(), $builder->getRelation()),
             $this->makeOrdering($builder->getOrdering()),
             $this->makeLimits($builder->getLimit(), $builder->getOffset())
         );

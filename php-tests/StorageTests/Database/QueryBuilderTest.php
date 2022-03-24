@@ -185,6 +185,32 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('bar', $data->getColumnName());
     }
 
+    /**
+     * @throws MapperException
+     */
+    public function testHavingFail(): void
+    {
+        $builder = new Builder();
+        $this->expectException(MapperException::class);
+        $builder->addHavingCondition('foo', 'bar', 'baz', 'anf');
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testHavingPass(): void
+    {
+        $builder = new Builder();
+        $builder->addHavingCondition('foo', 'bar', IQueryBuilder::OPERATION_EQ, 'anf');
+        $data = $builder->getHavingCondition();
+        $data = reset($data);
+        $this->assertEquals('foo', $data->getTableName());
+        $this->assertEquals('bar', $data->getColumnName());
+        $this->assertEquals(IQueryBuilder::OPERATION_EQ, $data->getOperation());
+        $this->assertEquals('anf', $builder->getParams()[$data->getColumnKey()]);
+        $builder->resetCounter();
+    }
+
     public function testLimits(): void
     {
         $builder = new Builder();

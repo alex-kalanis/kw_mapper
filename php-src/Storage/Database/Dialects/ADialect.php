@@ -257,6 +257,19 @@ abstract class ADialect
     }
 
     /**
+     * @param QueryBuilder\Condition[] $conditions
+     * @param string $relation
+     * @return string
+     */
+    public function makeHaving(array $conditions, string $relation): string
+    {
+        if (empty($conditions)) {
+            return '';
+        }
+        return ' HAVING ' . implode(' ' . $relation . ' ', array_map([$this, 'singleCondition'], $conditions));
+    }
+
+    /**
      * @param QueryBuilder\Condition $condition
      * @return string
      * @throws MapperException

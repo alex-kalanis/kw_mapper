@@ -101,29 +101,25 @@ class Records extends AConnector
     /**
      * @param bool $limited
      * @return ARecord[]
+     * @throws MapperException
      */
     public function getResults(bool $limited = true): array
     {
-        $results = $this->getInitialRecords();
+        $results = $this->sortResults( // sorting
+                $this->filterResults( // filters after grouping
+                $this->groupResults( // grouping
+                    $this->filterResults( // basic filters
+                        $this->getInitialRecords(), // all records
+                        $this->queryBuilder->getConditions()
+                    ),
+                    $this->queryBuilder->getGrouping()
+                ),
+                $this->queryBuilder->getHavingCondition()
+            ),
+            $this->queryBuilder->getOrdering()
+        );
 
-        // filtering
-        foreach ($this->queryBuilder->getConditions() as $condition) {
-            $this->condition = $condition;
-            $results = array_filter($results, [$this, 'filterCondition']);
-        }
-        $this->condition = null;
-
-        // sorting
-        foreach ($this->queryBuilder->getOrdering() as $order) {
-            $this->sortingOrder = $order;
-            usort($results, [$this, 'sortOrder']);
-        }
-        $this->sortingOrder = null;
-
-        // grouping
-//        $group = $this->queryBuilder->getGrouping();
-        // musi byt vsechny v grupe stejne - jedna jina a je to jina grupa
-
+        // paging
         return $limited
             ? array_slice($results, intval($this->queryBuilder->getOffset()), $this->queryBuilder->getLimit())
             : $results ;
@@ -132,6 +128,73 @@ class Records extends AConnector
     protected function getInitialRecords(): array
     {
         return $this->initialRecords;
+    }
+
+    /**
+     * @param ARecord[] $records
+     * @param Storage\Shared\QueryBuilder\Condition[] $conditions
+     * @return ARecord[]
+     */
+    protected function filterResults(array $records, array $conditions): array
+    {
+        foreach ($conditions as $condition) {
+            $this->condition = $condition;
+            $records = array_filter($records, [$this, 'filterCondition']);
+        }
+        $this->condition = null;
+        return $records;
+    }
+
+    /**
+     * @param ARecord[] $records
+     * @param Storage\Shared\QueryBuilder\Group[] $grouping
+     * @return ARecord[]
+     * @throws MapperException
+     * Each one in group must have the same value; one difference = another group
+     */
+    protected function groupResults(array $records, array $grouping): array
+    {
+        // no groups - no process
+        if (empty($grouping)) {
+            return $records;
+        }
+        // get indexes of groups
+        $indexes = [];
+        foreach ($grouping as $group) {
+            $indexes[] = $group->getColumnName();
+        }
+        $keys = [];
+        // over records...
+        foreach ($records as $record) {
+            $key = [];
+            // get value of each element wanted for grouping
+            foreach ($indexes as $index) {
+                $key[] = strval($record->offsetGet($index));
+            }
+            // create key which represents that element from the angle of view of groups
+            $expected = implode('__', $key);
+            // and check if already exists - add if not
+            if (!isset($keys[$expected])) {
+                $keys[$expected] = $record;
+            }
+        }
+        // here stays only the first one
+        return $keys;
+    }
+
+    /**
+     * @param ARecord[] $records
+     * @param Storage\Shared\QueryBuilder\Order[] $ordering
+     * @return ARecord[]
+     */
+    protected function sortResults(array $records, array $ordering): array
+    {
+        foreach ($ordering as $order) {
+            $this->sortingOrder = $order;
+            usort($records, [$this, 'sortOrder']);
+        }
+        $this->sortingOrder = null;
+        return $records;
     }
 
     /**
