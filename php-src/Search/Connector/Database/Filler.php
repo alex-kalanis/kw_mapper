@@ -14,6 +14,9 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder\Join;
  * Class Filler
  * @package kalanis\kw_mapper\Search\Connector\Database
  * Filling both columns and Records
+ *
+ * Start with getColumns() to decide which columns will be get from DB
+ * After the data will be obtained pass them through fillResults() to fill records itself
  */
 class Filler
 {
@@ -40,15 +43,16 @@ class Filler
         $columns = [];
         $join = $this->orderJoinsColumns($joins);
         foreach ($records as $alias => &$record) {
-            if (in_array($alias, $used)) { // if they came here more than once
+            if (in_array($alias, $used)) {
+                // @codeCoverageIgnoreStart
+                // if they came here more than once
+                // usually happens when the circular dependency came - the child has child which is the same record
                 continue;
             }
+            // @codeCoverageIgnoreEnd
             foreach ($record->getMapper()->getRelations() as $relation) {
-                if (!empty($join[$alias])) {
-                    $columns[] = [$join[$alias], $relation, implode($this->columnDelimiter, [$join[$alias], $relation])];
-                } else {
-                    $columns[] = [$alias, $relation, implode($this->columnDelimiter, [$alias, $relation])];
-                }
+                $joinAlias = empty($join[$alias]) ? $alias : $join[$alias];
+                $columns[] = [$joinAlias, $relation, implode($this->columnDelimiter, [$joinAlias, $relation])];
             }
             $used[] = $alias;
         }
@@ -114,11 +118,12 @@ class Filler
 
         // now we have complete necessary data
         foreach ($whatTablesInRow as &$row) {
-            foreach ($row as $table => &$hash) {
-                if (empty($joinTables[$table])) { // nothing as parent
+            foreach ($row as $tableAlias => &$hash) {
+                if (empty($joinTables[$tableAlias])) {
+                    // nothing as parent
                     $results[] = $soloRecords[$hash];
                 } else {
-                    $relations = $joinTables[$table];
+                    $relations = $joinTables[$tableAlias];
                     $parentTableName = $relations->getKnownTableName();
                     $parentHash = $row[$parentTableName];
                     if (!isset($tableHasChildren[$parentHash])) { // parent table was not used
@@ -142,8 +147,8 @@ class Filler
     protected function addChild(string $joinAlias, &$parent, &$current)
     {
         $parent->{$joinAlias} = empty($parent->{$joinAlias})
-            ? [$current]
-            : $parent->{$joinAlias} + [$current]
+            ? [$current] // first child
+            : $parent->{$joinAlias} + [$current] // another children
         ;
     }
 
