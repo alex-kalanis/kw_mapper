@@ -10,6 +10,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\Database\ADatabase;
 use kalanis\kw_mapper\Records\ASimpleRecord;
 use kalanis\kw_mapper\Search\Connector\Database\Filler;
+use kalanis\kw_mapper\Search\Connector\Database\Records;
 use kalanis\kw_mapper\Storage;
 use kalanis\kw_mapper\Storage\Database;
 
@@ -38,11 +39,12 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler($record);
+        $lib = new Filler();
         $records = [ // you must define all wanted records with their aliases used for join
-            $record->getMapper()->getAlias() => $record, // primary record has its alias as key
-            'as_is' => $record2, // other records has aliases defined by their parents or by custom value
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
+        $lib->initTreeSolver($record, $records);
         // more than once - ignore this one
         $join2 = new Storage\Shared\QueryBuilder\Join();
         $join2->setData(
@@ -54,7 +56,7 @@ class FillerTest extends CommonTestClass
             'not need here', // for join query itself
             '' // referred in query
         );
-        $struct = $lib->getColumns($records, [$this->basicJoin(), $join2]);
+        $struct = $lib->getColumns([$this->basicJoin(), $join2]);
         $this->assertEquals([ // tables
             'kw_mapper_child_testing',
             'kw_mapper_child_testing',
@@ -84,12 +86,13 @@ class FillerTest extends CommonTestClass
     public function testSimpleParse1(): void
     {
         $record = new XRecordChild();
-        $lib = new Filler($record);
+        $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            $record->getMapper()->getAlias() => $record, // primary record has its alias as key
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
         ];
-        $records = $lib->fillResults($wantedRecords, [], $this->resultData1());
+        $lib->initTreeSolver($record, $wantedRecords);
+        $records = $lib->fillResults($this->resultData1());
 
         // check records - four found
         /** @var XRecordChild[] $records */
@@ -114,12 +117,13 @@ class FillerTest extends CommonTestClass
     public function testSimpleParse2(): void
     {
         $record = new XRecordChild();
-        $lib = new Filler($record);
+        $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            $record->getMapper()->getAlias() => $record, // primary record has its alias as key
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
         ];
-        $records = $lib->fillResults($wantedRecords, [], $this->resultData2());
+        $lib->initTreeSolver($record, $wantedRecords);
+        $records = $lib->fillResults($this->resultData2());
 
         // check records - four found
         /** @var XRecordChild[] $records */
@@ -145,11 +149,11 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler($record);
+        $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            $record->getMapper()->getAlias() => $record, // primary record has its alias as key
-            'as_is' => $record2, // other records has aliases defined by their parents or by custom value
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
         // more than once - ignore this one
         $join2 = new Storage\Shared\QueryBuilder\Join();
@@ -163,7 +167,8 @@ class FillerTest extends CommonTestClass
             '' // referred in query
         );
 
-        $records = $lib->fillResults($wantedRecords, [$this->basicJoin(), $join2], $this->resultData3());
+        $lib->initTreeSolver($record, $wantedRecords);
+        $records = $lib->fillResults($this->resultData3());
 
         // check records - four found
         /** @var XRecordChild[] $records */
@@ -210,57 +215,102 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler($record);
+        $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            $record->getMapper()->getAlias() => $record, // primary record has its alias as key
-            'as_is' => $record2, // other records has aliases defined by their parents or by custom value
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
 
-        $records = $lib->fillResults($wantedRecords, [$this->basicJoin()], $this->resultData4());
+        $lib->initTreeSolver($record, $wantedRecords);
+        $records = $lib->fillResults($this->resultData4());
 
-        // check records - two found
-print_r($records);
+        // check records
         /** @var XRecordChild[] $records */
-        $this->assertEquals(2, count($records));
+        /** @var XRecordChild $child */
+        $this->assertEquals(6, count($records));
         $child = reset($records);
+
         $this->assertEquals('1', $child->id);
         $this->assertEquals('abc', $child->name);
+        $this->assertEquals(1, count($child->prt));
+        $inner1 = $child->prt;
+        $inner1 = reset($inner1);
+        $this->assertEquals('1', $inner1->id);
+        $this->assertEquals('def', $inner1->name);
+
+        $child = next($records);
+        $this->assertEquals('1', $child->id);
+        $this->assertEquals('abc', $child->name);
+        $this->assertEquals(1, count($child->prt));
+        $inner2 = $child->prt;
+        $inner2 = reset($inner2);
+        $this->assertEquals('2', $inner2->id);
+        $this->assertEquals('opq', $inner2->name);
+
         $child = next($records);
         $this->assertEquals('2', $child->id);
         $this->assertEquals('ghi', $child->name);
+        $this->assertEquals(1, count($child->prt));
+        $inner3 = $child->prt;
+        $inner3 = reset($inner3);
+        $this->assertEquals('1', $inner3->id);
+        $this->assertEquals('def', $inner3->name);
 
-        // check parents - only 2 get
-        foreach ($records as $record) {
-            $subs = $record->offsetGet('prt');
-            $this->assertEquals(2, count($subs));
-        }
+        $child = next($records);
+        $this->assertEquals('2', $child->id);
+        $this->assertEquals('ghi', $child->name);
+        $this->assertEquals(1, count($child->prt));
+        $inner4 = $child->prt;
+        $inner4 = reset($inner4);
+        $this->assertEquals('2', $inner4->id);
+        $this->assertEquals('opq', $inner4->name);
+
+        $child = next($records);
+        $this->assertEquals('3', $child->id);
+        $this->assertEquals('jkl', $child->name);
+        $this->assertEquals(0, count($child->prt));
+
+        $child = next($records);
+        $this->assertEquals('4', $child->id);
+        $this->assertEquals('mno', $child->name);
+        $this->assertEquals(1, count($child->prt));
+        $inner5 = $child->prt;
+        $inner5 = reset($inner5);
+        $this->assertEquals('3', $inner5->id);
+        $this->assertEquals('uhb', $inner5->name);
+
+        $this->assertEquals($inner1, $inner3);
+        $this->assertEquals($inner2, $inner4);
+        $this->assertNotEquals($inner1, $inner5);
+        $this->assertNotEquals($inner2, $inner5);
     }
 
-    /**
-     * @throws MapperException
-     */
-    public function testFailedParseTableNotExists(): void
-    {
-        $record = new XRecordChild();
-        $record2 = new XRecordParent();
-        $lib = new Filler($record);
-
-        $records = [ // you must define all wanted records with their aliases used for join
-            $record->getMapper()->getAlias() => $record, // primary record has its alias as key
-            'prt' => $record2, // this table alias is not set in results - it will fail
-        ];
-        $this->expectException(MapperException::class);
-        $lib->fillResults($records, [$this->basicJoin()], $this->resultData3());
-    }
-
+//    /**
+//     * @throws MapperException
+//     */
+//    public function testFailedParseTableNotExists(): void
+//    {
+//        $record = new XRecordChild();
+//        $record2 = new XRecordParent();
+//        $lib = new Filler();
+//
+//        $wantedRecords = [ // you must define all wanted records with their aliases used for join
+//            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+//            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
+//        ];
+//        $lib->initTreeSolver($record, $wantedRecords);
+//        $this->expectException(MapperException::class);
+//        $lib->fillResults($this->resultData3());
+//    }
+//
     protected function basicJoin(): Storage\Shared\QueryBuilder\Join
     {
         $join = new Storage\Shared\QueryBuilder\Join();
         $join->setData(
             'prt', // alias from join
             'kw_mapper_parent_testing', // parent
-            'kmpt_id', // colum in parent
+            'kmpt_id', // column in parent
             'kw_mapper_child_testing', // child which want join
             'kmpt_id', // column in child
             'not need here', // for join query itself
@@ -374,7 +424,7 @@ print_r($records);
     protected function resultData4(): array
     {
         return [
-            [
+            [ // 4 with cross references
                 'kw_mapper_child_testing____kmct_id' => 1,
                 'kw_mapper_child_testing____kmct_name' => 'abc',
                 'kw_mapper_child_testing____kmpt_id' => 1,
@@ -384,7 +434,7 @@ print_r($records);
             [
                 'kw_mapper_child_testing____kmct_id' => 1,
                 'kw_mapper_child_testing____kmct_name' => 'abc',
-                'kw_mapper_child_testing____kmpt_id' => 1,
+                'kw_mapper_child_testing____kmpt_id' => 2,
                 'as_is____kmpt_id' => 2,
                 'as_is____kmpt_name' => 'opq',
             ],
@@ -398,9 +448,23 @@ print_r($records);
             [
                 'kw_mapper_child_testing____kmct_id' => 2,
                 'kw_mapper_child_testing____kmct_name' => 'ghi',
-                'kw_mapper_child_testing____kmpt_id' => 1,
+                'kw_mapper_child_testing____kmpt_id' => 2,
                 'as_is____kmpt_id' => 2,
                 'as_is____kmpt_name' => 'opq',
+            ],
+            [ // no child
+                'kw_mapper_child_testing____kmct_id' => 3,
+                'kw_mapper_child_testing____kmct_name' => 'jkl',
+                'kw_mapper_child_testing____kmpt_id' => null,
+                'as_is____kmpt_id' => null,
+                'as_is____kmpt_name' => null,
+            ],
+            [ // one separated, no another reference
+                'kw_mapper_child_testing____kmct_id' => 4,
+                'kw_mapper_child_testing____kmct_name' => 'mno',
+                'kw_mapper_child_testing____kmpt_id' => 3,
+                'as_is____kmpt_id' => 3,
+                'as_is____kmpt_name' => 'uhb',
             ],
         ];
     }

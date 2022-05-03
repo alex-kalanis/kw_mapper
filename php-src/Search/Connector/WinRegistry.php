@@ -32,13 +32,12 @@ class WinRegistry extends AConnector
     public function __construct(ARecord $record)
     {
         $this->basicRecord = $record;
-        $alias = $record->getMapper()->getAlias();
-        $this->records[$alias] = $record;
-        $this->childTree[$alias] = [$alias => $alias];
+        $this->initRecordLookup($record);
+        $this->initChildTree($record);
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
         $this->queryBuilder = new Storage\Shared\QueryBuilder();
-        $this->queryBuilder->setBaseTable($alias);
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
     }
 
     /**

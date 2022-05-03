@@ -30,15 +30,14 @@ class Database extends AConnector
     public function __construct(ARecord $record)
     {
         $this->basicRecord = $record;
-        $alias = $record->getMapper()->getAlias();
-        $this->records[$alias] = $record;
-        $this->childTree[$alias] = [$alias => $alias];
+        $this->initRecordLookup($record);
+        $this->initChildTree($record);
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
         $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());
         $this->queryBuilder = new Storage\Database\QueryBuilder($this->dialect);
-        $this->queryBuilder->setBaseTable($alias);
-        $this->filler = new Database\Filler($record);
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $this->filler = new Database\Filler();
     }
 
     public function getCount(): int
@@ -63,7 +62,8 @@ class Database extends AConnector
     public function getResults(): array
     {
         $this->queryBuilder->clearColumns();
-        foreach ($this->filler->getColumns($this->records, $this->queryBuilder->getJoins()) as list($table, $column, $alias)) {
+        $this->filler->initTreeSolver($this->basicRecord, $this->records);
+        foreach ($this->filler->getColumns($this->queryBuilder->getJoins()) as list($table, $column, $alias)) {
             $this->queryBuilder->addColumn($table, $column, $alias);
         }
 
@@ -75,6 +75,6 @@ class Database extends AConnector
         }
 //print_r($rows);
 
-        return $this->filler->fillResults($this->records, $this->queryBuilder->getJoins(), $rows, $this);
+        return $this->filler->fillResults($rows, $this);
     }
 }

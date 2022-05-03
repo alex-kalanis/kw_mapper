@@ -27,7 +27,8 @@ class Records extends AConnector
     public function __construct(ARecord $record)
     {
         $this->basicRecord = $record;
-        $this->records[$record->getMapper()->getAlias()] = $record; // correct column
+        $this->initRecordLookup($record); // correct column
+        $this->initChildTree($record);
         $this->queryBuilder = $this->initQueryBuilder();
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
     }

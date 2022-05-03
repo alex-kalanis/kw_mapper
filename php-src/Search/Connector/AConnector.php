@@ -16,12 +16,11 @@ use kalanis\kw_mapper\Storage;
  */
 abstract class AConnector
 {
+    use Database\TChildTree;
+    use Database\TRecords;
+
     /** @var ARecord */
     protected $basicRecord = null;
-    /** @var ARecord[] */
-    protected $records = [];
-    /** @var string[][] */
-    protected $childTree = [];
     /** @var Storage\Shared\QueryBuilder */
     protected $queryBuilder = null;
 
@@ -313,9 +312,9 @@ abstract class AConnector
     public function child(string $childAlias, string $joinType = IQueryBuilder::JOIN_LEFT, string $parentAlias = '', string $customAlias = ''): self
     {
         // from mapper - children's mapper then there table name
-        $parentRecord = empty($parentAlias) ? $this->basicRecord : $this->recordLookup($parentAlias) ;
+        $parentRecord = empty($parentAlias) ? $this->basicRecord : $this->recordLookup($parentAlias)->getRecord() ;
         if (empty($parentRecord)) {
-            throw new MapperException(sprintf('Unknown mapper for parent alias *%s*', $parentAlias));
+            throw new MapperException(sprintf('Unknown record for parent alias *%s*', $parentAlias));
         }
         $parentKeys = $parentRecord->getMapper()->getForeignKeys();
         if (!isset($parentKeys[$childAlias])) {
@@ -327,28 +326,29 @@ abstract class AConnector
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for parent *%s*', $parentKey->getLocalEntryKey(), $parentAlias));
         }
 
-        $childMapper = $this->recordLookup($childAlias, $customAlias);
-        if (empty($childMapper)) {
-            throw new MapperException(sprintf('Unknown mapper for child alias *%s*', $childAlias));
+        $childTableAlias = empty($customAlias) ? $childAlias : $customAlias;
+        $childLookup = $this->recordLookup($childTableAlias);
+        if (empty($childLookup) || empty($childLookup->getRecord())) {
+            throw new MapperException(sprintf('Unknown record for child alias *%s*', $childAlias));
         }
-        $childRelations = $childMapper->getMapper()->getRelations();
+        $childRecord = $childLookup->getRecord();
+        $childRelations = $childRecord->getMapper()->getRelations();
         if (empty($childRelations[$parentKey->getRemoteEntryKey()])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for child *%s*', $parentKey->getRemoteEntryKey(), $childAlias));
         }
 
-        $tableAlias = empty($customAlias) ? $childAlias : $customAlias;
-        $knownTableName = empty($parentAlias) ? $parentRecord->getMapper()->getAlias() : $parentAlias ;
+        $parentTableAlias = empty($parentAlias) ? $parentRecord->getMapper()->getAlias() : $parentAlias ;
         $this->queryBuilder->addJoin(
             $childAlias,
-            $childMapper->getMapper()->getAlias(),
+            $childRecord->getMapper()->getAlias(),
             $childRelations[$parentKey->getRemoteEntryKey()],
-            $knownTableName,
+            $parentTableAlias,
             $parentRelations[$parentKey->getLocalEntryKey()],
             $joinType,
-            $tableAlias
+            $childTableAlias
         );
 
-        $this->childTree[$tableAlias] = $this->childTree[$knownTableName] + [$tableAlias => $childAlias];
+        $this->addChildToTree($knownTableName, $tableAlias, $childAlias);
         return $this;
     }
 
@@ -371,20 +371,6 @@ abstract class AConnector
             IQueryBuilder::OPERATION_NULL
         );
         return $this;
-    }
-
-    /**
-     * Returns tree for accessing the child
-     * @param string $childAlias
-     * @return string[]
-     * @throws MapperException
-     */
-    public function childTree(string $childAlias): array
-    {
-        if (!isset($this->childTree[$childAlias])) {
-            throw new MapperException(sprintf('Unknown alias *%s* in child tree.', $childAlias));
-        }
-        return $this->childTree[$childAlias];
     }
 
     /**
@@ -415,29 +401,11 @@ abstract class AConnector
      */
     protected function correctColumn(string $table, string $column)
     {
-        $record = !empty($table) ? $this->recordLookup($table) : $this->basicRecord ;
+        $record = !empty($table) ? $this->recordLookup($table)->getRecord() : $this->basicRecord ;
         $relations = $record->getMapper()->getRelations();
         if (empty($relations[$column])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for table *%s*', $column, $table));
         }
         return $relations[$column];
     }
-
-    protected function recordLookup(string $wantedAlias, string $customAlias = ''): ?ARecord
-    {
-        $key = empty($customAlias) ? $wantedAlias : $customAlias ;
-        if (isset($this->records[$key])) {
-            return $this->records[$key];
-        }
-        foreach ($this->records as $record) {
-            $foreignKeys = $record->getMapper()->getForeignKeys();
-            if (isset($foreignKeys[$wantedAlias])) {
-                $recordClassName = $foreignKeys[$wantedAlias]->getRemoteRecord();
-                $this->records[$key] = new $recordClassName();
-                return $this->records[$key];
-            }
-        }
-        return null;
-    }
-
 }
