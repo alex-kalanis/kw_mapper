@@ -26,11 +26,6 @@ class FileTable extends Records
         throw new MapperException('Cannot make relations over files!');
     }
 
-    public function childTree(string $childAlias): array
-    {
-        throw new MapperException('Cannot access relations over files!');
-    }
-
     /**
      * @return ARecord[]
      * @throws MapperException

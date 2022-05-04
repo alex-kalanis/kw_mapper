@@ -278,15 +278,4 @@ class Search extends ASearch
         $this->connector->childNotExist($childAlias, $table, $column);
         return $this;
     }
-
-    /**
-     * Returns tree for accessing the child
-     * @param string $childAlias
-     * @return string[]
-     * @throws MapperException
-     */
-    public function childTree(string $childAlias): array
-    {
-        return $this->connector->childTree($childAlias);
-    }
 }

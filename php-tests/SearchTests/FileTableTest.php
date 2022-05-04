@@ -241,18 +241,6 @@ class FileTableTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testSearchChildTree(): void
-    {
-        $record = new \TableIdRecord();
-        $record->useIdAsMapper();
-        $lib = new Search($record);
-        $this->expectException(MapperException::class);
-        $lib->childTree('any');
-    }
-
-    /**
-     * @throws MapperException
-     */
     public function testSearchInitial(): void
     {
         $record = new \TableIdRecord();
@@ -283,18 +271,6 @@ class FileTableTest extends CommonTestClass
         $lib = new Records($record);
         $this->expectException(MapperException::class);
         $lib->childNotExist('any', 'where', 'for');
-    }
-
-    /**
-     * @throws MapperException
-     */
-    public function testSearchChildTreeRecord(): void
-    {
-        $record = new \TableIdRecord();
-        $record->useNoKeyMapper();
-        $lib = new Records($record);
-        $this->expectException(MapperException::class);
-        $lib->childTree('any');
     }
 
     /**

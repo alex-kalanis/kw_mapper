@@ -28,7 +28,6 @@ class Records extends AConnector
     {
         $this->basicRecord = $record;
         $this->initRecordLookup($record); // correct column
-        $this->initChildTree($record);
         $this->queryBuilder = $this->initQueryBuilder();
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
     }
@@ -87,11 +86,6 @@ class Records extends AConnector
     public function childNotExist(string $childAlias, string $table, string $column, string $parentAlias = ''): parent
     {
         throw new MapperException('Cannot make relations over already loaded records!');
-    }
-
-    public function childTree(string $childAlias): array
-    {
-        throw new MapperException('Cannot access relations over already loaded records!');
     }
 
     public function getCount(): int

@@ -31,7 +31,6 @@ class Database extends AConnector
     {
         $this->basicRecord = $record;
         $this->initRecordLookup($record);
-        $this->initChildTree($record);
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
         $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());

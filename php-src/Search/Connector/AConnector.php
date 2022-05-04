@@ -16,7 +16,6 @@ use kalanis\kw_mapper\Storage;
  */
 abstract class AConnector
 {
-    use Database\TChildTree;
     use Database\TRecords;
 
     /** @var ARecord */
@@ -348,7 +347,6 @@ abstract class AConnector
             $childTableAlias
         );
 
-        $this->addChildToTree($knownTableName, $tableAlias, $childAlias);
         return $this;
     }
 
