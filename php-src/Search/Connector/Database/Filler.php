@@ -92,6 +92,8 @@ class Filler
         /** @var ARecord[][] */
         $aliasedRecords = [];
         $hashedRows = [];
+        // parse input data into something processable
+        // got records with elementary data and hashes of them
         foreach ($dataSourceRows as $lineNo => &$row) {
             // get each table from resulted row
             $splitRow = $this->splitByTables($row);
@@ -124,6 +126,7 @@ class Filler
 //print_r(['hashes rec', $aliasedRecords]);
 //print_r(['hashes row', $hashedRows]);
 
+        // tell which alias is parent of another - only by hashes
         $parentsAliases = $this->getParentsAliases();
         $children = [];
         foreach ($hashedRows as &$hashedRow) {
@@ -153,6 +156,7 @@ class Filler
 
 //print_r(['hashes children', $children]);
 
+        // now put records together as they're defined by their hashes
         foreach ($children as $parentAlias => &$hashes) {
             foreach ($hashes as $parentHash => &$childrenHashes) {
                 /** @var ARecord $record */

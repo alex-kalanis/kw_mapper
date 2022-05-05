@@ -41,7 +41,7 @@ class FillerTest extends CommonTestClass
         $record2 = new XRecordParent();
         $lib = new Filler();
         $records = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
             (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
         $lib->initTreeSolver($record, $records);
@@ -89,7 +89,7 @@ class FillerTest extends CommonTestClass
         $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
         ];
         $lib->initTreeSolver($record, $wantedRecords);
         $records = $lib->fillResults($this->resultData1());
@@ -120,7 +120,7 @@ class FillerTest extends CommonTestClass
         $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
         ];
         $lib->initTreeSolver($record, $wantedRecords);
         $records = $lib->fillResults($this->resultData2());
@@ -152,7 +152,7 @@ class FillerTest extends CommonTestClass
         $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
             (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
         // more than once - ignore this one
@@ -218,7 +218,7 @@ class FillerTest extends CommonTestClass
         $lib = new Filler();
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
             (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
 
@@ -286,24 +286,43 @@ class FillerTest extends CommonTestClass
         $this->assertNotEquals($inner2, $inner5);
     }
 
-//    /**
-//     * @throws MapperException
-//     */
-//    public function testFailedParseTableNotExists(): void
-//    {
-//        $record = new XRecordChild();
-//        $record2 = new XRecordParent();
-//        $lib = new Filler();
-//
-//        $wantedRecords = [ // you must define all wanted records with their aliases used for join
-//            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key
-//            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
-//        ];
-//        $lib->initTreeSolver($record, $wantedRecords);
-//        $this->expectException(MapperException::class);
-//        $lib->fillResults($this->resultData3());
-//    }
-//
+    /**
+     * @throws MapperException
+     */
+    public function testFailedRecordNotExists(): void
+    {
+        $record = new XRecordChild();
+        $record2 = new XRecordParent();
+        $lib = new Filler();
+
+        $wantedRecords = [ // you must define all wanted records with their aliases used for join
+            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
+            (new Records())->setData($record2, 'not_known', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
+        ];
+        $lib->initTreeSolver($record, $wantedRecords);
+        $this->expectException(MapperException::class);
+        $lib->fillResults($this->resultData3());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testFailedRootRecordNotExists(): void
+    {
+        $record = new XRecordChild();
+        $record2 = new XRecordParent();
+        $lib = new Filler();
+
+        $wantedRecords = [ // you must define all wanted records with their aliases used for join
+            (new Records())->setData($record, $record->getMapper()->getAlias(), 'not_known', ''), // primary record has its alias as key and must have empty parent
+            (new Records())->setData($record2, 'as_is', 'not_known', 'prt'), // other records has aliases defined by their parents or by custom value
+        ];
+        $lib->initTreeSolver($record, $wantedRecords);
+        $this->expectException(MapperException::class);
+        $this->expectExceptionMessage('No root record found.');
+        $lib->fillResults($this->resultData3());
+    }
+
     protected function basicJoin(): Storage\Shared\QueryBuilder\Join
     {
         $join = new Storage\Shared\QueryBuilder\Join();
@@ -520,7 +539,7 @@ class XMapperParent extends ADatabase
         $this->setRelation('id', 'kmpt_id');
         $this->setRelation('name', 'kmpt_name');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('chld', '\SearchTests\XMapperChild', 'chldId', 'id');
+        $this->addForeignKey('chld', '\SearchTests\XRecordChild', 'chldId', 'id');
     }
 }
 
@@ -535,6 +554,6 @@ class XMapperChild extends ADatabase
         $this->setRelation('name', 'kmct_name');
         $this->setRelation('prtId', 'kmpt_id');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('prt', '\SearchTests\XMapperParent', 'prtId', 'id');
+        $this->addForeignKey('prt', '\SearchTests\XRecordParent', 'prtId', 'id');
     }
 }
