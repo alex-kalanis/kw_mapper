@@ -44,7 +44,10 @@ class Database extends AConnector
         $this->queryBuilder->clearColumns();
         $relations = $this->basicRecord->getMapper()->getRelations();
         if (empty($this->basicRecord->getMapper()->getPrimaryKeys())) {
+            // @codeCoverageIgnoreStart
+            // no PKs in table
             $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), reset($relations), 'count', IQueryBuilder::AGGREGATE_COUNT);
+            // @codeCoverageIgnoreEnd
         } else {
             $pks = $this->basicRecord->getMapper()->getPrimaryKeys();
             $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), $relations[reset($pks)], 'count', IQueryBuilder::AGGREGATE_COUNT);
@@ -52,8 +55,11 @@ class Database extends AConnector
 
         $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
         if (empty($lines) || !is_iterable($lines)) {
+            // @codeCoverageIgnoreStart
+            // only when something horribly fails
             return 0;
         }
+        // @codeCoverageIgnoreEnd
         $line = reset($lines);
         return intval(reset($line));
     }

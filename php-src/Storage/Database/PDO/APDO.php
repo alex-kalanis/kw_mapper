@@ -13,7 +13,6 @@ use PDOStatement;
  * @package kalanis\kw_mapper\Storage\Database\PDO
  * PHP data object abstraction
  * Uses placeholders, not question marks
- * @codeCoverageIgnore remote connection
  */
 abstract class APDO extends ASQL
 {

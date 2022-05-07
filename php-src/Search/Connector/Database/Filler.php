@@ -173,7 +173,7 @@ class Filler
             }
         }
 
-        $results = $aliasedRecords[$this->getRecordForRoot()->getCurrentAlias()];
+        $results = array_values($aliasedRecords[$this->getRecordForRoot()->getCurrentAlias()]);
 //print_r(['count res', count($results) ]);
 
         return $results;

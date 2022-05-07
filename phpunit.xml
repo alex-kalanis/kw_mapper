@@ -49,5 +49,11 @@
         <testsuite name="debugs">
             <directory>php-tests/DebugsTests</directory>
         </testsuite>
+        <testsuite name="db">
+            <directory>php-tests/DatabaseTests</directory>
+        </testsuite>
+        <testsuite name="storedb">
+            <directory>php-tests/StorageTests/Database/Connect</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

@@ -172,7 +172,7 @@ abstract class AMapper
      * @return bool
      * @throws MapperException
      */
-    protected function update(ARecord $record): bool
+    public function update(ARecord $record): bool
     {
         if (!$this->beforeUpdate($record)) {
             return false;

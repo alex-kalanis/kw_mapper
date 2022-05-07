@@ -9,7 +9,6 @@ use PDO;
 /**
  * Class SQLite
  * @package kalanis\kw_mapper\Storage\Database\PDO
- * @codeCoverageIgnore remote connection
  */
 class SQLite extends APDO
 {

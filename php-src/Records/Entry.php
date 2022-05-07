@@ -14,7 +14,7 @@ use kalanis\kw_mapper\Interfaces\ICanFill;
 class Entry
 {
     protected $type = 0;
-    protected $data = null;
+    protected $data = false;
     protected $params = null;
     protected $isFromStorage = false;
 
@@ -47,7 +47,9 @@ class Entry
     }
 
     /**
-     * @return null|int|string|array|ICanFill
+     * @return null|int|string|array|ICanFill|false
+     * False is for no use - rest is available as data
+     * If you want to save false in your db, just cast it through integer
      */
     public function getData()
     {
