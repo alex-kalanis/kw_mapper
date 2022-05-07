@@ -8,7 +8,8 @@ php:
 #  - 8.1
 
 before_script:
-  - sudo apt-get install php-yaml
+  - sudo apt-get update
+  - sudo apt-get install -y php-yaml
   - composer self-update
   - composer install
 
