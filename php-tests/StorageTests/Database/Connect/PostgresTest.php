@@ -21,31 +21,47 @@ use PDO;
 
 
 /**
- * Class SqLiteTest
+ * Class PostgresTest
  * @package StorageTests\Database\Connect
  * @requires extension PDO
- * @requires extension pdo_sqlite
+ * @requires extension pdo_pgsql
  */
-class SqLiteTest extends CommonTestClass
+class PostgresTest extends CommonTestClass
 {
     /** @var null|SQLite */
     protected $database = null;
 
     /**
      * @throws MapperException
+     * Beware quoting in queries - Postgres uses simple for strings and double for references!
      */
     protected function setUp(): void
     {
+        $location = getenv('PGSERVER');
+        $location = false !== $location ? strval($location) : '127.0.0.1' ;
+
+        $port = getenv('PGPORT');
+        $port = false !== $port ? intval($port) : 5432 ;
+
+        $user = getenv('PGUSER');
+        $user = false !== $user ? strval($user) : 'postgres' ;
+
+        $pass = getenv('PGPASS');
+        $pass = false !== $pass ? strval($pass) : 'postgres' ;
+
+        $db = getenv('PGDB');
+        $db = false !== $db ? strval($db) : 'testing' ;
+
         $conf = Config::init()->setTarget(
-                    IDriverSources::TYPE_PDO_SQLITE,
-                    'test_sqlite_local',
-                    ':memory:',
-                    0,
-                    null,
-                    null,
-                    ''
+                    IDriverSources::TYPE_PDO_POSTGRES,
+                    'test_postgres_local',
+                    $location,
+                    $port,
+                    $user,
+                    $pass,
+                    $db
                 );
-        $conf->setParams(86000, true);
+        $conf->setParams(2400, true);
         ConfigStorage::getInstance()->addConfig($conf);
         $this->database = DatabaseSingleton::getInstance()->getDatabase($conf);
         $this->database->addAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -53,7 +69,6 @@ class SqLiteTest extends CommonTestClass
 
     /**
      * @throws MapperException
-     * Beware - SQLite cannot do more than one query at time - so the semicolons are unnecessary
      */
     public function testProcess(): void
     {
@@ -82,12 +97,12 @@ class SqLiteTest extends CommonTestClass
         $this->assertEquals(5, count($lines));
 
         $this->assertTrue($this->database->beginTransaction());
-        $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (11, 123456, 123456789, 13, "ls -laf");', []);
+        $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (11, 123456, 123456789, 13, \'ls -laf\');', []);
         $this->assertTrue($this->database->commit());
         $this->assertNotEmpty($this->database->lastInsertId(), 'There must be last id!');
         $this->assertEquals(1, $this->database->rowCount());
         $this->assertTrue($this->database->beginTransaction());
-        $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (12, 1234567, 123456789, 13, "ls -laf");', []);
+        $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (12, 1234567, 123456789, 13, \'ls -laf\');', []);
         $this->assertTrue($this->database->rollBack());
 
         $lines = $this->database->query($sql->select($query), $query->getParams());
@@ -102,21 +117,21 @@ class SqLiteTest extends CommonTestClass
         $this->dataRefill();
 
         // now queries - search
-        $search = new Search(new SQLiteTestRecord());
+        $search = new Search(new PostgresTestRecord());
         $search->like('command', '%laf%');
         $this->assertEquals(4, $search->getCount());
 
         $records = $search->getResults();
         $this->assertEquals(4, count($records));
 
-        /** @var SQLiteTestRecord $record */
+        /** @var PostgresTestRecord $record */
         $record = reset($records);
         $this->assertEquals(5, $record->id);
         $this->assertEquals(123456, $record->timeStart);
         $this->assertEquals(12345678, $record->timeEnd);
         $this->assertEquals(5, $record->status);
 
-        $search2 = new Search(new SQLiteTestRecord());
+        $search2 = new Search(new PostgresTestRecord());
         $search2->exact('status', 55);
         $this->assertEquals(0, $search2->getCount());
         $this->assertEquals(0, count($search2->getResults()));
@@ -130,7 +145,7 @@ class SqLiteTest extends CommonTestClass
         $this->dataRefill();
 
         // create
-        $rec1 = new SQLiteTestRecord();
+        $rec1 = new PostgresTestRecord();
         $rec1->id = 14;
         $rec1->timeStart = 12345;
         $rec1->timeEnd = 1234567;
@@ -138,7 +153,7 @@ class SqLiteTest extends CommonTestClass
         $this->assertTrue($rec1->save(true));
 
         // read
-        $rec2 = new SQLiteTestRecord();
+        $rec2 = new PostgresTestRecord();
         $rec2->status = 8;
         $this->assertEquals(1, count($rec2->loadMultiple()));
 
@@ -149,23 +164,23 @@ class SqLiteTest extends CommonTestClass
         $rec2->status = 9;
         $this->assertTrue($rec2->save());
 
-        $rec3 = new SQLiteTestRecord();
+        $rec3 = new PostgresTestRecord();
         $rec3->status = 8;
         $this->assertEquals(0, $rec3->count());
 
-        $rec4 = new SQLiteTestRecord();
+        $rec4 = new PostgresTestRecord();
         $rec4->id = 6;
         $this->assertTrue($rec4->load());
         $this->assertEquals(1234567, $rec4->timeStart);
         $this->assertEquals(12345678, $rec4->timeEnd);
 
         // delete
-        $rec5 = new SQLiteTestRecord();
+        $rec5 = new PostgresTestRecord();
         $rec5->status = 9;
         $this->assertTrue($rec5->delete());
 
         // bulk update - for now via ugly hack
-        $rec6 = new SQLiteTestRecord();
+        $rec6 = new PostgresTestRecord();
         $rec6->getEntry('status')->setData(5, true); // hack to set condition
         $rec6->timeEnd = 123; // this will be updated
         $rec6->getMapper()->update($rec6); // todo: another hack, change rules for insert/update in future
@@ -186,23 +201,23 @@ class SqLiteTest extends CommonTestClass
 
     protected function basicTable(): string
     {
-        return 'CREATE TABLE IF NOT EXISTS "d_queued_commands" (
-  "qc_id" INT AUTO_INCREMENT NOT NULL PRIMARY KEY ,
+        return 'CREATE UNLOGGED TABLE IF NOT EXISTS "d_queued_commands" (
+  "qc_id" SERIAL PRIMARY KEY,
   "qc_time_start" VARCHAR(20) NULL,
   "qc_time_end" VARCHAR(20) NULL,
-  "qc_status" INT(1) NULL,
-  "qc_command" TEXT NULL
+  "qc_status" INT NULL,
+  "qc_command" VARCHAR(256) NULL
 )';
     }
 
     protected function fillTable(): string
     {
         return 'INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES
-( 5, 123456,  12345678,  5, "ls -laf"),
-( 6, 1234567, 12345678,  5, "ls -laf"),
-( 7, 123456,  12345678, 11, "ls -laf"),
-( 8, 123456,  12345678, 11, "ls -laf"),
-( 9, 123456,  12345678, 12, "ls -alF"),
+( 5, 123456,  12345678,  5, \'ls -laf\'),
+( 6, 1234567, 12345678,  5, \'ls -laf\'),
+( 7, 123456,  12345678, 11, \'ls -laf\'),
+( 8, 123456,  12345678, 11, \'ls -laf\'),
+( 9, 123456,  12345678, 12, \'ls -alF\'),
 (10, 123456,  12345678, 14, null)
 ';
     }
@@ -210,14 +225,14 @@ class SqLiteTest extends CommonTestClass
 
 
 /**
- * Class SQLiteTestRecord
+ * Class PostgresTestRecord
  * @property int id
  * @property int timeStart
  * @property int timeEnd
  * @property int status
  * @property string command
  */
-class SQLiteTestRecord extends ASimpleRecord
+class PostgresTestRecord extends ASimpleRecord
 {
     protected function addEntries(): void
     {
@@ -226,16 +241,16 @@ class SQLiteTestRecord extends ASimpleRecord
         $this->addEntry('timeEnd', IEntryType::TYPE_INTEGER, 99999999);
         $this->addEntry('status', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('command', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\Connect\SQLiteTestMapper');
+        $this->setMapper('\StorageTests\Database\Connect\PostgresTestMapper');
     }
 }
 
 
-class SQLiteTestMapper extends ADatabase
+class PostgresTestMapper extends ADatabase
 {
     protected function setMap(): void
     {
-        $this->setSource('test_sqlite_local');
+        $this->setSource('test_postgres_local');
         $this->setTable('d_queued_commands');
         $this->setRelation('id', 'qc_id');
         $this->setRelation('timeStart', 'qc_time_start');

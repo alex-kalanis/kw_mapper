@@ -21,12 +21,12 @@ use PDO;
 
 
 /**
- * Class SqLiteTest
+ * Class MySqlTest
  * @package StorageTests\Database\Connect
  * @requires extension PDO
- * @requires extension pdo_sqlite
+ * @requires extension pdo_mysql
  */
-class SqLiteTest extends CommonTestClass
+class MySqlTest extends CommonTestClass
 {
     /** @var null|SQLite */
     protected $database = null;
@@ -36,16 +36,31 @@ class SqLiteTest extends CommonTestClass
      */
     protected function setUp(): void
     {
+        $location = getenv('MYSERVER');
+        $location = false !== $location ? strval($location) : '127.0.0.1' ;
+
+        $port = getenv('MYPORT');
+        $port = false !== $port ? intval($port) : 3306 ;
+
+        $user = getenv('MYUSER');
+        $user = false !== $user ? strval($user) : 'testing' ;
+
+        $pass = getenv('MYPASS');
+        $pass = false !== $pass ? strval($pass) : 'testing' ;
+
+        $db = getenv('MYDB');
+        $db = false !== $db ? strval($db) : 'testing' ;
+
         $conf = Config::init()->setTarget(
-                    IDriverSources::TYPE_PDO_SQLITE,
-                    'test_sqlite_local',
-                    ':memory:',
-                    0,
-                    null,
-                    null,
-                    ''
+                    IDriverSources::TYPE_PDO_MYSQL,
+                    'test_mysql_local',
+                    $location,
+                    $port,
+                    $user,
+                    $pass,
+                    $db
                 );
-        $conf->setParams(86000, true);
+        $conf->setParams(2400, true);
         ConfigStorage::getInstance()->addConfig($conf);
         $this->database = DatabaseSingleton::getInstance()->getDatabase($conf);
         $this->database->addAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -53,7 +68,6 @@ class SqLiteTest extends CommonTestClass
 
     /**
      * @throws MapperException
-     * Beware - SQLite cannot do more than one query at time - so the semicolons are unnecessary
      */
     public function testProcess(): void
     {
@@ -102,21 +116,21 @@ class SqLiteTest extends CommonTestClass
         $this->dataRefill();
 
         // now queries - search
-        $search = new Search(new SQLiteTestRecord());
+        $search = new Search(new MySqlTestRecord());
         $search->like('command', '%laf%');
         $this->assertEquals(4, $search->getCount());
 
         $records = $search->getResults();
         $this->assertEquals(4, count($records));
 
-        /** @var SQLiteTestRecord $record */
+        /** @var MySqlTestRecord $record */
         $record = reset($records);
         $this->assertEquals(5, $record->id);
         $this->assertEquals(123456, $record->timeStart);
         $this->assertEquals(12345678, $record->timeEnd);
         $this->assertEquals(5, $record->status);
 
-        $search2 = new Search(new SQLiteTestRecord());
+        $search2 = new Search(new MySqlTestRecord());
         $search2->exact('status', 55);
         $this->assertEquals(0, $search2->getCount());
         $this->assertEquals(0, count($search2->getResults()));
@@ -130,7 +144,7 @@ class SqLiteTest extends CommonTestClass
         $this->dataRefill();
 
         // create
-        $rec1 = new SQLiteTestRecord();
+        $rec1 = new MySqlTestRecord();
         $rec1->id = 14;
         $rec1->timeStart = 12345;
         $rec1->timeEnd = 1234567;
@@ -138,7 +152,7 @@ class SqLiteTest extends CommonTestClass
         $this->assertTrue($rec1->save(true));
 
         // read
-        $rec2 = new SQLiteTestRecord();
+        $rec2 = new MySqlTestRecord();
         $rec2->status = 8;
         $this->assertEquals(1, count($rec2->loadMultiple()));
 
@@ -149,23 +163,23 @@ class SqLiteTest extends CommonTestClass
         $rec2->status = 9;
         $this->assertTrue($rec2->save());
 
-        $rec3 = new SQLiteTestRecord();
+        $rec3 = new MySqlTestRecord();
         $rec3->status = 8;
         $this->assertEquals(0, $rec3->count());
 
-        $rec4 = new SQLiteTestRecord();
+        $rec4 = new MySqlTestRecord();
         $rec4->id = 6;
         $this->assertTrue($rec4->load());
         $this->assertEquals(1234567, $rec4->timeStart);
         $this->assertEquals(12345678, $rec4->timeEnd);
 
         // delete
-        $rec5 = new SQLiteTestRecord();
+        $rec5 = new MySqlTestRecord();
         $rec5->status = 9;
         $this->assertTrue($rec5->delete());
 
         // bulk update - for now via ugly hack
-        $rec6 = new SQLiteTestRecord();
+        $rec6 = new MySqlTestRecord();
         $rec6->getEntry('status')->setData(5, true); // hack to set condition
         $rec6->timeEnd = 123; // this will be updated
         $rec6->getMapper()->update($rec6); // todo: another hack, change rules for insert/update in future
@@ -210,14 +224,14 @@ class SqLiteTest extends CommonTestClass
 
 
 /**
- * Class SQLiteTestRecord
+ * Class MySqlTestRecord
  * @property int id
  * @property int timeStart
  * @property int timeEnd
  * @property int status
  * @property string command
  */
-class SQLiteTestRecord extends ASimpleRecord
+class MySqlTestRecord extends ASimpleRecord
 {
     protected function addEntries(): void
     {
@@ -226,16 +240,16 @@ class SQLiteTestRecord extends ASimpleRecord
         $this->addEntry('timeEnd', IEntryType::TYPE_INTEGER, 99999999);
         $this->addEntry('status', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('command', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\Connect\SQLiteTestMapper');
+        $this->setMapper('\StorageTests\Database\Connect\MySqlTestMapper');
     }
 }
 
 
-class SQLiteTestMapper extends ADatabase
+class MySqlTestMapper extends ADatabase
 {
     protected function setMap(): void
     {
-        $this->setSource('test_sqlite_local');
+        $this->setSource('test_mysql_local');
         $this->setTable('d_queued_commands');
         $this->setRelation('id', 'qc_id');
         $this->setRelation('timeStart', 'qc_time_start');

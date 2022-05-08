@@ -7,6 +7,14 @@ php:
   - 8.0
 #  - 8.1
 
+services:
+  - mysql
+  - postgresql
+
+before_install:
+  - mysql -e 'CREATE DATABASE travis_ci_test;'
+  - psql -c 'create database travis_ci_test;' -U root
+
 before_script:
   - composer self-update
   - composer install
@@ -17,6 +25,22 @@ script:
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover php-tests/data/clover.xml
+
+addons:
+  mariadb: '10.6'
+  apt:
+    packages:
+      - php-yaml
+
+env:
+  global:
+    - PGPORT=5432
+    - PGUSER=root
+    - PGPASS=
+    - PGDB=travis_ci_test
+    - MYUSER=root
+    - MYPASS=
+    - MYDB=travis_ci_test
 
 notifications:
   email: "me@kalanys.com"
