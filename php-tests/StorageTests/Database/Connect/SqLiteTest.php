@@ -20,6 +20,12 @@ use kalanis\kw_mapper\Storage\Database\PDO\SQLite;
 use PDO;
 
 
+/**
+ * Class SqLiteTest
+ * @package StorageTests\Database\Connect
+ * @requires extension PDO
+ * @requires extension pdo_sqlite
+ */
 class SqLiteTest extends CommonTestClass
 {
     /** @var null|SQLite */
@@ -30,7 +36,6 @@ class SqLiteTest extends CommonTestClass
      */
     protected function setUp(): void
     {
-
         $conf = Config::init()->setTarget(
                     IDriverSources::TYPE_PDO_SQLITE,
                     'test_sqlite_local',
@@ -163,18 +168,43 @@ class SqLiteTest extends CommonTestClass
         $rec6 = new SQLiteTestRecord();
         $rec6->getEntry('status')->setData(5, true); // hack to set condition
         $rec6->timeEnd = 123; // this will be updated
-        $rec6->getMapper()->update($rec6); // todo: another hack, change rules for insert/update
-
+        $rec6->getMapper()->update($rec6); // todo: another hack, change rules for insert/update in future
     }
 
     protected function dataRefill(): void
     {
-        $this->assertTrue($this->database->exec('DROP TABLE IF EXISTS "d_queued_commands"', []));
-        $basics = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'SQLite' . DIRECTORY_SEPARATOR . 'base.sql');
-        $this->assertTrue($this->database->exec($basics, []));
-        $fill = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'SQLite' . DIRECTORY_SEPARATOR . 'fill.sql');
-        $this->assertTrue($this->database->exec($fill, []));
+        $this->assertTrue($this->database->exec($this->dropTable(), []));
+        $this->assertTrue($this->database->exec($this->basicTable(), []));
+        $this->assertTrue($this->database->exec($this->fillTable(), []));
         $this->assertEquals(6, $this->database->rowCount());
+    }
+
+    protected function dropTable(): string
+    {
+        return 'DROP TABLE IF EXISTS "d_queued_commands"';
+    }
+
+    protected function basicTable(): string
+    {
+        return 'CREATE TABLE IF NOT EXISTS "d_queued_commands" (
+  "qc_id" INT AUTO_INCREMENT NOT NULL PRIMARY KEY ,
+  "qc_time_start" VARCHAR(20) NULL,
+  "qc_time_end" VARCHAR(20) NULL,
+  "qc_status" INT(1) NULL,
+  "qc_command" TEXT NULL
+);';
+    }
+
+    protected function fillTable(): string
+    {
+        return 'INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES
+( 5, 123456,  12345678,  5, "ls -laf"),
+( 6, 1234567, 12345678,  5, "ls -laf"),
+( 7, 123456,  12345678, 11, "ls -laf"),
+( 8, 123456,  12345678, 11, "ls -laf"),
+( 9, 123456,  12345678, 12, "ls -alF"),
+(10, 123456,  12345678, 14, null)
+;';
     }
 }
 
