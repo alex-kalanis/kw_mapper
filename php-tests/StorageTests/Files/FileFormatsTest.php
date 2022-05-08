@@ -73,6 +73,10 @@ class FileFormatsTest extends CommonTestClass
 
     /**
      * @throws MapperException
+     * @requires extension yaml
+     * @requires function yaml_parse
+     * @requires function yaml_emit
+     * -- markTestSkipped()
      */
     public function testYaml(): void
     {
@@ -85,6 +89,8 @@ class FileFormatsTest extends CommonTestClass
 
     /**
      * @throws MapperException
+     * @requires function parse_ini_string
+     * -- markTestSkipped()
      */
     public function testIni(): void
     {
