@@ -28,9 +28,6 @@ after_script:
 
 addons:
   mariadb: '10.6'
-  apt:
-    packages:
-      - php-yaml
 
 env:
   global:
