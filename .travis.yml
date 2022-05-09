@@ -7,13 +7,16 @@ php:
   - 8.0
 #  - 8.1
 
+addons:
+  mariadb: '10.6'
+
 services:
   - mysql
   - postgresql
 
 before_install:
-  - mysql -e 'CREATE DATABASE travis_ci_test;' -u root
-  - psql -c 'create database travis_ci_test;' -U root
+  - sudo mysql -e 'CREATE DATABASE travis_ci_test;' -u root
+  - sudo psql -c 'create database travis_ci_test;' -U root
 
 before_script:
   - composer self-update
@@ -25,9 +28,6 @@ script:
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover php-tests/data/clover.xml
-
-addons:
-  mariadb: '10.6'
 
 env:
   global:
