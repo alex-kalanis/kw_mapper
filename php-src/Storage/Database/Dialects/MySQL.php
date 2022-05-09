@@ -13,8 +13,10 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  * @package kalanis\kw_mapper\Storage\Database\Dialects
  * Create queries for MySQL / MariaDB / Percona servers
  */
-class MySQL extends AEscapedDialect
+class MySQL extends ADialect
 {
+    use TEscapedDialect;
+
     public function insert(QueryBuilder $builder)
     {
         return sprintf('INSERT INTO `%s` SET %s;',
@@ -26,13 +28,13 @@ class MySQL extends AEscapedDialect
     public function select(QueryBuilder $builder)
     {
         return sprintf('SELECT %s FROM `%s` %s %s%s%s%s%s;',
-            $this->makeColumns($builder->getColumns()),
+            $this->makeFullColumns($builder->getColumns()),
             $builder->getBaseTable(),
             $this->makeJoin($builder->getJoins()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation()),
-            $this->makeGrouping($builder->getGrouping()),
-            $this->makeHaving($builder->getHavingCondition(), $builder->getRelation()),
-            $this->makeOrdering($builder->getOrdering()),
+            $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
+            $this->makeFullGrouping($builder->getGrouping()),
+            $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
+            $this->makeFullOrdering($builder->getOrdering()),
             $this->makeLimits($builder->getLimit(), $builder->getOffset())
         );
     }
@@ -42,7 +44,7 @@ class MySQL extends AEscapedDialect
         return sprintf('UPDATE `%s` SET %s%s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation()),
+            $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
             $this->makeLimits($builder->getOffset(), null)
         );
     }
@@ -51,7 +53,7 @@ class MySQL extends AEscapedDialect
     {
         return sprintf('DELETE FROM `%s`%s%s;',
             $builder->getBaseTable(),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation()),
+            $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
             $this->makeLimits($builder->getLimit(), null)
         );
     }

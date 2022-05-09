@@ -9,7 +9,6 @@ use PDO;
 /**
  * Class PostgreSQL
  * @package kalanis\kw_mapper\Storage\Database\PDO
- * @codeCoverageIgnore remote connection
  */
 class PostgreSQL extends APDO
 {

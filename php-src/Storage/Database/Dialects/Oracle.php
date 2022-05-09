@@ -15,13 +15,15 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  * Also for the similar purposes you cannot limit amount of deleted or updated rows
  * @link https://www.databasestar.com/limit-the-number-of-rows-in-oracle/
  */
-class Oracle extends AEscapedDialect
+class Oracle extends ADialect
 {
+    use TEscapedDialect;
+
     public function insert(QueryBuilder $builder)
     {
         return sprintf('INSERT INTO `%s` (%s) VALUES (%s);',
             $builder->getBaseTable(),
-            $this->makePropertyList($builder->getProperties()),
+            $this->makeSimplePropertyList($builder->getProperties()),
             $this->makePropertyEntries($builder->getProperties())
         );
     }
@@ -29,13 +31,13 @@ class Oracle extends AEscapedDialect
     public function select(QueryBuilder $builder)
     {
         return sprintf('SELECT %s FROM `%s` %s %s%s%s%s%s;',
-            $this->makeColumns($builder->getColumns()),
+            $this->makeFullColumns($builder->getColumns()),
             $builder->getBaseTable(),
             $this->makeJoin($builder->getJoins()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation()),
-            $this->makeGrouping($builder->getGrouping()),
-            $this->makeHaving($builder->getHavingCondition(), $builder->getRelation()),
-            $this->makeOrdering($builder->getOrdering()),
+            $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
+            $this->makeFullGrouping($builder->getGrouping()),
+            $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
+            $this->makeFullOrdering($builder->getOrdering()),
             $this->makeLimits($builder->getLimit(), $builder->getOffset())
         );
     }
@@ -45,7 +47,7 @@ class Oracle extends AEscapedDialect
         return sprintf('UPDATE `%s` SET %s%s;',
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
@@ -53,7 +55,7 @@ class Oracle extends AEscapedDialect
     {
         return sprintf('DELETE FROM `%s`%s;',
             $builder->getBaseTable(),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
@@ -68,11 +70,6 @@ class Oracle extends AEscapedDialect
             ? ''
             : sprintf(' OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', intval($offset), $limit)
         ;
-    }
-
-    public function singlePropertyListed(QueryBuilder\Property $column): string
-    {
-        return sprintf('`%s`', $column->getColumnName());
     }
 
     public function availableJoins(): array

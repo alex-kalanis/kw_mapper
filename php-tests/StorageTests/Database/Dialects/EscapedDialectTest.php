@@ -1,6 +1,6 @@
 <?php
 
-namespace StorageTests\Database;
+namespace StorageTests\Database\Dialects;
 
 
 use CommonTestClass;
@@ -15,7 +15,8 @@ class EscapedDialectTest extends CommonTestClass
     public function testAllColumns(): void
     {
         $lib = new XEscDialect();
-        $this->assertEquals('*', $lib->makeColumns([]));
+        $this->assertEquals('*', $lib->makeSimpleColumns([]));
+        $this->assertEquals('*', $lib->makeFullColumns([]));
     }
 
     public function testSelectedColumns(): void
@@ -31,7 +32,8 @@ class EscapedDialectTest extends CommonTestClass
         $columns[] = $column2;
 
         $lib = new XEscDialect();
-        $this->assertEquals('jkl(`abc`.`def`) AS `ghi`, `pqr` AS `stu`', $lib->makeColumns($columns));
+        $this->assertEquals('jkl(`def`) AS `ghi`, `pqr` AS `stu`', $lib->makeSimpleColumns($columns));
+        $this->assertEquals('jkl(`abc`.`def`) AS `ghi`, `pqr` AS `stu`', $lib->makeFullColumns($columns));
     }
 
     public function testAllProperties(): void
@@ -59,11 +61,21 @@ class EscapedDialectTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testAllPropertiesAsList(): void
+    public function testAllPropertiesAsSimpleList(): void
     {
         $lib = new XEscDialect();
         $this->expectException(MapperException::class);
-        $lib->makePropertyList([]);
+        $lib->makeSimplePropertyList([]);
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testAllPropertiesAsFullList(): void
+    {
+        $lib = new XEscDialect();
+        $this->expectException(MapperException::class);
+        $lib->makeFullPropertyList([]);
     }
 
     /**
@@ -92,14 +104,16 @@ class EscapedDialectTest extends CommonTestClass
         $properties[] = $property2;
 
         $lib = new XEscDialect();
-        $this->assertEquals('`abc`.`def`, `mno`', $lib->makePropertyList($properties));
+        $this->assertEquals('`def`, `mno`', $lib->makeSimplePropertyList($properties));
+        $this->assertEquals('`abc`.`def`, `mno`', $lib->makeFullPropertyList($properties));
         $this->assertEquals('ghi, pqr', $lib->makePropertyEntries($properties));
     }
 
     public function testAllConditions(): void
     {
         $lib = new XEscDialect();
-        $this->assertEquals('', $lib->makeConditions([], 'not need for this'));
+        $this->assertEquals('', $lib->makeSimpleConditions([], 'not need for this'));
+        $this->assertEquals('', $lib->makeFullConditions([], 'not need for this'));
     }
 
     public function testSelectedConditions(): void
@@ -115,13 +129,15 @@ class EscapedDialectTest extends CommonTestClass
         $conditions[] = $condition2;
 
         $lib = new XEscDialect();
-        $this->assertEquals(' WHERE `abc`.`def` = ghi UNIONED BY `mno` != pqr', $lib->makeConditions($conditions, 'UNIONED BY'));
+        $this->assertEquals(' WHERE `def` = ghi UNIONED BY `mno` != pqr', $lib->makeSimpleConditions($conditions, 'UNIONED BY'));
+        $this->assertEquals(' WHERE `abc`.`def` = ghi UNIONED BY `mno` != pqr', $lib->makeFullConditions($conditions, 'UNIONED BY'));
     }
 
     public function testAllOrdering(): void
     {
         $lib = new XEscDialect();
-        $this->assertEquals('', $lib->makeOrdering([]));
+        $this->assertEquals('', $lib->makeSimpleOrdering([]));
+        $this->assertEquals('', $lib->makeFullOrdering([]));
     }
 
     public function testSelectedOrdering(): void
@@ -137,13 +153,15 @@ class EscapedDialectTest extends CommonTestClass
         $ordering[] = $order2;
 
         $lib = new XEscDialect();
-        $this->assertEquals(' ORDER BY `abc`.`def` ghi, `mno` pqr', $lib->makeOrdering($ordering));
+        $this->assertEquals(' ORDER BY `def` ghi, `mno` pqr', $lib->makeSimpleOrdering($ordering));
+        $this->assertEquals(' ORDER BY `abc`.`def` ghi, `mno` pqr', $lib->makeFullOrdering($ordering));
     }
 
     public function testAllGrouping(): void
     {
         $lib = new XEscDialect();
-        $this->assertEquals('', $lib->makeGrouping([]));
+        $this->assertEquals('', $lib->makeSimpleGrouping([]));
+        $this->assertEquals('', $lib->makeFullGrouping([]));
     }
 
     public function testSelectedGrouping(): void
@@ -159,7 +177,32 @@ class EscapedDialectTest extends CommonTestClass
         $grouping[] = $group2;
 
         $lib = new XEscDialect();
-        $this->assertEquals(' GROUP BY `abc`.`def`, `ghi`', $lib->makeGrouping($grouping));
+        $this->assertEquals(' GROUP BY `def`, `ghi`', $lib->makeSimpleGrouping($grouping));
+        $this->assertEquals(' GROUP BY `abc`.`def`, `ghi`', $lib->makeFullGrouping($grouping));
+    }
+
+    public function testAllHaving(): void
+    {
+        $lib = new XEscDialect();
+        $this->assertEquals('', $lib->makeSimpleHaving([], 'not need for this case'));
+        $this->assertEquals('', $lib->makeFullHaving([], 'not need for this case'));
+    }
+
+    public function testSelectedHaving(): void
+    {
+        $condition1 = new QueryBuilder\Condition();
+        $condition1->setData('abc', 'def', IQueryBuilder::OPERATION_EQ, 'ghi');
+
+        $condition2 = new QueryBuilder\Condition();
+        $condition2->setData('', 'mno', IQueryBuilder::OPERATION_NEQ, 'pqr');
+
+        $conditions = [];
+        $conditions[] = $condition1;
+        $conditions[] = $condition2;
+
+        $lib = new XEscDialect();
+        $this->assertEquals(' HAVING `def` = ghi KNOWN BY `mno` != pqr', $lib->makeSimpleHaving($conditions, 'KNOWN BY'));
+        $this->assertEquals(' HAVING `abc`.`def` = ghi KNOWN BY `mno` != pqr', $lib->makeFullHaving($conditions, 'KNOWN BY'));
     }
 
     public function testAllJoins(): void
@@ -186,32 +229,9 @@ class EscapedDialectTest extends CommonTestClass
 }
 
 
-class XEscDialect extends Dialects\AEscapedDialect
+class XEscDialect extends Dialects\EmptyDialect
 {
-    public function insert(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function select(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function update(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function delete(QueryBuilder $builder)
-    {
-        return '';
-    }
-
-    public function describe(QueryBuilder $builder)
-    {
-        return '';
-    }
+    use Dialects\TEscapedDialect;
 
     public function availableJoins(): array
     {

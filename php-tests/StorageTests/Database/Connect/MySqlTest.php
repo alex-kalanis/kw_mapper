@@ -80,7 +80,7 @@ class MySqlTest extends CommonTestClass
 
         $query = new Builder();
         $query->setBaseTable('d_queued_commands');
-        $sql = new Dialects\SQLite();
+        $sql = new Dialects\MySQL();
         $result = $this->database->query($sql->describe($query), []);
 //var_dump($result);
         $this->assertNotEmpty($result, 'There MUST be table from file!');
@@ -195,23 +195,23 @@ class MySqlTest extends CommonTestClass
 
     protected function dropTable(): string
     {
-        return 'DROP TABLE IF EXISTS "d_queued_commands"';
+        return 'DROP TABLE IF EXISTS `d_queued_commands`';
     }
 
     protected function basicTable(): string
     {
-        return 'CREATE TABLE IF NOT EXISTS "d_queued_commands" (
-  "qc_id" INT AUTO_INCREMENT NOT NULL PRIMARY KEY ,
-  "qc_time_start" VARCHAR(20) NULL,
-  "qc_time_end" VARCHAR(20) NULL,
-  "qc_status" INT(1) NULL,
-  "qc_command" TEXT NULL
+        return 'CREATE TABLE IF NOT EXISTS `d_queued_commands` (
+  `qc_id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY ,
+  `qc_time_start` VARCHAR(20) NULL,
+  `qc_time_end` VARCHAR(20) NULL,
+  `qc_status` INT(1) NULL,
+  `qc_command` TEXT NULL
 )';
     }
 
     protected function fillTable(): string
     {
-        return 'INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES
+        return 'INSERT INTO `d_queued_commands` (`qc_id`, `qc_time_start`, `qc_time_end`, `qc_status`, `qc_command`) VALUES
 ( 5, 123456,  12345678,  5, "ls -laf"),
 ( 6, 1234567, 12345678,  5, "ls -laf"),
 ( 7, 123456,  12345678, 11, "ls -laf"),

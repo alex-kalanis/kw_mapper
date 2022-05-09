@@ -10,7 +10,6 @@ use PDO;
  * Class MySQL
  * @package kalanis\kw_mapper\Storage\Database\PDO
  * Can be also used for Sphinx search engine
- * @codeCoverageIgnore remote connection
  */
 class MySQL extends APDO
 {

@@ -14,6 +14,8 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 class TransactSQL extends ADialect
 {
+    use TSimpleDialect;
+
     /**
      * @param QueryBuilder $builder
      * @return string
@@ -36,13 +38,13 @@ class TransactSQL extends ADialect
     {
         return sprintf('SELECT %s %s FROM %s %s %s%s%s%s%s;',
             $this->makeLimit($builder->getLimit()),
-            $this->makeColumns($builder->getColumns()),
+            $this->makeFullColumns($builder->getColumns()),
             $builder->getBaseTable(),
             $this->makeJoin($builder->getJoins()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation()),
-            $this->makeGrouping($builder->getGrouping()),
-            $this->makeHaving($builder->getHavingCondition(), $builder->getRelation()),
-            $this->makeOrdering($builder->getOrdering()),
+            $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
+            $this->makeFullGrouping($builder->getGrouping()),
+            $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
+            $this->makeFullOrdering($builder->getOrdering()),
             $this->makeOffset($builder->getOffset())
         );
     }
@@ -58,7 +60,7 @@ class TransactSQL extends ADialect
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeFullConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
@@ -72,7 +74,7 @@ class TransactSQL extends ADialect
         return sprintf('DELETE %s FROM %s%s;',
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
-            $this->makeConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeFullConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 

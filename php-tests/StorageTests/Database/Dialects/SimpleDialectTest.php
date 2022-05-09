@@ -1,6 +1,6 @@
 <?php
 
-namespace StorageTests\Database;
+namespace StorageTests\Database\Dialects;
 
 
 use CommonTestClass;
@@ -10,73 +10,13 @@ use kalanis\kw_mapper\Storage\Database\Dialects;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
-class DialectTest extends CommonTestClass
+class SimpleDialectTest extends CommonTestClass
 {
-    /**
-     * @param string $operation
-     * @param string $expectedOper
-     * @param string $key
-     * @param string $expectedKey
-     * @throws MapperException
-     * @dataProvider operationsProvider
-     */
-    public function testOperations(string $operation, $key, string $expectedOper, string $expectedKey): void
-    {
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals($expectedOper, $lib->translateOperation($operation));
-    }
-
-    /**
-     * @param string $operation
-     * @param string $expectedOper
-     * @param string $key
-     * @param string $expectedKey
-     * @throws MapperException
-     * @dataProvider operationsProvider
-     */
-    public function testKeys(string $operation, $key, string $expectedOper, string $expectedKey): void
-    {
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals($expectedKey, $lib->translateKey($operation, $key));
-    }
-
-    public function operationsProvider(): array
-    {
-        return [
-            [IQueryBuilder::OPERATION_NULL, 'abc', 'IS NULL', ''],
-            [IQueryBuilder::OPERATION_NNULL, 123, 'IS NOT NULL', ''],
-            [IQueryBuilder::OPERATION_EQ, 'def', '=', 'def'],
-            [IQueryBuilder::OPERATION_NEQ, 456, '!=', '456'],
-            [IQueryBuilder::OPERATION_GT, 'ghi', '>', 'ghi'],
-            [IQueryBuilder::OPERATION_GTE, 789.01, '>=', '789.01'],
-            [IQueryBuilder::OPERATION_LT, 'jkl', '<', 'jkl'],
-            [IQueryBuilder::OPERATION_LTE, new \StrObjMock(), '<=', 'strObj'],
-            [IQueryBuilder::OPERATION_LIKE, 'mno', 'LIKE', 'mno'],
-            [IQueryBuilder::OPERATION_NLIKE, 'pqr', 'NOT LIKE', 'pqr'],
-            [IQueryBuilder::OPERATION_REXP, 'stu', 'REGEX', 'stu'],
-            [IQueryBuilder::OPERATION_IN,  [], 'IN', '(0)'],
-            [IQueryBuilder::OPERATION_NIN, ['okm', 'ijn'], 'NOT IN', '(okm,ijn)'],
-        ];
-    }
-
-    public function testOperationsFailed(): void
-    {
-        $lib = new Dialects\EmptyDialect();
-        $this->expectException(MapperException::class);
-        $lib->translateOperation('undefined one');
-    }
-
-    public function testKeysFailed(): void
-    {
-        $lib = new Dialects\EmptyDialect();
-        $this->expectException(MapperException::class);
-        $lib->translateKey('undefined one', 'with failed');
-    }
-
     public function testAllColumns(): void
     {
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals('*', $lib->makeColumns([]));
+        $lib = new XSimpleDialect();
+        $this->assertEquals('*', $lib->makeSimpleColumns([]));
+        $this->assertEquals('*', $lib->makeFullColumns([]));
     }
 
     public function testSelectedColumns(): void
@@ -91,13 +31,14 @@ class DialectTest extends CommonTestClass
         $columns[] = $column1;
         $columns[] = $column2;
 
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals('jkl(abc.def) AS ghi, pqr AS stu', $lib->makeColumns($columns));
+        $lib = new XSimpleDialect();
+        $this->assertEquals('jkl(def) AS ghi, pqr AS stu', $lib->makeSimpleColumns($columns));
+        $this->assertEquals('jkl(abc.def) AS ghi, pqr AS stu', $lib->makeFullColumns($columns));
     }
 
     public function testAllProperties(): void
     {
-        $lib = new Dialects\EmptyDialect();
+        $lib = new XSimpleDialect();
         $this->assertEquals('1=1', $lib->makeProperty([]));
     }
 
@@ -113,18 +54,28 @@ class DialectTest extends CommonTestClass
         $properties[] = $property1;
         $properties[] = $property2;
 
-        $lib = new Dialects\EmptyDialect();
+        $lib = new XSimpleDialect();
         $this->assertEquals('def = ghi, mno = pqr', $lib->makeProperty($properties));
     }
 
     /**
      * @throws MapperException
      */
-    public function testAllPropertiesAsList(): void
+    public function testAllPropertiesAsSimpleList(): void
     {
-        $lib = new Dialects\EmptyDialect();
+        $lib = new XSimpleDialect();
         $this->expectException(MapperException::class);
-        $lib->makePropertyList([]);
+        $lib->makeSimplePropertyList([]);
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testAllPropertiesAsFullList(): void
+    {
+        $lib = new XSimpleDialect();
+        $this->expectException(MapperException::class);
+        $lib->makeFullPropertyList([]);
     }
 
     /**
@@ -132,7 +83,7 @@ class DialectTest extends CommonTestClass
      */
     public function testAllPropertiesAsEntries(): void
     {
-        $lib = new Dialects\EmptyDialect();
+        $lib = new XSimpleDialect();
         $this->expectException(MapperException::class);
         $lib->makePropertyEntries([]);
     }
@@ -152,15 +103,17 @@ class DialectTest extends CommonTestClass
         $properties[] = $property1;
         $properties[] = $property2;
 
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals('abc.def, mno', $lib->makePropertyList($properties));
+        $lib = new XSimpleDialect();
+        $this->assertEquals('def, mno', $lib->makeSimplePropertyList($properties));
+        $this->assertEquals('abc.def, mno', $lib->makeFullPropertyList($properties));
         $this->assertEquals('ghi, pqr', $lib->makePropertyEntries($properties));
     }
 
     public function testAllConditions(): void
     {
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals('', $lib->makeConditions([], 'not need for this'));
+        $lib = new XSimpleDialect();
+        $this->assertEquals('', $lib->makeSimpleConditions([], 'not need for this'));
+        $this->assertEquals('', $lib->makeFullConditions([], 'not need for this'));
     }
 
     public function testSelectedConditions(): void
@@ -175,14 +128,16 @@ class DialectTest extends CommonTestClass
         $conditions[] = $condition1;
         $conditions[] = $condition2;
 
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals(' WHERE abc.def = ghi UNIONED BY mno != pqr', $lib->makeConditions($conditions, 'UNIONED BY'));
+        $lib = new XSimpleDialect();
+        $this->assertEquals(' WHERE def = ghi UNIONED BY mno != pqr', $lib->makeSimpleConditions($conditions, 'UNIONED BY'));
+        $this->assertEquals(' WHERE abc.def = ghi UNIONED BY mno != pqr', $lib->makeFullConditions($conditions, 'UNIONED BY'));
     }
 
     public function testAllOrdering(): void
     {
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals('', $lib->makeOrdering([]));
+        $lib = new XSimpleDialect();
+        $this->assertEquals('', $lib->makeSimpleOrdering([]));
+        $this->assertEquals('', $lib->makeFullOrdering([]));
     }
 
     public function testSelectedOrdering(): void
@@ -197,14 +152,16 @@ class DialectTest extends CommonTestClass
         $ordering[] = $order1;
         $ordering[] = $order2;
 
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals(' ORDER BY abc.def ghi, mno pqr', $lib->makeOrdering($ordering));
+        $lib = new XSimpleDialect();
+        $this->assertEquals(' ORDER BY def ghi, mno pqr', $lib->makeSimpleOrdering($ordering));
+        $this->assertEquals(' ORDER BY abc.def ghi, mno pqr', $lib->makeFullOrdering($ordering));
     }
 
     public function testAllGrouping(): void
     {
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals('', $lib->makeGrouping([]));
+        $lib = new XSimpleDialect();
+        $this->assertEquals('', $lib->makeSimpleGrouping([]));
+        $this->assertEquals('', $lib->makeFullGrouping([]));
     }
 
     public function testSelectedGrouping(): void
@@ -219,14 +176,16 @@ class DialectTest extends CommonTestClass
         $grouping[] = $group1;
         $grouping[] = $group2;
 
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals(' GROUP BY abc.def, ghi', $lib->makeGrouping($grouping));
+        $lib = new XSimpleDialect();
+        $this->assertEquals(' GROUP BY def, ghi', $lib->makeSimpleGrouping($grouping));
+        $this->assertEquals(' GROUP BY abc.def, ghi', $lib->makeFullGrouping($grouping));
     }
 
     public function testAllHaving(): void
     {
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals('', $lib->makeHaving([], 'not need for this case'));
+        $lib = new XSimpleDialect();
+        $this->assertEquals('', $lib->makeSimpleHaving([], 'not need for this case'));
+        $this->assertEquals('', $lib->makeFullHaving([], 'not need for this case'));
     }
 
     public function testSelectedHaving(): void
@@ -241,13 +200,14 @@ class DialectTest extends CommonTestClass
         $conditions[] = $condition1;
         $conditions[] = $condition2;
 
-        $lib = new Dialects\EmptyDialect();
-        $this->assertEquals(' HAVING abc.def = ghi KNOWN BY mno != pqr', $lib->makeHaving($conditions, 'KNOWN BY'));
+        $lib = new XSimpleDialect();
+        $this->assertEquals(' HAVING def = ghi KNOWN BY mno != pqr', $lib->makeSimpleHaving($conditions, 'KNOWN BY'));
+        $this->assertEquals(' HAVING abc.def = ghi KNOWN BY mno != pqr', $lib->makeFullHaving($conditions, 'KNOWN BY'));
     }
 
     public function testAllJoins(): void
     {
-        $lib = new Dialects\EmptyDialect();
+        $lib = new XSimpleDialect();
         $this->assertEquals('', $lib->makeJoin([]));
     }
 
@@ -263,7 +223,13 @@ class DialectTest extends CommonTestClass
         $grouping[] = $group1;
         $grouping[] = $group2;
 
-        $lib = new Dialects\EmptyDialect();
+        $lib = new XSimpleDialect();
         $this->assertEquals(' pqr JOIN def AS stu ON (jkl.mno = stu.ghi)  klm JOIN yza ON (efg.hij = yza.bcd)', $lib->makeJoin($grouping));
     }
+}
+
+
+class XSimpleDialect extends Dialects\EmptyDialect
+{
+    use Dialects\TSimpleDialect;
 }

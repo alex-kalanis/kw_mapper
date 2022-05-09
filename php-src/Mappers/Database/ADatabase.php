@@ -222,7 +222,8 @@ abstract class ADatabase extends AMapper
 //            foreach ($this->primaryKeys as $primaryKey) {
 //                $this->queryBuilder->addColumn($this->getTable(), $primaryKey, '', IQueryBuilder::AGGREGATE_COUNT);
 //            }
-            $this->queryBuilder->addColumn($this->getTable(), reset($this->primaryKeys), 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $key = reset($this->primaryKeys);
+            $this->queryBuilder->addColumn($this->getTable(), $this->relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
         $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());

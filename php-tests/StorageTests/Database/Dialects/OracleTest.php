@@ -51,7 +51,7 @@ class OracleTest extends CommonTestClass
         $query->addCondition('foo', 'dbt', IQueryBuilder::OPERATION_EQ, 'ggf');
         $query->addCondition('foo', 'dfd', IQueryBuilder::OPERATION_NEQ, 'yxn');
         $sql = new Dialects\Oracle();
-        $this->assertEquals('DELETE FROM `foo` WHERE `foo`.`dbt` = :dbt_0 AND `foo`.`dfd` != :dfd_1;', $sql->delete($query));
+        $this->assertEquals('DELETE FROM `foo` WHERE `dbt` = :dbt_0 AND `dfd` != :dfd_1;', $sql->delete($query));
         $this->assertEquals([ ':dbt_0' => 'ggf', ':dfd_1' => 'yxn', ], $query->getParams());
         $query->resetCounter();
     }
@@ -69,7 +69,7 @@ class OracleTest extends CommonTestClass
         $query->addCondition('foo', 'dbt', IQueryBuilder::OPERATION_EQ, 'ggf');
         $query->addCondition('foo', 'dfd', IQueryBuilder::OPERATION_NEQ, 'yxn');
         $sql = new Dialects\Oracle();
-        $this->assertEquals('UPDATE `foo` SET `bar` = :bar_0, `htf` = :htf_1, `vrs` = :vrs_2 WHERE `foo`.`dbt` = :dbt_3 AND `foo`.`dfd` != :dfd_4;', $sql->update($query));
+        $this->assertEquals('UPDATE `foo` SET `bar` = :bar_0, `htf` = :htf_1, `vrs` = :vrs_2 WHERE `dbt` = :dbt_3 AND `dfd` != :dfd_4;', $sql->update($query));
         $this->assertEquals([ ':bar_0' => 'baz', ':htf_1' => 'yjd', ':vrs_2' => 'abh', ':dbt_3' => 'ggf', ':dfd_4' => 'yxn', ], $query->getParams());
         $query->resetCounter();
     }

@@ -55,5 +55,8 @@
         <testsuite name="storedb">
             <directory>php-tests/StorageTests/Database/Connect</directory>
         </testsuite>
+        <testsuite name="dialdb">
+            <directory>php-tests/StorageTests/Database/Dialects</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

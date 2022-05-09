@@ -81,7 +81,7 @@ class PostgresTest extends CommonTestClass
 
         $query = new Builder();
         $query->setBaseTable('d_queued_commands');
-        $sql = new Dialects\SQLite();
+        $sql = new Dialects\PostgreSQL();
         $result = $this->database->query($sql->describe($query), []);
 //var_dump($result);
         $this->assertNotEmpty($result, 'There MUST be table from file!');
@@ -97,12 +97,11 @@ class PostgresTest extends CommonTestClass
         $this->assertEquals(5, count($lines));
 
         $this->assertTrue($this->database->beginTransaction());
-        $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (11, 123456, 123456789, 13, \'ls -laf\');', []);
+        $this->database->exec('INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES (11, 123456, 123456789, 13, \'ls -laf\');', []);
         $this->assertTrue($this->database->commit());
-        $this->assertNotEmpty($this->database->lastInsertId(), 'There must be last id!');
         $this->assertEquals(1, $this->database->rowCount());
         $this->assertTrue($this->database->beginTransaction());
-        $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (12, 1234567, 123456789, 13, \'ls -laf\');', []);
+        $this->database->exec('INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES (12, 1234567, 123456789, 13, \'ls -laf\');', []);
         $this->assertTrue($this->database->rollBack());
 
         $lines = $this->database->query($sql->select($query), $query->getParams());
@@ -127,8 +126,8 @@ class PostgresTest extends CommonTestClass
         /** @var PostgresTestRecord $record */
         $record = reset($records);
         $this->assertEquals(5, $record->id);
-        $this->assertEquals(123456, $record->timeStart);
-        $this->assertEquals(12345678, $record->timeEnd);
+        $this->assertEquals(123456, $record->time_start);
+        $this->assertEquals(12345678, $record->time_end);
         $this->assertEquals(5, $record->status);
 
         $search2 = new Search(new PostgresTestRecord());
@@ -147,8 +146,8 @@ class PostgresTest extends CommonTestClass
         // create
         $rec1 = new PostgresTestRecord();
         $rec1->id = 14;
-        $rec1->timeStart = 12345;
-        $rec1->timeEnd = 1234567;
+        $rec1->time_start = 12345;
+        $rec1->time_end = 1234567;
         $rec1->status = 8;
         $this->assertTrue($rec1->save(true));
 
@@ -158,8 +157,8 @@ class PostgresTest extends CommonTestClass
         $this->assertEquals(1, count($rec2->loadMultiple()));
 
         $this->assertTrue($rec2->load());
-        $this->assertEquals(12345, $rec2->timeStart);
-        $this->assertEquals(1234567, $rec2->timeEnd);
+        $this->assertEquals(12345, $rec2->time_start);
+        $this->assertEquals(1234567, $rec2->time_end);
         // update
         $rec2->status = 9;
         $this->assertTrue($rec2->save());
@@ -171,8 +170,8 @@ class PostgresTest extends CommonTestClass
         $rec4 = new PostgresTestRecord();
         $rec4->id = 6;
         $this->assertTrue($rec4->load());
-        $this->assertEquals(1234567, $rec4->timeStart);
-        $this->assertEquals(12345678, $rec4->timeEnd);
+        $this->assertEquals(1234567, $rec4->time_start);
+        $this->assertEquals(12345678, $rec4->time_end);
 
         // delete
         $rec5 = new PostgresTestRecord();
@@ -182,7 +181,7 @@ class PostgresTest extends CommonTestClass
         // bulk update - for now via ugly hack
         $rec6 = new PostgresTestRecord();
         $rec6->getEntry('status')->setData(5, true); // hack to set condition
-        $rec6->timeEnd = 123; // this will be updated
+        $rec6->time_end = 123; // this will be updated
         $rec6->getMapper()->update($rec6); // todo: another hack, change rules for insert/update in future
     }
 
@@ -227,8 +226,8 @@ class PostgresTest extends CommonTestClass
 /**
  * Class PostgresTestRecord
  * @property int id
- * @property int timeStart
- * @property int timeEnd
+ * @property int time_start
+ * @property int time_end
  * @property int status
  * @property string command
  */
@@ -237,8 +236,8 @@ class PostgresTestRecord extends ASimpleRecord
     protected function addEntries(): void
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
-        $this->addEntry('timeStart', IEntryType::TYPE_INTEGER, 99999999);
-        $this->addEntry('timeEnd', IEntryType::TYPE_INTEGER, 99999999);
+        $this->addEntry('time_start', IEntryType::TYPE_INTEGER, 99999999);
+        $this->addEntry('time_end', IEntryType::TYPE_INTEGER, 99999999);
         $this->addEntry('status', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('command', IEntryType::TYPE_STRING, 250);
         $this->setMapper('\StorageTests\Database\Connect\PostgresTestMapper');
@@ -253,8 +252,8 @@ class PostgresTestMapper extends ADatabase
         $this->setSource('test_postgres_local');
         $this->setTable('d_queued_commands');
         $this->setRelation('id', 'qc_id');
-        $this->setRelation('timeStart', 'qc_time_start');
-        $this->setRelation('timeEnd', 'qc_time_end');
+        $this->setRelation('time_start', 'qc_time_start');
+        $this->setRelation('time_end', 'qc_time_end');
         $this->setRelation('status', 'qc_status');
         $this->setRelation('command', 'qc_command');
         $this->addPrimaryKey('id');
