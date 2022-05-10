@@ -57,7 +57,7 @@ trait TMapper
     /**
      * @throws MapperException
      */
-    final private function checkMapper()
+    private function checkMapper()
     {
         if (empty($this->mapper)) {
             throw new MapperException('Unknown entry mapper');

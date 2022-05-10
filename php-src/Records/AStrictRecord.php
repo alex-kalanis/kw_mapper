@@ -63,7 +63,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    final private function checkBool($value, string $key)
+    private function checkBool($value, string $key)
     {
         if (is_null($value)) {
             return;
@@ -78,7 +78,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    final private function checkNumeric($value, string $key)
+    private function checkNumeric($value, string $key)
     {
         if (is_null($value)) {
             return;
@@ -93,7 +93,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    final private function checkString($value, string $key)
+    private function checkString($value, string $key)
     {
         if (is_null($value)) {
             return;
@@ -108,7 +108,7 @@ abstract class AStrictRecord extends ARecord
      * @param float $limit
      * @throws MapperException
      */
-    final private function checkSize($value, float $limit)
+    private function checkSize($value, float $limit)
     {
         if (is_null($value)) {
             return;
@@ -123,7 +123,7 @@ abstract class AStrictRecord extends ARecord
      * @param int $limit
      * @throws MapperException
      */
-    final private function checkLength($value, int $limit)
+    private function checkLength($value, int $limit)
     {
         if (is_null($value)) {
             return;
@@ -139,7 +139,7 @@ abstract class AStrictRecord extends ARecord
      * @param array $preset
      * @throws MapperException
      */
-    final private function checkPreset($value, $preset)
+    private function checkPreset($value, $preset)
     {
         if (is_null($value)) {
             return;
@@ -154,7 +154,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    final private function checkArrayForNotEntries($value, string $key)
+    private function checkArrayForNotEntries($value, string $key)
     {
         if (!is_array($value)) {
             throw new MapperException(sprintf('You must set array into key *%s*', $key));
