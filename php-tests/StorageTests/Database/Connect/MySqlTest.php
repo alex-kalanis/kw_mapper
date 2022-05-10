@@ -98,7 +98,6 @@ class MySqlTest extends CommonTestClass
         $this->assertTrue($this->database->beginTransaction());
         $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (11, 123456, 123456789, 13, "ls -laf");', []);
         $this->assertTrue($this->database->commit());
-        $this->assertNotEmpty($this->database->lastInsertId(), 'There must be last id!');
         $this->assertEquals(1, $this->database->rowCount());
         $this->assertTrue($this->database->beginTransaction());
         $this->database->exec('INSERT INTO `d_queued_commands` (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (12, 1234567, 123456789, 13, "ls -laf");', []);
