@@ -14,7 +14,7 @@ services:
 
 before_script:
   - sudo mysql -e 'CREATE DATABASE travis_ci_test;'
-  - psql -c 'create database travis_ci_test;'
+  - sudo psql -c 'create database travis_ci_test;' -U postgres
   - composer self-update
   - composer install --no-interaction
 
@@ -28,7 +28,7 @@ after_script:
 env:
   global:
     - PGPORT=5432
-    - PGUSER=root
+    - PGUSER=postgres
     - PGPASS=
     - PGDB=travis_ci_test
     - MYUSER=root
