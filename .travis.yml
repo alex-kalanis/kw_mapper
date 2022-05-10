@@ -4,8 +4,8 @@ language: php
 
 php:
   - 7.3
-  - 7.4
-  - 8.0
+#  - 7.4
+#  - 8.0
 #  - 8.1
 
 services:
@@ -14,7 +14,7 @@ services:
 
 before_script:
   - sudo mysql -e 'CREATE DATABASE travis_ci_test;'
-  - sudo psql -c 'create database travis_ci_test;'
+  - psql -c 'create database travis_ci_test;'
   - composer self-update
   - composer install --no-interaction
 
