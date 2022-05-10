@@ -1,16 +1,12 @@
 # see https://docs.travis-ci.com/user/languages/php/ for more hints
-dist: precise
 
 language: php
 
 php:
   - 7.3
   - 7.4
-#  - 8.0
+  - 8.0
 #  - 8.1
-
-addons:
-  mariadb: '10.6'
 
 services:
   - mysql
