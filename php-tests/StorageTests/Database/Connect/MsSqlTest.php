@@ -16,45 +16,45 @@ use kalanis\kw_mapper\Storage\Database\Config;
 use kalanis\kw_mapper\Storage\Database\ConfigStorage;
 use kalanis\kw_mapper\Storage\Database\DatabaseSingleton;
 use kalanis\kw_mapper\Storage\Database\Dialects;
-use kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL;
+use kalanis\kw_mapper\Storage\Database\PDO\MSSQL;
 use PDO;
 
 
 /**
- * Class PostgresTest
+ * Class MySqlTest
  * @package StorageTests\Database\Connect
  * @requires extension PDO
- * @requires extension pdo_pgsql
+ * @requires extension pdo_mssql
+ * @link https://sqliteonline.com/
  */
-class PostgresTest extends CommonTestClass
+class MsSqlTest extends CommonTestClass
 {
-    /** @var null|PostgreSQL */
+    /** @var null|MSSQL */
     protected $database = null;
 
     /**
      * @throws MapperException
-     * Beware quoting in queries - Postgres uses simple for strings and double for references!
      */
     protected function setUp(): void
     {
-        $location = getenv('PGSERVER');
+        $location = getenv('MSSERVER');
         $location = false !== $location ? strval($location) : '127.0.0.1' ;
 
-        $port = getenv('PGPORT');
-        $port = false !== $port ? intval($port) : 5432 ;
+        $port = getenv('MSPORT');
+        $port = false !== $port ? intval($port) : 3306 ;
 
-        $user = getenv('PGUSER');
-        $user = false !== $user ? strval($user) : 'postgres' ;
+        $user = getenv('MSUSER');
+        $user = false !== $user ? strval($user) : 'testing' ;
 
-        $pass = getenv('PGPASS');
-        $pass = false !== $pass ? strval($pass) : 'postgres' ;
+        $pass = getenv('MSPASS');
+        $pass = false !== $pass ? strval($pass) : 'testing' ;
 
-        $db = getenv('PGDB');
+        $db = getenv('MSDB');
         $db = false !== $db ? strval($db) : 'testing' ;
 
         $conf = Config::init()->setTarget(
-                    IDriverSources::TYPE_PDO_POSTGRES,
-                    'test_postgres_local',
+                    IDriverSources::TYPE_PDO_MSSQL,
+                    'test_mssql_local',
                     $location,
                     $port,
                     $user,
@@ -81,7 +81,7 @@ class PostgresTest extends CommonTestClass
 
         $query = new Builder();
         $query->setBaseTable('d_queued_commands');
-        $sql = new Dialects\PostgreSQL();
+        $sql = new Dialects\TransactSQL();
         $result = $this->database->query($sql->describe($query), []);
 //var_dump($result);
         $this->assertNotEmpty($result, 'There MUST be table from file!');
@@ -99,6 +99,7 @@ class PostgresTest extends CommonTestClass
         $this->assertTrue($this->database->beginTransaction());
         $this->database->exec('INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES (11, 123456, 123456789, 13, \'ls -laf\');', []);
         $this->assertTrue($this->database->commit());
+        $this->assertNotEmpty($this->database->lastInsertId(), 'There must be last id!');
         $this->assertEquals(1, $this->database->rowCount());
         $this->assertTrue($this->database->beginTransaction());
         $this->database->exec('INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES (12, 1234567, 123456789, 13, \'ls -laf\');', []);
@@ -116,21 +117,21 @@ class PostgresTest extends CommonTestClass
         $this->dataRefill();
 
         // now queries - search
-        $search = new Search(new PostgresTestRecord());
+        $search = new Search(new MsSqlTestRecord());
         $search->like('command', '%laf%');
         $this->assertEquals(4, $search->getCount());
 
         $records = $search->getResults();
         $this->assertEquals(4, count($records));
 
-        /** @var PostgresTestRecord $record */
+        /** @var MsSqlTestRecord $record */
         $record = reset($records);
         $this->assertEquals(5, $record->id);
-        $this->assertEquals(123456, $record->time_start);
-        $this->assertEquals(12345678, $record->time_end);
+        $this->assertEquals(123456, $record->timeStart);
+        $this->assertEquals(12345678, $record->timeEnd);
         $this->assertEquals(5, $record->status);
 
-        $search2 = new Search(new PostgresTestRecord());
+        $search2 = new Search(new MsSqlTestRecord());
         $search2->exact('status', 55);
         $this->assertEquals(0, $search2->getCount());
         $this->assertEquals(0, count($search2->getResults()));
@@ -144,44 +145,44 @@ class PostgresTest extends CommonTestClass
         $this->dataRefill();
 
         // create
-        $rec1 = new PostgresTestRecord();
+        $rec1 = new MsSqlTestRecord();
         $rec1->id = 14;
-        $rec1->time_start = 12345;
-        $rec1->time_end = 1234567;
+        $rec1->timeStart = 12345;
+        $rec1->timeEnd = 1234567;
         $rec1->status = 8;
         $this->assertTrue($rec1->save(true));
 
         // read
-        $rec2 = new PostgresTestRecord();
+        $rec2 = new MsSqlTestRecord();
         $rec2->status = 8;
         $this->assertEquals(1, count($rec2->loadMultiple()));
 
         $this->assertTrue($rec2->load());
-        $this->assertEquals(12345, $rec2->time_start);
-        $this->assertEquals(1234567, $rec2->time_end);
+        $this->assertEquals(12345, $rec2->timeStart);
+        $this->assertEquals(1234567, $rec2->timeEnd);
         // update
         $rec2->status = 9;
         $this->assertTrue($rec2->save());
 
-        $rec3 = new PostgresTestRecord();
+        $rec3 = new MsSqlTestRecord();
         $rec3->status = 8;
         $this->assertEquals(0, $rec3->count());
 
-        $rec4 = new PostgresTestRecord();
+        $rec4 = new MsSqlTestRecord();
         $rec4->id = 6;
         $this->assertTrue($rec4->load());
-        $this->assertEquals(1234567, $rec4->time_start);
-        $this->assertEquals(12345678, $rec4->time_end);
+        $this->assertEquals(1234567, $rec4->timeStart);
+        $this->assertEquals(12345678, $rec4->timeEnd);
 
         // delete
-        $rec5 = new PostgresTestRecord();
+        $rec5 = new MsSqlTestRecord();
         $rec5->status = 9;
         $this->assertTrue($rec5->delete());
 
         // bulk update - for now via ugly hack
-        $rec6 = new PostgresTestRecord();
+        $rec6 = new MsSqlTestRecord();
         $rec6->getEntry('status')->setData(5, true); // hack to set condition
-        $rec6->time_end = 123; // this will be updated
+        $rec6->timeEnd = 123; // this will be updated
         $rec6->getMapper()->update($rec6); // todo: another hack, change rules for insert/update in future
     }
 
@@ -200,8 +201,8 @@ class PostgresTest extends CommonTestClass
 
     protected function basicTable(): string
     {
-        return 'CREATE UNLOGGED TABLE IF NOT EXISTS "d_queued_commands" (
-  "qc_id" SERIAL PRIMARY KEY,
+        return 'CREATE TABLE "d_queued_commands" (
+  "qc_id" INT PRIMARY KEY NOT NULL,
   "qc_time_start" VARCHAR(20) NULL,
   "qc_time_end" VARCHAR(20) NULL,
   "qc_status" INT NULL,
@@ -224,36 +225,36 @@ class PostgresTest extends CommonTestClass
 
 
 /**
- * Class PostgresTestRecord
+ * Class MsSqlTestRecord
  * @property int id
- * @property int time_start
- * @property int time_end
+ * @property int timeStart
+ * @property int timeEnd
  * @property int status
  * @property string command
  */
-class PostgresTestRecord extends ASimpleRecord
+class MsSqlTestRecord extends ASimpleRecord
 {
     protected function addEntries(): void
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
-        $this->addEntry('time_start', IEntryType::TYPE_INTEGER, 99999999);
-        $this->addEntry('time_end', IEntryType::TYPE_INTEGER, 99999999);
+        $this->addEntry('timeStart', IEntryType::TYPE_INTEGER, 99999999);
+        $this->addEntry('timeEnd', IEntryType::TYPE_INTEGER, 99999999);
         $this->addEntry('status', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('command', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\Connect\PostgresTestMapper');
+        $this->setMapper('\StorageTests\Database\Connect\MsSqlTestMapper');
     }
 }
 
 
-class PostgresTestMapper extends ADatabase
+class MsSqlTestMapper extends ADatabase
 {
     protected function setMap(): void
     {
-        $this->setSource('test_postgres_local');
+        $this->setSource('test_mssql_local');
         $this->setTable('d_queued_commands');
         $this->setRelation('id', 'qc_id');
-        $this->setRelation('time_start', 'qc_time_start');
-        $this->setRelation('time_end', 'qc_time_end');
+        $this->setRelation('timeStart', 'qc_time_start');
+        $this->setRelation('timeEnd', 'qc_time_end');
         $this->setRelation('status', 'qc_status');
         $this->setRelation('command', 'qc_command');
         $this->addPrimaryKey('id');

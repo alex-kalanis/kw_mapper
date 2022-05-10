@@ -11,7 +11,6 @@ use PDO;
  * @package kalanis\kw_mapper\Storage\Database\PDO
  * Connection to Microsoft SQL, they based it on TransactSQL
  * Can be also used for Sybase DB, because they have similar base
- * @codeCoverageIgnore remote connection
  */
 class MSSQL extends APDO
 {

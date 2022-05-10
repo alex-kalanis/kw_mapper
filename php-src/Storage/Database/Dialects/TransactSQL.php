@@ -4,6 +4,7 @@ namespace kalanis\kw_mapper\Storage\Database\Dialects;
 
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
@@ -14,18 +15,20 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 class TransactSQL extends ADialect
 {
-    use TSimpleDialect;
+    use TQuotationDialect;
 
     /**
      * @param QueryBuilder $builder
      * @return string
+     * @throws MapperException
      * @link https://docs.microsoft.com/en-us/sql/t-sql/statements/insert-transact-sql?view=sql-server-ver15
      */
     public function insert(QueryBuilder $builder)
     {
-        return sprintf('INSERT INTO %s SET %s;',
+        return sprintf('INSERT INTO "%s" (%s) VALUES (%s);',
             $builder->getBaseTable(),
-            $this->makeProperty($builder->getProperties())
+            $this->makeSimplePropertyList($builder->getProperties()),
+            $this->makePropertyEntries($builder->getProperties())
         );
     }
 
@@ -36,15 +39,16 @@ class TransactSQL extends ADialect
      */
     public function select(QueryBuilder $builder)
     {
-        return sprintf('SELECT %s %s FROM %s %s %s%s%s%s%s;',
+        $joins = $builder->getJoins();
+        return sprintf('SELECT %s %s FROM "%s" %s %s%s%s%s%s;',
             $this->makeLimit($builder->getLimit()),
-            $this->makeFullColumns($builder->getColumns()),
+            empty($joins) ? $this->makeSimpleColumns($builder->getColumns()) : $this->makeFullColumns($builder->getColumns()),
             $builder->getBaseTable(),
-            $this->makeJoin($builder->getJoins()),
-            $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
-            $this->makeFullGrouping($builder->getGrouping()),
-            $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
-            $this->makeFullOrdering($builder->getOrdering()),
+            empty($joins) ? '' : $this->makeJoin($builder->getJoins()),
+            empty($joins) ? $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation()) : $this->makeFullConditions($builder->getConditions(), $builder->getRelation()),
+            empty($joins) ? $this->makeSimpleGrouping($builder->getGrouping()) : $this->makeFullGrouping($builder->getGrouping()),
+            empty($joins) ? $this->makeSimpleHaving($builder->getHavingCondition(), $builder->getRelation()) : $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
+            empty($joins) ? $this->makeSimpleOrdering($builder->getOrdering()) : $this->makeFullOrdering($builder->getOrdering()),
             $this->makeOffset($builder->getOffset())
         );
     }
@@ -56,11 +60,11 @@ class TransactSQL extends ADialect
      */
     public function update(QueryBuilder $builder)
     {
-        return sprintf('UPDATE %s %s SET %s%s;',
+        return sprintf('UPDATE %s "%s" SET %s%s;',
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
-            $this->makeFullConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 
@@ -71,10 +75,10 @@ class TransactSQL extends ADialect
      */
     public function delete(QueryBuilder $builder)
     {
-        return sprintf('DELETE %s FROM %s%s;',
+        return sprintf('DELETE %s FROM "%s"%s;',
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
-            $this->makeFullConditions($builder->getConditions(), $builder->getRelation())
+            $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
         );
     }
 

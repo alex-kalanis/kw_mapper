@@ -1,4 +1,6 @@
 # see https://docs.travis-ci.com/user/languages/php/ for more hints
+dist: precise
+
 language: php
 
 php:
@@ -14,13 +16,11 @@ services:
   - mysql
   - postgresql
 
-before_install:
-  - sudo mysql -e 'CREATE DATABASE travis_ci_test;' -u root
-  - sudo psql -c 'create database travis_ci_test;' -U root
-
 before_script:
+  - sudo mysql -e 'CREATE DATABASE travis_ci_test;'
+  - sudo psql -c 'create database travis_ci_test;' -U root
   - composer self-update
-  - composer install
+  - composer install --no-interaction
 
 script:
   - XDEBUG_MODE=coverage phpunit --configuration phpunit.xml --coverage-clover php-tests/data/clover.xml

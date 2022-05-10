@@ -16,7 +16,7 @@ use kalanis\kw_mapper\Storage\Database\Config;
 use kalanis\kw_mapper\Storage\Database\ConfigStorage;
 use kalanis\kw_mapper\Storage\Database\DatabaseSingleton;
 use kalanis\kw_mapper\Storage\Database\Dialects;
-use kalanis\kw_mapper\Storage\Database\PDO\SQLite;
+use kalanis\kw_mapper\Storage\Database\PDO\MySQL;
 use PDO;
 
 
@@ -28,7 +28,7 @@ use PDO;
  */
 class MySqlTest extends CommonTestClass
 {
-    /** @var null|SQLite */
+    /** @var null|MySQL */
     protected $database = null;
 
     /**
