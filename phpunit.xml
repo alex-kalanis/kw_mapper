@@ -54,6 +54,7 @@
         </testsuite>
         <testsuite name="storedb">
             <directory>php-tests/StorageTests/Database/Connect</directory>
+            <directory>php-tests/StorageTests/Database/DeepQuery</directory>
         </testsuite>
         <testsuite name="dialdb">
             <directory>php-tests/StorageTests/Database/Dialects</directory>

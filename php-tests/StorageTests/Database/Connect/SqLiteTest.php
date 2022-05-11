@@ -171,6 +171,9 @@ class SqLiteTest extends CommonTestClass
         $rec6->getMapper()->update($rec6); // todo: another hack, change rules for insert/update in future
     }
 
+    /**
+     * @throws MapperException
+     */
     protected function dataRefill(): void
     {
         $this->assertTrue($this->database->exec($this->dropTable(), []));

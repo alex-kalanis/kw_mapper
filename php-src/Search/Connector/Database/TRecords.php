@@ -28,22 +28,23 @@ trait TRecords
         $this->records[$record->getMapper()->getAlias()] = $rec;
     }
 
-    public function recordLookup(string $storeKey): ?Records
+    public function recordLookup(string $storeKey, string $knownAs = ''): ?Records
     {
         if (isset($this->records[$storeKey])) {
             return $this->records[$storeKey];
         }
         foreach ($this->records as $record) {
             $foreignKeys = $record->getRecord()->getMapper()->getForeignKeys();
-            if (isset($foreignKeys[$storeKey])) {
-                $recordClassName = $foreignKeys[$storeKey]->getRemoteRecord();
+            $fk = empty($knownAs) ? $storeKey : $knownAs ;
+            if (isset($foreignKeys[$fk])) {
+                $recordClassName = $foreignKeys[$fk]->getRemoteRecord();
                 $thatRecord = new $recordClassName();
                 $rec = new Records();
                 $rec->setData(
                     $thatRecord,
-                    $thatRecord->getMapper()->getAlias(),
+                    $storeKey,
                     $record->getRecord()->getMapper()->getAlias(),
-                    $storeKey
+                    $knownAs
                 );
                 $this->records[$storeKey] = $rec;
                 return $this->records[$storeKey];

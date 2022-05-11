@@ -15,27 +15,22 @@ class Records
 {
     /** @var ARecord|null */
     protected $record = null;
-    protected $currentAlias = '';
     protected $parentAlias = null;
     protected $storeKey = '';
+    protected $knownAs = '';
 
-    public function setData(ARecord $record, string $currentAlias, ?string $parentAlias, string $storeKey): self
+    public function setData(ARecord $record, string $storeKey, ?string $parentAlias, string $knownAs = ''): self
     {
         $this->record = $record;
-        $this->currentAlias = $currentAlias;
         $this->parentAlias = $parentAlias;
         $this->storeKey = $storeKey;
+        $this->knownAs = empty($knownAs) ? $storeKey : $knownAs ;
         return $this;
     }
 
     public function getRecord(): ?ARecord
     {
         return $this->record;
-    }
-
-    public function getCurrentAlias(): ?string
-    {
-        return $this->currentAlias;
     }
 
     public function getParentAlias(): ?string
@@ -46,5 +41,10 @@ class Records
     public function getStoreKey(): string
     {
         return $this->storeKey;
+    }
+
+    public function getKnownAs(): string
+    {
+        return $this->knownAs;
     }
 }

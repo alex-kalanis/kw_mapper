@@ -50,7 +50,7 @@ class Filler
         $columns = [];
         $join = $this->orderJoinsColumns($joins);
         foreach ($this->joinRecords as &$record) {
-            $alias = $record->getCurrentAlias();
+            $alias = $record->getStoreKey();
             if (in_array($alias, $used)) {
                 // @codeCoverageIgnoreStart
                 // if they came here more than once
@@ -123,20 +123,19 @@ class Filler
             }
         }
 
-//print_r(['hashes rec', $aliasedRecords]);
-//print_r(['hashes row', $hashedRows]);
+//print_r(['hashes rec', $aliasedRecords]); // records of each table in each row keyed to their hash --> $aliasedRecords[table_name][hash] = Record
+//print_r(['hashes row', $hashedRows]); // line contains --> $hashedRows[line_number][table_name] = hash
 
         // tell which alias is parent of another - only by hashes
         $parentsAliases = $this->getParentsAliases();
         $children = [];
         foreach ($hashedRows as &$hashedRow) {
             foreach ($parentsAliases as $currentAlias => &$parentsAlias) {
-                if (empty($hashedRow[$parentsAlias])) {
+                if (empty($hashedRow[$parentsAlias])) { // top parent
                     continue;
                 }
                 $currentHash = $hashedRow[$currentAlias];
                 $parentHash = $hashedRow[$parentsAlias];
-//print_r(['got hashes', $currentHash, $parentHash]);
                 // from parent aliases which will be called to fill add child aliases with their content
                 if (!isset($children[$parentsAlias])) {
                     $children[$parentsAlias] = [];
@@ -168,12 +167,12 @@ class Filler
                     foreach ($childrenHashArr as $hash) {
                         $records[] = $aliasedRecords[$childAlias][$hash];
                     }
-                    $record->getEntry($aliasParams->getStoreKey())->setData($records, $this->fromDatabase);
+                    $record->getEntry($aliasParams->getKnownAs())->setData($records, $this->fromDatabase);
                 }
             }
         }
 
-        $results = array_values($aliasedRecords[$this->getRecordForRoot()->getCurrentAlias()]);
+        $results = array_values($aliasedRecords[$this->getRecordForRoot()->getStoreKey()]);
 //print_r(['count res', count($results) ]);
 
         return $results;
@@ -218,7 +217,7 @@ class Filler
     protected function getRecordForAlias(string $alias): Records
     {
         foreach ($this->joinRecords as $joinRecord) {
-            if ($joinRecord->getCurrentAlias() == $alias) {
+            if ($joinRecord->getStoreKey() == $alias) {
                 return $joinRecord;
             }
         }
@@ -226,7 +225,6 @@ class Filler
     }
 
     /**
-     * @param string $alias
      * @return Records
      * @throws MapperException
      */
@@ -244,7 +242,7 @@ class Filler
     {
         $result = [];
         foreach ($this->joinRecords as &$joinRecord) {
-            $result[$joinRecord->getCurrentAlias()] = $joinRecord->getParentAlias();
+            $result[$joinRecord->getStoreKey()] = $joinRecord->getParentAlias();
         }
         return $result;
     }

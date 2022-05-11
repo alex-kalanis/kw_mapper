@@ -29,6 +29,7 @@ abstract class APDO extends ASQL
 
         $this->connect();
 
+//print_r(['qu', str_split($query, 80), $params]);
         $statement = $this->connection->prepare($query);
         $statement->execute($params);
 

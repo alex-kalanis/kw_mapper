@@ -311,7 +311,15 @@ abstract class AConnector
     public function child(string $childAlias, string $joinType = IQueryBuilder::JOIN_LEFT, string $parentAlias = '', string $customAlias = ''): self
     {
         // from mapper - children's mapper then there table name
-        $parentRecord = empty($parentAlias) ? $this->basicRecord : $this->recordLookup($parentAlias)->getRecord() ;
+        if (!empty($parentAlias)) {
+            $parentLookup = $this->recordLookup($parentAlias);
+            if ($parentLookup && $parentLookup->getRecord()) {
+                $parentRecord = $parentLookup->getRecord();
+            }
+        } else {
+            $parentRecord = $this->basicRecord;
+            $parentAlias = $parentRecord->getMapper()->getAlias();
+        }
         if (empty($parentRecord)) {
             throw new MapperException(sprintf('Unknown record for parent alias *%s*', $parentAlias));
         }
@@ -326,7 +334,7 @@ abstract class AConnector
         }
 
         $childTableAlias = empty($customAlias) ? $childAlias : $customAlias;
-        $childLookup = $this->recordLookup($childTableAlias);
+        $childLookup = $this->recordLookup($childTableAlias, $childAlias);
         if (empty($childLookup) || empty($childLookup->getRecord())) {
             throw new MapperException(sprintf('Unknown record for child alias *%s*', $childAlias));
         }
@@ -336,12 +344,11 @@ abstract class AConnector
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for child *%s*', $parentKey->getRemoteEntryKey(), $childAlias));
         }
 
-        $parentTableAlias = empty($parentAlias) ? $parentRecord->getMapper()->getAlias() : $parentAlias ;
         $this->queryBuilder->addJoin(
             $childAlias,
             $childRecord->getMapper()->getAlias(),
             $childRelations[$parentKey->getRemoteEntryKey()],
-            $parentTableAlias,
+            $parentAlias,
             $parentRelations[$parentKey->getLocalEntryKey()],
             $joinType,
             $childTableAlias
@@ -358,6 +365,7 @@ abstract class AConnector
      * @param string $parentAlias
      * @return $this
      * @throws MapperException
+     * @codeCoverageIgnore any db with left outer join?
      */
     public function childNotExist(string $childAlias, string $table, string $column, string $parentAlias = ''): self
     {
