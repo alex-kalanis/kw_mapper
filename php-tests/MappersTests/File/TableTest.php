@@ -204,7 +204,7 @@ class TableTest extends CommonTestClass
         $data->desc = 'to load';
         $data->order = 11;
         $data->sub = false;
-        $this->assertFalse($data->save()); // insert with PK - no force, not found, cannot update
+        $this->assertTrue($data->save()); // insert with PK - no force, not preset, just insert
 
         // forced exists insert - false
         $data = new \TableRecord();

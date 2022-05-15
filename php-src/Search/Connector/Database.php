@@ -54,7 +54,7 @@ class Database extends AConnector
         }
 
         $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
-        if (empty($lines) || !is_iterable($lines)) {
+        if (empty($lines) || !(is_iterable($lines) || is_array($lines))) {
             // @codeCoverageIgnoreStart
             // only when something horribly fails
             return 0;
@@ -75,7 +75,7 @@ class Database extends AConnector
         $select = $this->dialect->select($this->queryBuilder);
 //print_r(str_split($select, 100));
         $rows = $this->database->query($select, $this->queryBuilder->getParams());
-        if (empty($rows) || !is_iterable($rows)) {
+        if (empty($rows) || !(is_iterable($rows) || is_array($rows))) {
             return [];
         }
 //print_r($rows);

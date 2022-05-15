@@ -249,10 +249,17 @@ abstract class AMapper
             return false;
         }
 
-        $countPksInRecord = count(array_filter(iterator_to_array($record), [$this, 'filterPrimary'], ARRAY_FILTER_USE_BOTH));
-        $allPrimaryKeys = count($this->primaryKeys) == $countPksInRecord;
+        $hasPreset = 0;
+        $hasNewOne = 0;
+        foreach ($record as $key => $value) {
+            $hasPreset += intval($record->getEntry($key)->isFromStorage() && (false !== $value));
+            $hasNewOne += intval(!$record->getEntry($key)->isFromStorage() && (false !== $value));
+        }
 
-        $result = ($forceInsert || !$allPrimaryKeys) ? $this->insert($record) : $this->update($record);
+        $result = (boolval($hasPreset) && boolval($hasNewOne) && !$forceInsert)
+            ? $this->update($record)
+            : $this->insert($record)
+        ;
 
         if (!$result) {
             return false;

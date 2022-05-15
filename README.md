@@ -34,13 +34,7 @@ storage. But then remember that every storage behaves differently for unwanted i
 ```
 {
     "require": {
-        "alex-kalanis/kw_mapper": "dev-master"
-    },
-    "repositories": [
-        {
-            "type": "http",
-            "url":  "https://github.com/alex-kalanis/kw_mapper.git"
-        }
+        "alex-kalanis/kw_mapper": "1.0"
     }
 }
 ```
