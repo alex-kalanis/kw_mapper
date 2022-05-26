@@ -14,7 +14,7 @@ use stdClass;
  */
 class MappedStdClass extends stdClass implements ICanFill
 {
-    const SIMPLE = 'simple';
+    const SIMPLE = '__simple';
 
     public function fillData($data): void
     {

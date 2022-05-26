@@ -7,6 +7,9 @@ namespace kalanis\kw_mapper\Mappers;
  * Trait TForeignKey
  * @package kalanis\kw_mapper\Mappers
  * Accessing foreign keys
+ *
+ * @todo idea: fk from/to composite keys
+ *     - shall be like array where the first entry is what will join and then what entry aliases will be used
  */
 trait TForeignKey
 {

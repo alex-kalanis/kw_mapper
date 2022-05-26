@@ -109,34 +109,36 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @return int|ICanFill|string|null
      * @throws MapperException
      */
+    #[\ReturnTypeWillChange]
     final public function current()
     {
         return $this->valid() ? $this->offsetGet($this->key) : null ;
     }
 
-    final public function next()
+    final public function next(): void
     {
         next($this->entries);
         $this->key = key($this->entries);
     }
 
+    #[\ReturnTypeWillChange]
     final public function key()
     {
         return $this->key;
     }
 
-    final public function valid()
+    final public function valid(): bool
     {
         return $this->offsetExists($this->key);
     }
 
-    final public function rewind()
+    final public function rewind(): void
     {
         reset($this->entries);
         $this->key = key($this->entries);
     }
 
-    final public function offsetExists($offset)
+    final public function offsetExists($offset): bool
     {
         return isset($this->entries[$offset]);
     }
@@ -146,6 +148,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @return int|ICanFill|mixed|string|null
      * @throws MapperException
      */
+    #[\ReturnTypeWillChange]
     final public function offsetGet($offset)
     {
         $this->offsetCheck($offset);
@@ -176,7 +179,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param mixed $offset
      * @throws MapperException
      */
-    final public function offsetUnset($offset)
+    final public function offsetUnset($offset): void
     {
         throw new MapperException(sprintf('Key %s removal denied', $offset));
     }

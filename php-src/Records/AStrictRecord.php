@@ -21,7 +21,7 @@ abstract class AStrictRecord extends ARecord
      * @param mixed $value
      * @throws MapperException
      */
-    final public function offsetSet($offset, $value)
+    final public function offsetSet($offset, $value): void
     {
         $this->offsetCheck($offset);
         $data = & $this->entries[$offset];
