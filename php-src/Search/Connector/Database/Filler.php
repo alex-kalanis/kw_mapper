@@ -26,18 +26,21 @@ class Filler
     protected $columnDelimiter = "____";
     /** @var ARecord|null */
     protected $basicRecord = null;
-    /** @var Records[] */
-    protected $joinRecords = [];
+    /** @var RecordsInJoin[] */
+    protected $recordsInJoin = [];
     private $fromDatabase = false;
 
-    /**
-     * @param ARecord $basicRecord
-     * @param Records[] $records
-     */
-    public function initTreeSolver(ARecord $basicRecord, array &$records): void
+    public function __construct(ARecord $basicRecord)
     {
         $this->basicRecord = $basicRecord;
-        $this->joinRecords = $records;
+    }
+
+    /**
+     * @param RecordsInJoin[] $recordsInJoin
+     */
+    public function initTreeSolver(array &$recordsInJoin): void
+    {
+        $this->recordsInJoin = $recordsInJoin;
     }
 
     /**
@@ -49,7 +52,7 @@ class Filler
         $used = [];
         $columns = [];
         $join = $this->orderJoinsColumns($joins);
-        foreach ($this->joinRecords as &$record) {
+        foreach ($this->recordsInJoin as &$record) {
             $alias = $record->getStoreKey();
             if (in_array($alias, $used)) {
                 // @codeCoverageIgnoreStart
@@ -211,28 +214,28 @@ class Filler
 
     /**
      * @param string $alias
-     * @return Records
+     * @return RecordsInJoin
      * @throws MapperException
      */
-    protected function getRecordForAlias(string $alias): Records
+    protected function getRecordForAlias(string $alias): RecordsInJoin
     {
-        foreach ($this->joinRecords as $joinRecord) {
-            if ($joinRecord->getStoreKey() == $alias) {
-                return $joinRecord;
+        foreach ($this->recordsInJoin as $recordInJoin) {
+            if ($recordInJoin->getStoreKey() == $alias) {
+                return $recordInJoin;
             }
         }
         throw new MapperException(sprintf('No record for alias *%s* found.', $alias));
     }
 
     /**
-     * @return Records
+     * @return RecordsInJoin
      * @throws MapperException
      */
-    protected function getRecordForRoot(): Records
+    protected function getRecordForRoot(): RecordsInJoin
     {
-        foreach ($this->joinRecords as $joinRecord) {
-            if (is_null($joinRecord->getParentAlias())) {
-                return $joinRecord;
+        foreach ($this->recordsInJoin as $recordInJoin) {
+            if (is_null($recordInJoin->getParentAlias())) {
+                return $recordInJoin;
             }
         }
         throw new MapperException(sprintf('No root record found.'));
@@ -241,8 +244,8 @@ class Filler
     protected function getParentsAliases(): array
     {
         $result = [];
-        foreach ($this->joinRecords as &$joinRecord) {
-            $result[$joinRecord->getStoreKey()] = $joinRecord->getParentAlias();
+        foreach ($this->recordsInJoin as &$recordInJoin) {
+            $result[$recordInJoin->getStoreKey()] = $recordInJoin->getParentAlias();
         }
         return $result;
     }

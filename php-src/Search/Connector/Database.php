@@ -36,7 +36,7 @@ class Database extends AConnector
         $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());
         $this->queryBuilder = new Storage\Database\QueryBuilder($this->dialect);
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
-        $this->filler = new Database\Filler();
+        $this->filler = new Database\Filler($this->basicRecord);
     }
 
     public function getCount(): int
@@ -67,7 +67,7 @@ class Database extends AConnector
     public function getResults(): array
     {
         $this->queryBuilder->clearColumns();
-        $this->filler->initTreeSolver($this->basicRecord, $this->records);
+        $this->filler->initTreeSolver($this->recordsInJoin);
         foreach ($this->filler->getColumns($this->queryBuilder->getJoins()) as list($table, $column, $alias)) {
             $this->queryBuilder->addColumn($table, $column, $alias);
         }

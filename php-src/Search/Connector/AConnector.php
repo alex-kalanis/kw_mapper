@@ -16,7 +16,7 @@ use kalanis\kw_mapper\Storage;
  */
 abstract class AConnector
 {
-    use Database\TRecords;
+    use Database\TRecordsInJoins;
 
     /** @var ARecord */
     protected $basicRecord = null;

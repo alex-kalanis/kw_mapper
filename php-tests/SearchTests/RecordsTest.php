@@ -8,7 +8,7 @@ use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\Database\ADatabase;
 use kalanis\kw_mapper\Records\ASimpleRecord;
-use kalanis\kw_mapper\Search\Connector\Database\TRecords;
+use kalanis\kw_mapper\Search\Connector\Database\TRecordsInJoins;
 use kalanis\kw_mapper\Storage;
 
 
@@ -21,9 +21,9 @@ class RecordsTest extends CommonTestClass
     {
         $record = new XTRecords();
         $record->initRecordLookup(new XaRecordChild());
-        $this->assertEquals(1, count($record->getRecords()));
+        $this->assertEquals(1, count($record->getRecordsInJoin()));
         $child = $record->recordLookup('prt');
-        $this->assertEquals(2, count($record->getRecords()));
+        $this->assertEquals(2, count($record->getRecordsInJoin()));
         $this->assertInstanceOf('\SearchTests\XaRecordParent', $child->getRecord());
         $this->assertEquals($child, $record->recordLookup('prt'));
         $this->assertEmpty($record->recordLookup('unknown'));
@@ -33,7 +33,7 @@ class RecordsTest extends CommonTestClass
 
 class XTRecords
 {
-    use TRecords;
+    use TRecordsInJoins;
 }
 
 

@@ -7,11 +7,11 @@ use kalanis\kw_mapper\Records\ARecord;
 
 
 /**
- * Class Records
+ * Class RecordsInJoin
  * @package kalanis\kw_mapper\Search\Connector\Database
  * Structure to access records which come in joins
  */
-class Records
+class RecordsInJoin
 {
     /** @var ARecord|null */
     protected $record = null;

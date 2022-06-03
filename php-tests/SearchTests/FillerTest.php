@@ -10,7 +10,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\Database\ADatabase;
 use kalanis\kw_mapper\Records\ASimpleRecord;
 use kalanis\kw_mapper\Search\Connector\Database\Filler;
-use kalanis\kw_mapper\Search\Connector\Database\Records;
+use kalanis\kw_mapper\Search\Connector\Database\RecordsInJoin;
 use kalanis\kw_mapper\Storage;
 use kalanis\kw_mapper\Storage\Database;
 
@@ -39,12 +39,12 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler();
+        $lib = new Filler($record);
         $records = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
-            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
+            (new RecordsInJoin())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
+            (new RecordsInJoin())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
-        $lib->initTreeSolver($record, $records);
+        $lib->initTreeSolver($records);
         // more than once - ignore this one
         $join2 = new Storage\Shared\QueryBuilder\Join();
         $join2->setData(
@@ -86,12 +86,12 @@ class FillerTest extends CommonTestClass
     public function testSimpleParse1(): void
     {
         $record = new XRecordChild();
-        $lib = new Filler();
+        $lib = new Filler($record);
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
+            (new RecordsInJoin())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
         ];
-        $lib->initTreeSolver($record, $wantedRecords);
+        $lib->initTreeSolver($wantedRecords);
         $records = $lib->fillResults($this->resultData1());
 
         // check records - four found
@@ -117,12 +117,12 @@ class FillerTest extends CommonTestClass
     public function testSimpleParse2(): void
     {
         $record = new XRecordChild();
-        $lib = new Filler();
+        $lib = new Filler($record);
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
+            (new RecordsInJoin())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
         ];
-        $lib->initTreeSolver($record, $wantedRecords);
+        $lib->initTreeSolver($wantedRecords);
         $records = $lib->fillResults($this->resultData2());
 
         // check records - four found
@@ -149,11 +149,11 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler();
+        $lib = new Filler($record);
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
-            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
+            (new RecordsInJoin())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
+            (new RecordsInJoin())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
         // more than once - ignore this one
         $join2 = new Storage\Shared\QueryBuilder\Join();
@@ -167,7 +167,7 @@ class FillerTest extends CommonTestClass
             '' // referred in query
         );
 
-        $lib->initTreeSolver($record, $wantedRecords);
+        $lib->initTreeSolver($wantedRecords);
         $records = $lib->fillResults($this->resultData3());
 
         // check records - four found
@@ -215,14 +215,14 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler();
+        $lib = new Filler($record);
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
-            (new Records())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
+            (new RecordsInJoin())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
+            (new RecordsInJoin())->setData($record2, 'as_is', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
 
-        $lib->initTreeSolver($record, $wantedRecords);
+        $lib->initTreeSolver($wantedRecords);
         $records = $lib->fillResults($this->resultData4());
 
         // check records
@@ -293,13 +293,13 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler();
+        $lib = new Filler($record);
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
-            (new Records())->setData($record2, 'not_known', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
+            (new RecordsInJoin())->setData($record, $record->getMapper()->getAlias(), null, ''), // primary record has its alias as key and must have empty parent
+            (new RecordsInJoin())->setData($record2, 'not_known', $record->getMapper()->getAlias(), 'prt'), // other records has aliases defined by their parents or by custom value
         ];
-        $lib->initTreeSolver($record, $wantedRecords);
+        $lib->initTreeSolver($wantedRecords);
         $this->expectException(MapperException::class);
         $lib->fillResults($this->resultData3());
     }
@@ -311,13 +311,13 @@ class FillerTest extends CommonTestClass
     {
         $record = new XRecordChild();
         $record2 = new XRecordParent();
-        $lib = new Filler();
+        $lib = new Filler($record);
 
         $wantedRecords = [ // you must define all wanted records with their aliases used for join
-            (new Records())->setData($record, $record->getMapper()->getAlias(), 'not_known', ''), // primary record has its alias as key and must have empty parent
-            (new Records())->setData($record2, 'as_is', 'not_known', 'prt'), // other records has aliases defined by their parents or by custom value
+            (new RecordsInJoin())->setData($record, $record->getMapper()->getAlias(), 'not_known', ''), // primary record has its alias as key and must have empty parent
+            (new RecordsInJoin())->setData($record2, 'as_is', 'not_known', 'prt'), // other records has aliases defined by their parents or by custom value
         ];
-        $lib->initTreeSolver($record, $wantedRecords);
+        $lib->initTreeSolver($wantedRecords);
         $this->expectException(MapperException::class);
         $this->expectExceptionMessage('No root record found.');
         $lib->fillResults($this->resultData3());
