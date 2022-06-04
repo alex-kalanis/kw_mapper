@@ -294,5 +294,4 @@ abstract class AMapper
      * @throws MapperException
      */
     abstract protected function deleteRecord(ARecord $record): bool;
-
 }

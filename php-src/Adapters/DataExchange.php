@@ -41,18 +41,22 @@ class DataExchange
     /**
      * Import data into record
      * @param iterable $data
+     * @return int how much nas been imported
      * @throws MapperException
      */
-    public function import(iterable $data): void
+    public function import(iterable $data): int
     {
+        $imported = 0;
         foreach ($data as $property => $value) {
             if (!$this->isExcluded($property)
                 && $this->record->offsetExists($property)
-                && ($this->record->offsetGet($property)) !== $value
+                && ($this->record->offsetGet($property) != $value)
             ) {
                 $this->record->offsetSet($property, $value);
+                $imported++;
             }
         }
+        return $imported;
     }
 
     /**

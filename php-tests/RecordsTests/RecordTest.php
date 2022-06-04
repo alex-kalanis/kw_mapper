@@ -270,7 +270,7 @@ class RecordTest extends CommonTestClass
 
         $ex = new DataExchange($data);
         $ex->addExclude('password');
-        $ex->import(['id' => 888, 'password' => 'mnbvcxy']);
+        $this->assertEquals(1, $ex->import(['id' => 888, 'password' => 'mnbvcxy']));
         $ex->clearExclude();
         $pack = $ex->export();
 
