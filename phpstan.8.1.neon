@@ -1,0 +1,35 @@
+parameters:
+	level: 7
+	paths:
+		- 'php-src'
+	scanFiles:
+		- 'php-tests/CommonTestClass.php'
+	excludePaths:
+		- 'php-tests/_autoload.php'
+		- 'php-tests/_bootstrap.php'
+		- 'php-tests/CommonTestClass.php'
+	bootstrapFiles:
+		- 'php-tests/_bootstrap.php'
+	checkGenericClassInNonGenericObjectType: false
+	ignoreErrors:
+		# known one
+		- '#Constructor of class kalanis\\kw_mapper\\Storage\\Database\\Shared\\DotNet\\ComRegistry has an unused parameter \$moduleName.#'
+		- '#does not accept kalanis\\kw_mapper\\Storage\\Database\\ADatabase.#'
+		- '#does not accept kalanis\\kw_mapper\\Storage\\Database\\Dialects\\ADialect.#'
+		# explode()
+		- '#of function explode expects non-empty-string, string given.#'
+		# ldap connection problems - php8.0- uses resource, php8.1+ object
+		- '#expects LDAP\\Connection, resource given.#'
+		- '#expects LDAP\\Connection, resource\|null given.#'
+		- '#should return resource but returns LDAP\\Connection.#'
+		- '#ldap_get_entries expects LDAP\\Connection, object\|resource given.#'
+		- '#ldap_get_entries expects LDAP\\Result, array\|LDAP\\Result given.#'
+		- '#ldap_search expects array\|LDAP\\Connection, object\|resource given.#'
+		- '#ldap_search expects array\|LDAP\\Connection, resource given.#'
+		-
+			message: '#Cannot access offset int\|string on array#'
+			path: 'php-src/Mappers/File/ATable.php'
+		-
+			message: '#Else branch is unreachable because ternary operator condition is always true.#'
+			path: 'php-src/Storage/Database/PDO/APDO.php'
+			# php7 also returns back false, php8 just arrays

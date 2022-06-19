@@ -60,7 +60,7 @@ class Ldap extends AConnector
         $result = [];
         $relationMap = array_flip($this->basicRecord->getMapper()->getRelations());
         foreach ($lines as $key => $line) {
-            if (is_numeric($key)) {
+            if (is_numeric($key) && is_iterable($line)) {
                 $rec = clone $this->basicRecord;
                 foreach ($line as $index => $item) {
                     $entry = $rec->getEntry(strval($relationMap[$index]));
@@ -83,12 +83,12 @@ class Ldap extends AConnector
 
     /**
      * @throws MapperException
-     * @return string[][]
+     * @return array<string|int, string|int|array<string|int, string|int|float|null>>
      */
     protected function multiple(): array
     {
         $connect = $this->database->getConnection();
-        if (!is_resource($connect)) {
+        if (!(is_resource($connect) || is_object($connect))) {
             return [];
         }
         $result = ldap_search(

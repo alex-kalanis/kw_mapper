@@ -263,9 +263,9 @@ class Records extends AConnector
             case IQueryBuilder::OPERATION_REXP:
                 return 1 === preg_match($expected, $value);
             case IQueryBuilder::OPERATION_IN:
-                return in_array($value, (array)$expected);
+                return in_array($value, (array) $expected);
             case IQueryBuilder::OPERATION_NIN:
-                return !in_array($value, (array)$expected);
+                return !in_array($value, (array) $expected);
             default:
                 throw new MapperException(sprintf('Unknown operation *%s* for comparation.', $operation));
         }

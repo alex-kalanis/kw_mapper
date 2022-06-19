@@ -39,7 +39,7 @@ abstract class AOdbc extends ADatabase implements IPassConnection
      * @param string $query
      * @param array<string, mixed> $params
      * @throws MapperException
-     * @return array<string|int, array<int, string|int|float>>
+     * @return array<string|int, string|int|float|bool|null|array<int, string|int|float|null>>
      * @link https://www.php.net/manual/en/function.odbc-prepare.php#71616
      */
     public function query(string $query, array $params): array

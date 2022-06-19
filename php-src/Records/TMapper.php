@@ -66,8 +66,8 @@ trait TMapper
 
     /**
      * @param bool $forceInsert
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     final public function save(bool $forceInsert = false): bool
     {

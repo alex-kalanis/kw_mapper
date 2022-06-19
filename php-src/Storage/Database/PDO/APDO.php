@@ -97,16 +97,16 @@ abstract class APDO extends ASQL
         }
         // @codeCoverageIgnoreEnd
 
-        return (bool)$this->connection->beginTransaction();
+        return (bool) $this->connection->beginTransaction();
     }
 
     public function commit(): bool
     {
-        return (bool)$this->connection->commit();
+        return (bool) $this->connection->commit();
     }
 
     public function rollBack(): bool
     {
-        return (bool)$this->connection->rollBack();
+        return (bool) $this->connection->rollBack();
     }
 }

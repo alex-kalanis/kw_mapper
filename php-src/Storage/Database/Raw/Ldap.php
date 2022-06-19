@@ -57,8 +57,7 @@ class Ldap extends ADatabase implements IPassConnection
     protected function connectToServer(bool $withBind = true)
     {
         $connection = ldap_connect(
-            $this->config->getLocation(),
-            $this->config->getPort()
+            $this->config->getLocation()
         );
 
         if (false === $connection) {
