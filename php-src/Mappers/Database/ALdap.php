@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Mappers\Database;
 
 
+use kalanis\kw_mapper\Interfaces\ICanFill;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
@@ -101,13 +102,14 @@ abstract class ALdap extends AMapper
     /**
      * @param ARecord $record
      * @throws MapperException
-     * @return mixed
+     * @return string
      */
     protected function getPk(ARecord $record)
     {
         $pks = $this->getPrimaryKeys();
         $pk = reset($pks);
-        return $record->offsetGet($pk);
+        $off = $record->offsetGet($pk);
+        return ($off instanceof ICanFill) ? strval($off->dumpData()) : strval($off);
     }
 
     protected function loadRecord(ARecord $record): bool
