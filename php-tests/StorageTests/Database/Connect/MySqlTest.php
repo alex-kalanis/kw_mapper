@@ -69,11 +69,6 @@ class MySqlTest extends CommonTestClass
         ConfigStorage::getInstance()->addConfig($conf);
         $this->database = DatabaseSingleton::getInstance()->getDatabase($conf);
         $this->database->addAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-        if (in_array($user, ['root', ])) {
-            $this->database->reconnect();
-            $this->database->exec('CREATE DATABASE IF NOT EXISTS ' . strval($db), []);
-        }
     }
 
     /**

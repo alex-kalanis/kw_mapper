@@ -16,7 +16,7 @@ build:
       MYSKIP: 1
       MYUSER: 'root'
       MYPASS: ''
-      MYDB: 'testing'
+      MYDB: 'scrutinizer'
       PGUSER: 'scrutinizer'
       PGPASS: 'scrutinizer'
       PGDB: 'scrutinizer'
