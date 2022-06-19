@@ -24,7 +24,7 @@ abstract class ADatabase extends AMapper
     protected $database = null;
     /** @var Storage\Database\Dialects\ADialect */
     protected $dialect = null;
-    /** @var Storage\Database\QueryBuilder|null */
+    /** @var Storage\Database\QueryBuilder */
     protected $queryBuilder = null;
 
     /**

@@ -23,7 +23,7 @@ abstract class ALdap extends AMapper
 
     /** @var Storage\Database\Raw\Ldap */
     protected $database = null;
-    /** @var Storage\Shared\QueryBuilder|null */
+    /** @var Storage\Shared\QueryBuilder */
     protected $queryBuilder = null;
     /** @var Storage\Database\Dialects\LdapQueries */
     protected $dialect = null;
@@ -54,7 +54,7 @@ abstract class ALdap extends AMapper
         }
         $this->database->connect();
         $connect = $this->database->getConnection();
-        if (!is_resource($connect)) {
+        if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
         return ldap_add(
@@ -75,7 +75,7 @@ abstract class ALdap extends AMapper
         }
         $this->database->connect();
         $connect = $this->database->getConnection();
-        if (!is_resource($connect)) {
+        if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
         return ldap_mod_replace(
@@ -89,7 +89,7 @@ abstract class ALdap extends AMapper
     {
         $this->database->connect();
         $connect = $this->database->getConnection();
-        if (!is_resource($connect)) {
+        if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
         return ldap_delete(
@@ -192,7 +192,7 @@ abstract class ALdap extends AMapper
     {
         $this->database->connect();
         $connect = $this->database->getConnection();
-        if (!is_resource($connect)) {
+        if (!(is_resource($connect) || is_object($connect))) {
             return [];
         }
         $result = ldap_search(
@@ -223,7 +223,7 @@ abstract class ALdap extends AMapper
         $this->database->disconnect();
         $this->database->connect(false);
         $connect = $this->database->getConnection();
-        if (!is_resource($connect)) {
+        if (!(is_resource($connect) || is_object($connect))) {
             return false;
         }
         $result = ldap_bind($connect, $this->dialect->userDn($this->database->getDomain(), $params['user']), $params['password']);

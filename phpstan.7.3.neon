@@ -19,6 +19,7 @@ parameters:
 		# ldap connection problems - php8.0- uses resource, php8.1+ object
 		- '#ldap_search expects array\|resource, object\|resource given.#'
 		- '#ldap_get_entries expects resource, object\|resource given.#'
+		- '#of function ldap_[a-z_]+ expects resource, object\|resource given.#'
 		-
 			message: '#Cannot access offset int\|string on array#'
 			path: 'php-src/Mappers/File/ATable.php'

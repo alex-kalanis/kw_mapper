@@ -5,12 +5,20 @@ filter:
     - 'php-tests/_bootstrap.php'
     - 'php-tests/data/*'
     - 'php-tests/external/*'
-  paths: {  }
+  paths:
+    - 'php-src/*'
 
 build:
   environment:
     php:
       version: '7.4'
+    variables:
+      MYUSER: 'root'
+      MYPASS: ''
+      MYDB: 'testing'
+      PGUSER: 'scrutinizer'
+      PGPASS: 'scrutinizer'
+      PGDB: 'scrutinizer'
   dependencies:
     before:
       - wget -O composer.phar https://getcomposer.org/composer.phar
@@ -21,6 +29,9 @@ build:
       tests:
         override:
           - php-scrutinizer-run
+      services:
+        mariadb: 10
+        postgres: 10
     coverage:
       tests:
         override:
@@ -28,6 +39,9 @@ build:
             coverage:
               file:  php-tests/data/clover.xml
               format: php-clover
+      services:
+        mariadb: 10
+        postgres: 10
 
 coding_style:
   php:
