@@ -142,8 +142,8 @@ abstract class AMapper
     /**
      * Insert data
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function insert(ARecord $record): bool
     {
@@ -161,16 +161,16 @@ abstract class AMapper
     /**
      * Insert data - process
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     abstract protected function insertRecord(ARecord $record): bool;
 
     /**
      * Update data - by entries in record
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function update(ARecord $record): bool
     {
@@ -188,16 +188,16 @@ abstract class AMapper
     /**
      * Update data - by entries in record - process
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     abstract protected function updateRecord(ARecord $record): bool;
 
     /**
      * Load record from storage
      * @param ARecord $record
-     * @return boolean
      * @throws MapperException
+     * @return boolean
      */
     public function load(ARecord $record): bool
     {
@@ -215,24 +215,24 @@ abstract class AMapper
     /**
      * Count records with equal data as predefined one
      * @param ARecord $record
-     * @return int
      * @throws MapperException
+     * @return int
      */
     abstract public function countRecord(ARecord $record): int;
 
     /**
      * Load record from storage
      * @param ARecord $record
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     abstract public function loadMultiple(ARecord $record): array;
 
     /**
      * Load record from storage - process
      * @param ARecord $record
-     * @return boolean
      * @throws MapperException
+     * @return boolean
      */
     abstract protected function loadRecord(ARecord $record): bool;
 
@@ -240,8 +240,8 @@ abstract class AMapper
      * Save record object
      * @param ARecord $record
      * @param bool $forceInsert
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function save(ARecord $record, bool $forceInsert = false): bool
     {
@@ -271,8 +271,8 @@ abstract class AMapper
     /**
      * Remove record from storage
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function delete(ARecord $record): bool
     {
@@ -290,8 +290,8 @@ abstract class AMapper
     /**
      * Remove record from storage - process
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     abstract protected function deleteRecord(ARecord $record): bool;
 }

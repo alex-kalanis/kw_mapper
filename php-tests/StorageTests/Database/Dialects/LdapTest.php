@@ -15,6 +15,7 @@ class LdapTest extends CommonTestClass
     public function testDomain(): void
     {
         $sql = new LdapQueries();
+        $this->assertEquals('', $sql->domainDn('###'));
         $this->assertEquals('uid=name,ou=organization,cn=on,dc=server,dc=tld', $sql->domainDn('ldaps://someone:logged@server.tld:136/on/organization/name/'));
         $this->assertEquals('ou=organization,cn=on,dc=server,dc=tld', $sql->domainDn('ldaps://someone:logged@server.tld:136/on/organization/'));
         $this->assertEquals('cn=on,dc=server,dc=tld', $sql->domainDn('ldaps://someone:logged@server.tld:136/on/'));
@@ -23,6 +24,7 @@ class LdapTest extends CommonTestClass
     public function testUser(): void
     {
         $sql = new LdapQueries();
+        $this->assertEquals('', $sql->userDn('###', '#myself'));
         $this->assertEquals('uid=\23myself,ou=name,cn=organization,dc=server,dc=tld', $sql->userDn('ldaps://someone:logged@server.tld:136/on/organization/name/', '#myself'));
         $this->assertEquals('uid=\23myself,ou=organization,cn=on,dc=server,dc=tld', $sql->userDn('ldaps://someone:logged@server.tld:136/on/organization/', '#myself'));
         $this->assertEquals('uid=\23myself,cn=on,dc=server,dc=tld', $sql->userDn('ldaps://someone:logged@server.tld:136/on/', '#myself'));
@@ -62,8 +64,9 @@ class LdapTest extends CommonTestClass
         $query->addCondition('foo', 'bgf', IQueryBuilder::OPERATION_NLIKE, 'yhy');
         $query->addCondition('foo', 'ydf', IQueryBuilder::OPERATION_IN, ['bzy', 'gjf', ]);
         $query->addCondition('foo', 'ybf', IQueryBuilder::OPERATION_NIN, []);
+        $query->addCondition('foo', 'sns', IQueryBuilder::OPERATION_IN, 'hff');
         $sql = new LdapQueries();
-        $this->assertEquals('(&(dbt=ggf)(!(dfd=yxn))(dhd=*)(!(hjx=*))(hdz>bfd)(gnd>=btj)(xhj<xdf)(gdg<=djs)(xgj=yxh)(!(bgf=yhy))(|(ydf=bzy)(ydf=gjf))(!(|(ybf=0))))', $sql->filter($query));
+        $this->assertEquals('(&(dbt=ggf)(!(dfd=yxn))(dhd=*)(!(hjx=*))(hdz>bfd)(gnd>=btj)(xhj<xdf)(gdg<=djs)(xgj=yxh)(!(bgf=yhy))(|(ydf=bzy)(ydf=gjf))(!(|(ybf=0)))(|(sns=hff)))', $sql->filter($query));
 
         $this->expectException(MapperException::class);
         $query->addCondition('foo', 'dfd', IQueryBuilder::OPERATION_REXP, 'yxn');

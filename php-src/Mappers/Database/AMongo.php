@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Mappers\Database;
 
 
+use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
 use kalanis\kw_mapper\Records\ARecord;
@@ -52,6 +53,7 @@ abstract class AMongo extends AMapper
         foreach ($record as $key => $item) {
             $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
         }
+        // @phpstan-ignore-next-line
         return $this->database->exec($this->queryBuilder, $this->dialect->insert($this->queryBuilder));
     }
 
@@ -60,15 +62,28 @@ abstract class AMongo extends AMapper
         $this->queryBuilder->clear();
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
-            if (!$record->getEntry($key)->isFromStorage()) {
-                $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (false !== $item) {
+                if ($record->getEntry($key)->isFromStorage()) {
+                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                } else {
+                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                }
             }
         }
+        // @phpstan-ignore-next-line
         return $this->database->exec($this->queryBuilder, $this->dialect->update($this->queryBuilder));
     }
 
     protected function deleteRecord(ARecord $record): bool
     {
+        $this->queryBuilder->clear();
+        $this->queryBuilder->setBaseTable($this->getTable());
+        foreach ($record as $key => $item) {
+            if (false !== $item) {
+                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            }
+        }
+        // @phpstan-ignore-next-line
         return $this->database->exec($this->queryBuilder, $this->dialect->delete($this->queryBuilder));
     }
 
@@ -76,7 +91,7 @@ abstract class AMongo extends AMapper
     {
         $this->fillConditions($record);
         $lines = $this->multiple();
-        if (empty($lines) || empty($lines[0])) { // nothing found
+        if (empty($lines) || empty($lines[0]) || !is_iterable($lines[0])) { // nothing found
             return false;
         }
 
@@ -106,7 +121,7 @@ abstract class AMongo extends AMapper
         $result = [];
         $relationMap = array_flip($this->relations);
         foreach ($lines as $key => $line) {
-            if (is_numeric($key)) {
+            if (is_numeric($key) && is_iterable($line)) {
                 $rec = clone $record;
                 foreach ($line as $index => $item) {
                     $entry = $rec->getEntry($relationMap[$index]);
@@ -127,18 +142,19 @@ abstract class AMongo extends AMapper
         $this->queryBuilder->clear();
         $this->queryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
-            if (!empty($item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], $item);
+            if ((false !== $item) && !$record->getEntry($key)->isFromStorage()) {
+                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], strval($item));
             }
         }
     }
 
     /**
-     * @return array
      * @throws MapperException
+     * @return array<string|int, string|int|float|array<string|int|float>>
      */
     protected function multiple(): array
     {
+        // @phpstan-ignore-next-line
         return $this->database->query($this->queryBuilder, $this->dialect->select($this->queryBuilder))->toArray();
     }
 }

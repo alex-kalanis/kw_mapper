@@ -12,18 +12,24 @@ use kalanis\kw_mapper\Storage;
 
 class TraitTest extends CommonTestClass
 {
+    /**
+     * @throws MapperException
+     */
     public function testContentOk(): void
     {
         $data = new Content();
         $data->setContentKey('lkjhgfd');
-        $this->assertEquals('lkjhgfd', $data->getKey());
+        $this->assertEquals('lkjhgfd', $data->getContentKey());
     }
 
+    /**
+     * @throws MapperException
+     */
     public function testContentFail(): void
     {
         $data = new Content();
         $this->expectException(MapperException::class);
-        $data->getKey();
+        $data->getContentKey();
     }
 
     /**
@@ -148,11 +154,6 @@ class TraitTest extends CommonTestClass
 class Content
 {
     use Mappers\File\TContent;
-
-    public function getKey(): string
-    {
-        return $this->getContentKey();
-    }
 }
 
 

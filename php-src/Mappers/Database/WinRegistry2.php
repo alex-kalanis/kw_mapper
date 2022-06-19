@@ -31,6 +31,7 @@ class WinRegistry2 extends AMapper
     use TContent;
     use TFill;
 
+    /** @var string */
     protected $typeKey = '';
     /** @var Storage\Database\Raw\WinRegistry2 */
     protected $database = null;
@@ -71,8 +72,8 @@ class WinRegistry2 extends AMapper
 
     /**
      * @param Records\ARecord|Records\RegistryRecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function insertRecord(Records\ARecord $record): bool
     {
@@ -112,7 +113,7 @@ class WinRegistry2 extends AMapper
     protected function loadRecord(ARecord $record): bool
     {
         $pks = $this->getPrimaryKeys();
-        $values = $this->database->values(
+        $values = $this->database->value(
             $record->offsetGet(reset($pks)),
             $record->offsetGet(next($pks))
         );

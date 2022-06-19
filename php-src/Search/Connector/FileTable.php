@@ -32,8 +32,8 @@ class FileTable extends Records
     }
 
     /**
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     protected function getInitialRecords(): array
     {

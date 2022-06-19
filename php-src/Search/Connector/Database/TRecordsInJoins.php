@@ -38,6 +38,7 @@ trait TRecordsInJoins
             $fk = empty($knownAs) ? $storeKey : $knownAs ;
             if (isset($foreignKeys[$fk])) {
                 $recordClassName = $foreignKeys[$fk]->getRemoteRecord();
+                /** @var ARecord $thatRecord */
                 $thatRecord = new $recordClassName();
                 $rec = new RecordsInJoin();
                 $rec->setData(
@@ -53,6 +54,9 @@ trait TRecordsInJoins
         return null;
     }
 
+    /**
+     * @return RecordsInJoin[]
+     */
     public function getRecordsInJoin(): array
     {
         return $this->recordsInJoin;

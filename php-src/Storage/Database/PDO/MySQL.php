@@ -22,8 +22,8 @@ class MySQL extends APDO
 
     protected function connectToServer(): PDO
     {
-        ini_set('mysql.connect_timeout', $this->config->getTimeout());
-        ini_set('default_socket_timeout', $this->config->getTimeout());
+        ini_set('mysql.connect_timeout', strval($this->config->getTimeout()));
+        ini_set('default_socket_timeout', strval($this->config->getTimeout()));
 
         $connection = new PDO(
             sprintf('mysql:host=%s;port=%d;dbname=%s',

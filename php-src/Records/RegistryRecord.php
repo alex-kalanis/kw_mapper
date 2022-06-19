@@ -10,10 +10,10 @@ use kalanis\kw_mapper\Interfaces\IRegistry;
 /**
  * Class RegistryRecord
  * @package kalanis\kw_mapper\Records
- * @property int part
- * @property string path
- * @property string type
- * @property string content
+ * @property int $part
+ * @property string $path
+ * @property string $type
+ * @property string $content
  * @codeCoverageIgnore cannot check this on *nix
  */
 class RegistryRecord extends AStrictRecord

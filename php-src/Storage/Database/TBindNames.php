@@ -14,9 +14,9 @@ trait TBindNames
 {
     /**
      * @param string $query
-     * @param array $params
-     * @return array
+     * @param array<string, mixed> $params
      * @throws MapperException
+     * @return array<string|string[]>
      */
     public function bindFromNamedToQuestions(string $query, array $params): array
     {
@@ -38,6 +38,10 @@ trait TBindNames
         return [$query, $binds, $types];
     }
 
+    /**
+     * @param mixed $var
+     * @return string
+     */
     protected function getTypeOf($var): string
     {
         if (is_bool($var)) {

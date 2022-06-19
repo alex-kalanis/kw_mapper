@@ -65,8 +65,8 @@ class MySQL extends ADialect
 
     /**
      * @param string $operation
-     * @return string
      * @throws MapperException
+     * @return string
      * @codeCoverageIgnore too many options
      */
     public function translateOperation(string $operation): string

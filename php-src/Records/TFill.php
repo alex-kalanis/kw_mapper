@@ -13,11 +13,20 @@ use kalanis\kw_mapper\Interfaces\IEntryType;
  */
 trait TFill
 {
+    /**
+     * @param Entry $entry
+     * @param mixed $value
+     */
     protected function typedFill(Entry &$entry, $value): void
     {
         $entry->setData($this->typedFillSelection($entry, $value));
     }
 
+    /**
+     * @param Entry $entry
+     * @param mixed $dbValue
+     * @return bool|float|int|string
+     */
     protected function typedFillSelection(Entry &$entry, $dbValue)
     {
         switch ($entry->getType()) {

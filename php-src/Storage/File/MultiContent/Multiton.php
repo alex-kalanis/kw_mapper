@@ -15,6 +15,7 @@ use kalanis\kw_mapper\MapperException;
  */
 class Multiton
 {
+    /** @var self|null */
     protected static $instance = null;
     /** @var Entity[] */
     private $storage = [];
@@ -22,7 +23,7 @@ class Multiton
     public static function getInstance(): self
     {
         if (empty(static::$instance)) {
-            static::$instance = new static();
+            static::$instance = new self();
         }
         return static::$instance;
     }
@@ -50,8 +51,8 @@ class Multiton
 
     /**
      * @param string $key
-     * @return string[]
      * @throws MapperException
+     * @return string[]
      */
     public function getContent(string $key): array
     {
@@ -61,10 +62,10 @@ class Multiton
 
     /**
      * @param string $key
-     * @return IFileFormat
      * @throws MapperException
+     * @return IFileFormat|null
      */
-    public function getFormatClass(string $key): IFileFormat
+    public function getFormatClass(string $key): ?IFileFormat
     {
         $this->checkContent($key);
         return $this->storage[$key]->getFormat();

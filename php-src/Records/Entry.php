@@ -13,14 +13,18 @@ use kalanis\kw_mapper\Interfaces\ICanFill;
  */
 class Entry
 {
+    /** @var int */
     protected $type = 0;
+    /** @var null|int|string|float|bool|array<int|string, int|string|float|bool|ARecord|array<int|string, int|string>>|ICanFill|false */
     protected $data = false;
+    /** @var string|int|array<string|int, string|int>|null */
     protected $params = null;
+    /** @var bool */
     protected $isFromStorage = false;
 
-    public static function getInstance(): Entry
+    public static function getInstance(): self
     {
-        return new static();
+        return new self();
     }
 
     public function setType(int $type): self
@@ -35,7 +39,7 @@ class Entry
     }
 
     /**
-     * @param null|int|string|array|ICanFill $data
+     * @param null|int|string|float|bool|array<int|string, int|string|float|bool|ARecord|array<int|string, int|string>>|ICanFill $data
      * @param bool $isFromStorage
      * @return Entry
      */
@@ -47,7 +51,7 @@ class Entry
     }
 
     /**
-     * @return null|int|string|array|ICanFill|false
+     * @return null|int|string|float|bool|array<int|string, int|string|float|bool|ARecord|array<int|string, int|string>>|ICanFill|false
      * False is for no use - rest is available as data
      * If you want to save false in your db, just cast it through integer
      */
@@ -56,12 +60,19 @@ class Entry
         return $this->data;
     }
 
+    /**
+     * @param string|int|array<string|int, string|int>|null $params
+     * @return Entry
+     */
     public function setParams($params): self
     {
         $this->params = $params;
         return $this;
     }
 
+    /**
+     * @return string|int|array<string|int, string|int>|null
+     */
     public function getParams()
     {
         return $this->params;

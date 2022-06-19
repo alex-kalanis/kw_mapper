@@ -61,13 +61,12 @@ class PageRecordTest extends CommonTestClass
 
 class PageRecordMock extends PageRecord
 {
-        /**
-         * @return bool
-         * @throws MapperException
-         */
+    /**
+     * @throws MapperException
+     * @return bool
+     */
     public function insert(): bool
     {
         return $this->mapper->insert($this->getSelf());
     }
-
 }

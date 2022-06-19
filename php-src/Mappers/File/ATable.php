@@ -18,6 +18,7 @@ abstract class ATable extends AStorage
 {
     use TTranslate;
 
+    /** @var bool */
     protected $orderFromFirst = true;
 
     /** @var Records\ARecord[] */
@@ -31,8 +32,8 @@ abstract class ATable extends AStorage
 
     /**
      * @param Records\ARecord|Records\PageRecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function insertRecord(Records\ARecord $record): bool
     {
@@ -47,7 +48,7 @@ abstract class ATable extends AStorage
             $entry = $record->getEntry($primaryKey);
             if (in_array($entry->getType(), [IEntryType::TYPE_INTEGER, IEntryType::TYPE_FLOAT])) {
                 if (empty($entry->getData())) {
-                    $data = empty($records) ? 1 : max(array_column($records, $primaryKey)) + 1 ;
+                    $data = empty($records) ? 1 : intval(max(array_column($records, $primaryKey))) + 1 ;
                     $entry->setData($data);
                 }
             }
@@ -57,6 +58,10 @@ abstract class ATable extends AStorage
         return $this->saveSource();
     }
 
+    /**
+     * @param Records\ARecord $object
+     * @return array<string|int, string|int|float|object|array<string|int|float|object>>
+     */
     public function toArray($object)
     {
         $ex = new DataExchange($object);
@@ -65,8 +70,8 @@ abstract class ATable extends AStorage
 
     /**
      * @param Records\ARecord|Records\PageRecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function updateRecord(Records\ARecord $record): bool
     {
@@ -87,8 +92,8 @@ abstract class ATable extends AStorage
 
     /**
      * @param Records\ARecord|Records\PageRecord $record
-     * @return int
      * @throws MapperException
+     * @return int
      */
     public function countRecord(Records\ARecord $record): int
     {
@@ -98,8 +103,8 @@ abstract class ATable extends AStorage
 
     /**
      * @param Records\ARecord|Records\PageRecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function loadRecord(Records\ARecord $record): bool
     {
@@ -118,8 +123,8 @@ abstract class ATable extends AStorage
 
     /**
      * @param Records\ARecord|Records\PageRecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      * Scan array and remove items that have set equal values as that in passed record
      */
     protected function deleteRecord(Records\ARecord $record): bool
@@ -138,8 +143,8 @@ abstract class ATable extends AStorage
 
     /**
      * @param Records\ARecord $record
-     * @return Records\ARecord[]
      * @throws MapperException
+     * @return Records\ARecord[]
      */
     public function loadMultiple(Records\ARecord $record): array
     {
@@ -156,8 +161,8 @@ abstract class ATable extends AStorage
      * @param Records\ARecord $record
      * @param bool $usePks
      * @param bool $wantFromStorage
-     * @return string[]|int[]
      * @throws MapperException
+     * @return string[]|int[]
      */
     private function findMatched(Records\ARecord $record, bool $usePks = false, bool $wantFromStorage = false): array
     {
@@ -254,8 +259,8 @@ abstract class ATable extends AStorage
     }
 
     /**
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     private function saveSource(): bool
     {
@@ -280,8 +285,8 @@ abstract class ATable extends AStorage
 
     /**
      * @param Records\ARecord $record
-     * @return string|null
      * @throws MapperException
+     * @return string|null
      */
     private function generateKeyFromPks(Records\ARecord $record): ?string
     {

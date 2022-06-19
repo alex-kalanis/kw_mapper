@@ -36,8 +36,8 @@ class MongoDb extends ADatabase implements IPassConnection
     /**
      * @param QueryBuilder $builder
      * @param Driver\Query $query
-     * @return Driver\Cursor
      * @throws MapperException
+     * @return Driver\Cursor
      */
     public function query(QueryBuilder $builder, Driver\Query $query)
     {

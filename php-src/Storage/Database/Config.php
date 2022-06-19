@@ -11,20 +11,30 @@ namespace kalanis\kw_mapper\Storage\Database;
  */
 class Config
 {
+    /** @var string */
     protected $driver = ''; // determine which driver for database will be used; they are defined in IDriverSources
+    /** @var string */
     protected $sourceName = ''; // determine source identifier, must be unique in whole connection system
+    /** @var string */
     protected $location = ''; // location, host
+    /** @var int */
     protected $port = 0; // port number, usually something you have preset
+    /** @var string */
     protected $user = ''; // which user will access data
+    /** @var string */
     protected $password = ''; // his password
+    /** @var string */
     protected $database = ''; // which database will be processed
+    /** @var int */
     protected $timeout = 8600; // how long it will be connected
+    /** @var bool */
     protected $persistent = false; // it will try to live longer
+    /** @var mixed|null */
     protected $type = null; // special - type for connection
 
-    public static function init()
+    public static function init(): self
     {
-        return new static();
+        return new self();
     }
 
     public function setTarget(string $driver, string $sourceName, string $location, int $port, ?string $user, ?string $password, string $database): self
@@ -39,6 +49,12 @@ class Config
         return $this;
     }
 
+    /**
+     * @param int $timeout
+     * @param bool $persistent
+     * @param mixed|null $type
+     * @return Config
+     */
     public function setParams(int $timeout = 8600, bool $persistent = false, $type = null): self
     {
         $this->timeout = $timeout;
@@ -92,6 +108,9 @@ class Config
         return $this->persistent;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getType()
     {
         return $this->type;

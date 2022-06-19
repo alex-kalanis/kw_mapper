@@ -20,8 +20,8 @@ class SQLite extends ADialect
 
     /**
      * @param QueryBuilder $builder
-     * @return string
      * @throws MapperException
+     * @return string
      * @link https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
      */
     public function insert(QueryBuilder $builder)

@@ -13,6 +13,7 @@ use kalanis\kw_mapper\MapperException;
  */
 class ConfigStorage
 {
+    /** @var self|null */
     protected static $instance = null;
     /** @var Config[] */
     private $configs = [];
@@ -20,7 +21,7 @@ class ConfigStorage
     public static function getInstance(): self
     {
         if (empty(static::$instance)) {
-            static::$instance = new static();
+            static::$instance = new self();
         }
         return static::$instance;
     }
@@ -43,8 +44,8 @@ class ConfigStorage
 
     /**
      * @param string $sourceName
-     * @return Config
      * @throws MapperException
+     * @return Config
      */
     final public function getConfig(string $sourceName): Config
     {

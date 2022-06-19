@@ -12,8 +12,10 @@ use kalanis\kw_mapper\Interfaces\INl;
  */
 trait TNl
 {
+    /** @var string */
     protected $delimitElements = '|';
 
+    /** @var array<string, string> */
     protected static $escapeNlTr = [
         "\r\n" => INl::CRLF_REPLACEMENT,
         "\r" => INl::CR_REPLACEMENT,
@@ -26,6 +28,10 @@ trait TNl
         return strtr($content, array_flip(static::$escapeNlTr));
     }
 
+    /**
+     * @param mixed $content
+     * @return string
+     */
     public function escapeNl($content): string
     {
         static::$escapeNlTr[$this->delimitElements] = INl::SEP_REPLACEMENT;

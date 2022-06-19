@@ -26,15 +26,15 @@ trait TMapper
      * @param string $name
      * @throws MapperException
      */
-    final protected function setMapper(string $name)
+    final protected function setMapper(string $name): void
     {
         $this->mapper = $this->mapperFromFactory($name);
     }
 
     /**
      * @param string $name
-     * @return Mappers\AMapper
      * @throws MapperException
+     * @return Mappers\AMapper
      */
     protected function mapperFromFactory(string $name): Mappers\AMapper
     {
@@ -57,7 +57,7 @@ trait TMapper
     /**
      * @throws MapperException
      */
-    private function checkMapper()
+    private function checkMapper(): void
     {
         if (empty($this->mapper)) {
             throw new MapperException('Unknown entry mapper');
@@ -76,8 +76,8 @@ trait TMapper
     }
 
     /**
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     final public function load(): bool
     {
@@ -86,8 +86,8 @@ trait TMapper
     }
 
     /**
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     final public function delete(): bool
     {
@@ -96,8 +96,8 @@ trait TMapper
     }
 
     /**
-     * @return int
      * @throws MapperException
+     * @return int
      */
     final public function count(): int
     {
@@ -106,8 +106,8 @@ trait TMapper
     }
 
     /**
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     final public function loadMultiple(): array
     {

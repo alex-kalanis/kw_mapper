@@ -9,6 +9,7 @@ namespace kalanis\kw_mapper\Storage\File;
  */
 trait TFormat
 {
+    /** @var string */
     protected $format = '';
 
     public function setFormat(string $formatClass): self

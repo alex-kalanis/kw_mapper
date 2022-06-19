@@ -20,17 +20,23 @@ use COM;
  */
 class ComRegistry extends COM
 {
-    public function __construct($moduleName = null, $serverName = null, $codePage = null, $typeLib = null)
+    /**
+     * @param string|null $moduleName
+     * @param string|null $serverName
+     * @param int|null $codePage
+     * @param string|null $typeLib
+     */
+    public function __construct(?string $moduleName = null, ?string $serverName = null, ?int $codePage = null, ?string $typeLib = null)
     {
         // @todo: nowhere to find if can be init with an empty values or not - look and change if need
         if (!is_null($typeLib)) {
-            parent::__construct("WScript.Shell", $serverName, $codePage, $typeLib);
+            parent::__construct('WScript.Shell', $serverName, $codePage, $typeLib);
         } elseif (!is_null($codePage)) {
-            parent::__construct("WScript.Shell", $serverName, $codePage);
+            parent::__construct('WScript.Shell', $serverName, $codePage);
         } elseif (!is_null($serverName)) {
-            parent::__construct("WScript.Shell", $serverName);
+            parent::__construct('WScript.Shell', $serverName);
         } else {
-            parent::__construct("WScript.Shell");
+            parent::__construct('WScript.Shell');
         }
     }
 }

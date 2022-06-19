@@ -51,8 +51,8 @@ class Ldap extends ADatabase implements IPassConnection
 
     /**
      * @param bool $withBind
-     * @return resource
      * @throws MapperException
+     * @return resource
      */
     protected function connectToServer(bool $withBind = true)
     {
@@ -85,14 +85,14 @@ class Ldap extends ADatabase implements IPassConnection
     }
 
     /**
-     * @return string
      * @throws MapperException
+     * @return string
      */
     public function getDomain(): string
     {
         if (!isset($this->attributes['domain'])) {
             throw new MapperException('The domain is not set!');
         }
-        return $this->attributes['domain'];
+        return strval($this->attributes['domain']);
     }
 }

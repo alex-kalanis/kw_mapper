@@ -17,6 +17,8 @@ use MongoDB\Driver;
  */
 class MongoDb extends ADialect
 {
+    use TTranslate;
+
     public function insert(QueryBuilder $builder)
     {
         $write = new Driver\BulkWrite();
@@ -74,8 +76,8 @@ class MongoDb extends ADialect
 
     /**
      * @param QueryBuilder $builder
-     * @return string[]|int[]|float[]
      * @throws MapperException
+     * @return array<string, array<array<string, int|string|float|array<int, array<int|string|float>>>>>
      */
     public function filterArray(QueryBuilder $builder): array
     {
@@ -90,13 +92,15 @@ class MongoDb extends ADialect
 
     /**
      * @param QueryBuilder\Order[] $ordering
-     * @return int[]
-     * @todo: multiple columns
+     * @return array<string|int, int>
      */
     public function order(array $ordering): array
     {
-        $column = reset($ordering);
-        return [$column->getColumnName(), (IQueryBuilder::ORDER_ASC == $column->getDirection() ? 1 : -1 )];
+        $columns = [];
+        foreach ($ordering as $column) {
+            $columns[$column->getColumnName()] = (IQueryBuilder::ORDER_ASC == $column->getDirection() ? 1 : -1 );
+        }
+        return $columns;
     }
 
     public function availableJoins(): array
@@ -106,39 +110,40 @@ class MongoDb extends ADialect
 
     /**
      * @param QueryBuilder\Condition $condition
-     * @param array $values
-     * @return string|string[]
+     * @param array<int|string> $values
      * @throws MapperException
+     * @return array<string, int|string|float|array<int, array<int|string|float>>>
      */
     protected function operation(QueryBuilder\Condition $condition, array &$values)
     {
+        $columnKey = strval($condition->getColumnKey());
         switch ($condition->getOperation()) {
 //            case IQueryBuilder::OPERATION_NULL:
 //                return 'IS NULL';
 //            case IQueryBuilder::OPERATION_NNULL:
 //                return 'IS NOT NULL';
             case IQueryBuilder::OPERATION_EQ:
-                return ['$eq' => $values[$condition->getColumnKey()]];
+                return ['$eq' => $values[$columnKey]];
             case IQueryBuilder::OPERATION_NEQ:
-                return ['$ne' => $values[$condition->getColumnKey()]];
+                return ['$ne' => $values[$columnKey]];
             case IQueryBuilder::OPERATION_GT:
-                return ['$gt' => $values[$condition->getColumnKey()]];
+                return ['$gt' => $values[$columnKey]];
             case IQueryBuilder::OPERATION_GTE:
-                return ['$gte' => $values[$condition->getColumnKey()]];
+                return ['$gte' => $values[$columnKey]];
             case IQueryBuilder::OPERATION_LT:
-                return ['$le' => $values[$condition->getColumnKey()]];
+                return ['$le' => $values[$columnKey]];
             case IQueryBuilder::OPERATION_LTE:
-                return ['$lte' => $values[$condition->getColumnKey()]];
+                return ['$lte' => $values[$columnKey]];
 //            case IQueryBuilder::OPERATION_LIKE:
 //                return 'LIKE';
 //            case IQueryBuilder::OPERATION_NLIKE:
 //                return 'NOT LIKE';
             case IQueryBuilder::OPERATION_REXP:
-                return ['$regex' => $values[$condition->getColumnKey()]];
+                return ['$regex' => $values[$columnKey]];
             case IQueryBuilder::OPERATION_IN:
-                return ['$in' => [$this->notEmptyArray($values[$condition->getColumnKey()])]];
+                return ['$in' => [$this->notEmptyArray($values[$columnKey])]];
             case IQueryBuilder::OPERATION_NIN:
-                return ['$nin' => [$this->notEmptyArray($values[$condition->getColumnKey()])]];
+                return ['$nin' => [$this->notEmptyArray($values[$columnKey])]];
             default:
                 throw new MapperException(sprintf('Unknown operation *%s*', $condition->getOperation()));
         }

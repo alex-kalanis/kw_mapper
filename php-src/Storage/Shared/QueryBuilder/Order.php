@@ -34,7 +34,7 @@ class Order
     /**
      * @return string|int
      */
-    public function getColumnName(): string
+    public function getColumnName()
     {
         return $this->columnName;
     }

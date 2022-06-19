@@ -13,13 +13,15 @@ use kalanis\kw_storage\Storage;
  */
 class StorageSingleton
 {
+    /** @var self|null */
     protected static $instance = null;
+    /** @var Storage\Storage|null */
     private $storage = null;
 
     public static function getInstance(): self
     {
         if (empty(static::$instance)) {
-            static::$instance = new static();
+            static::$instance = new self();
         }
         return static::$instance;
     }

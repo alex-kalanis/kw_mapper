@@ -12,6 +12,7 @@ use kalanis\kw_mapper\MapperException;
  */
 trait TConnection
 {
+    /** @var object|resource|null */
     protected $connection = null;
 
     public function __destruct()
@@ -50,6 +51,9 @@ trait TConnection
         return !empty($this->connection);
     }
 
+    /**
+     * @return object|resource|null
+     */
     public function getConnection()
     {
         return $this->connection;

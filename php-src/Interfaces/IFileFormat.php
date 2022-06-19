@@ -15,15 +15,15 @@ interface IFileFormat
 {
     /**
      * @param string $content
-     * @return array
      * @throws MapperException
+     * @return array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>>
      */
     public function unpack(string $content): array;
 
     /**
-     * @param array $content
-     * @return string
+     * @param array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>> $content
      * @throws MapperException
+     * @return string
      */
     public function pack(array $content): string;
 }

@@ -9,7 +9,7 @@ class Column
     protected $tableName = '';
     /** @var string|int */
     protected $columnName = '';
-    /** @var string */
+    /** @var string|int */
     protected $columnAlias = '';
     /** @var string */
     protected $aggregate = '';
@@ -17,11 +17,11 @@ class Column
     /**
      * @param string $tableName
      * @param string|int $columnName
-     * @param string $columnAlias
+     * @param string|int $columnAlias
      * @param string $aggregate
      * @return $this
      */
-    public function setData(string $tableName, $columnName, string $columnAlias, string $aggregate = ''): self
+    public function setData(string $tableName, $columnName, $columnAlias, string $aggregate = ''): self
     {
         $this->tableName = $tableName;
         $this->columnName = $columnName;
@@ -43,7 +43,10 @@ class Column
         return $this->columnName;
     }
 
-    public function getColumnAlias(): string
+    /**
+     * @return string|int
+     */
+    public function getColumnAlias()
     {
         return $this->columnAlias;
     }

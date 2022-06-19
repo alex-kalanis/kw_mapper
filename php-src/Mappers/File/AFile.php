@@ -26,8 +26,8 @@ abstract class AFile extends AStorage
 
     /**
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function insertRecord(ARecord $record): bool
     {
@@ -36,8 +36,8 @@ abstract class AFile extends AStorage
 
     /**
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function updateRecord(ARecord $record): bool
     {
@@ -47,8 +47,8 @@ abstract class AFile extends AStorage
 
     /**
      * @param ARecord $record
-     * @return int
      * @throws MapperException
+     * @return int
      */
     public function countRecord(ARecord $record): int
     {
@@ -58,8 +58,8 @@ abstract class AFile extends AStorage
 
     /**
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function loadRecord(ARecord $record): bool
     {
@@ -71,8 +71,8 @@ abstract class AFile extends AStorage
 
     /**
      * @param ARecord|PageRecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function deleteRecord(ARecord $record): bool
     {
@@ -89,8 +89,8 @@ abstract class AFile extends AStorage
 
     /**
      * @param ARecord $record
-     * @return string
      * @throws MapperException
+     * @return string
      */
     protected function getPathFromPk(ARecord $record): string
     {

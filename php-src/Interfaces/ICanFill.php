@@ -10,7 +10,13 @@ namespace kalanis\kw_mapper\Interfaces;
  */
 interface ICanFill
 {
+    /**
+     * @param mixed $data
+     */
     public function fillData($data): void;
 
+    /**
+     * @return mixed
+     */
     public function dumpData();
 }

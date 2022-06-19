@@ -63,7 +63,7 @@ class Ldap extends AConnector
             if (is_numeric($key)) {
                 $rec = clone $this->basicRecord;
                 foreach ($line as $index => $item) {
-                    $entry = $rec->getEntry($relationMap[$index]);
+                    $entry = $rec->getEntry(strval($relationMap[$index]));
                     $entry->setData($this->typedFillSelection($entry, $this->readItem($item)), true);
                 }
                 $result[] = $rec;
@@ -72,25 +72,34 @@ class Ldap extends AConnector
         return $result;
     }
 
+    /**
+     * @param mixed $item
+     * @return string
+     */
     protected function readItem($item)
     {
         return (empty($item) || empty($item[0]) || ('NULL' == $item[0])) ? '' : $item[0];
     }
 
     /**
-     * @return array
      * @throws MapperException
+     * @return string[][]
      */
     protected function multiple(): array
     {
+        $connect = $this->database->getConnection();
+        if (!is_resource($connect)) {
+            return [];
+        }
         $result = ldap_search(
-            $this->database->getConnection(),
+            $connect,
             $this->dialect->domainDn($this->database->getDomain()),
             $this->dialect->filter($this->queryBuilder)
         );
         if (false === $result) {
             return [];
         }
-        return ldap_get_entries($this->database->getConnection(), $result);
+        $items = ldap_get_entries($connect, $result);
+        return (false !== $items) ? $items : [];
     }
 }

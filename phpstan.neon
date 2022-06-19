@@ -1,0 +1,21 @@
+parameters:
+	level: 7
+	paths:
+		- 'php-src'
+	scanFiles:
+		- 'php-tests/CommonTestClass.php'
+	excludePaths:
+		- 'php-tests/_autoload.php'
+		- 'php-tests/_bootstrap.php'
+		- 'php-tests/CommonTestClass.php'
+	bootstrapFiles:
+		- 'php-tests/_bootstrap.php'
+	checkGenericClassInNonGenericObjectType: false
+	ignoreErrors:
+		# known one
+		- '#Constructor of class kalanis\\kw_mapper\\Storage\\Database\\Shared\\DotNet\\ComRegistry has an unused parameter \$moduleName.#'
+		- '#does not accept kalanis\\kw_mapper\\Storage\\Database\\ADatabase.#'
+		- '#does not accept kalanis\\kw_mapper\\Storage\\Database\\Dialects\\ADialect.#'
+		-
+			message: '#Cannot access offset int\|string on array#'
+			path: 'php-src/Mappers/File/ATable.php'

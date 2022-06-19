@@ -29,18 +29,22 @@ abstract class ASearch
         $this->connector = Connector\Factory::getInstance()->getConnector($record, $initialRecords);
     }
 
+    /**
+     * @param string $property
+     * @return string[]
+     */
     protected function parseProperty(string $property): array
     {
         $separated = explode(static::$propertySeparator, $property, 2);
-        return ( (1 < count($separated)) && mb_strlen($separated[0]) && mb_strlen($separated[1]) )
+        return ((false !== $separated) && (1 < count($separated)) && mb_strlen($separated[0]) && mb_strlen($separated[1]) )
             ? $separated
             : ['', $property]
         ;
     }
 
     /**
-     * @return int
      * @throws MapperException
+     * @return int
      */
     public function getCount(): int
     {
@@ -48,8 +52,8 @@ abstract class ASearch
     }
 
     /**
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     public function getResults(): array
     {

@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Storage\Database\PDO;
 
 
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ASQL;
 use PDO;
 use PDOStatement;
@@ -21,6 +22,13 @@ abstract class APDO extends ASQL
     /** @var PDOStatement|null */
     protected $lastStatement;
 
+    /**
+     * @param string $query
+     * @param array<string, mixed> $params
+     * @param int $fetchType
+     * @throws MapperException
+     * @return array<string|int, array<int, string|int|float>>
+     */
     public function query(string $query, array $params, int $fetchType = PDO::FETCH_ASSOC): array
     {
         if (empty($query)) {
@@ -35,9 +43,16 @@ abstract class APDO extends ASQL
 
         $this->lastStatement = $statement;
 
-        return $statement->fetchAll($fetchType);
+        $result = $statement->fetchAll($fetchType);
+        return (false !== $result) ? $result : [];
     }
 
+    /**
+     * @param string $query
+     * @param array<string, mixed> $params
+     * @throws MapperException
+     * @return bool
+     */
     public function exec(string $query, array $params): bool
     {
         if (empty($query)) {
@@ -65,7 +80,8 @@ abstract class APDO extends ASQL
 
     public function lastInsertId(): ?string
     {
-        return $this->connection->lastInsertId();
+        $id = $this->connection->lastInsertId();
+        return false === $id ? null : strval($id);
     }
 
     public function rowCount(): ?int

@@ -29,8 +29,8 @@ abstract class AStorage extends AMapper
 
     /**
      * @param IFileFormat|null $format
-     * @return array
      * @throws MapperException
+     * @return array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>>
      */
     protected function loadFromStorage(?IFileFormat $format = null): array
     {
@@ -43,10 +43,10 @@ abstract class AStorage extends AMapper
     }
 
     /**
-     * @param array $content
+     * @param array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>> $content
      * @param IFileFormat|null $format
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function saveToStorage(array $content, ?IFileFormat $format = null): bool
     {

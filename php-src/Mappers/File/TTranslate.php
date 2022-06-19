@@ -12,7 +12,12 @@ use kalanis\kw_mapper\Interfaces\IEntryType;
  */
 trait TTranslate
 {
-    protected function translateTypeFrom(string $type, $input)
+    /**
+     * @param int $type
+     * @param mixed $input
+     * @return bool|float|int|mixed|string
+     */
+    protected function translateTypeFrom(int $type, $input)
     {
         switch ($type) {
             case IEntryType::TYPE_BOOLEAN:
@@ -29,6 +34,11 @@ trait TTranslate
         }
     }
 
+    /**
+     * @param int $type
+     * @param mixed $input
+     * @return string
+     */
     protected function translateTypeTo(int $type, $input): string
     {
         switch ($type) {

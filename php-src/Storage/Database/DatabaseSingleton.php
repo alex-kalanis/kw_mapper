@@ -13,6 +13,7 @@ use kalanis\kw_mapper\MapperException;
  */
 class DatabaseSingleton
 {
+    /** @var self|null */
     protected static $instance = null;
     /** @var ADatabase[] */
     private $database = [];
@@ -20,7 +21,7 @@ class DatabaseSingleton
     public static function getInstance(): self
     {
         if (empty(static::$instance)) {
-            static::$instance = new static();
+            static::$instance = new self();
         }
         return static::$instance;
     }
@@ -38,8 +39,8 @@ class DatabaseSingleton
 
     /**
      * @param Config $config
-     * @return ADatabase
      * @throws MapperException
+     * @return ADatabase
      */
     final public function getDatabase(Config $config): ADatabase
     {

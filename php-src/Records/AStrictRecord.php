@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Records;
 
 
+use kalanis\kw_mapper\Interfaces\ICanFill;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 
@@ -39,13 +40,14 @@ abstract class AStrictRecord extends ARecord
                 $this->checkLength($value, intval($data->getParams()));
                 break;
             case IEntryType::TYPE_SET:
-                $this->checkPreset($value, $data->getParams());
+                $this->checkPreset($value, (array) $data->getParams());
                 break;
             case IEntryType::TYPE_ARRAY:
                 $this->checkArrayForNotEntries($value, $offset);
                 break;
             case IEntryType::TYPE_OBJECT:
                 $this->reloadClass($data);
+                /** @var ICanFill $class */
                 $class = $data->getData();
                 $class->fillData($value);
                 return; // fill data elsewhere
@@ -63,7 +65,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    private function checkBool($value, string $key)
+    private function checkBool($value, string $key): void
     {
         if (is_null($value)) {
             return;
@@ -78,7 +80,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    private function checkNumeric($value, string $key)
+    private function checkNumeric($value, string $key): void
     {
         if (is_null($value)) {
             return;
@@ -93,7 +95,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    private function checkString($value, string $key)
+    private function checkString($value, string $key): void
     {
         if (is_null($value)) {
             return;
@@ -108,7 +110,7 @@ abstract class AStrictRecord extends ARecord
      * @param float $limit
      * @throws MapperException
      */
-    private function checkSize($value, float $limit)
+    private function checkSize($value, float $limit): void
     {
         if (is_null($value)) {
             return;
@@ -123,7 +125,7 @@ abstract class AStrictRecord extends ARecord
      * @param int $limit
      * @throws MapperException
      */
-    private function checkLength($value, int $limit)
+    private function checkLength($value, int $limit): void
     {
         if (is_null($value)) {
             return;
@@ -136,10 +138,10 @@ abstract class AStrictRecord extends ARecord
 
     /**
      * @param mixed $value
-     * @param array $preset
+     * @param array<string|int|float> $preset
      * @throws MapperException
      */
-    private function checkPreset($value, $preset)
+    private function checkPreset($value, $preset): void
     {
         if (is_null($value)) {
             return;
@@ -154,7 +156,7 @@ abstract class AStrictRecord extends ARecord
      * @param string $key
      * @throws MapperException
      */
-    private function checkArrayForNotEntries($value, string $key)
+    private function checkArrayForNotEntries($value, string $key): void
     {
         if (!is_array($value)) {
             throw new MapperException(sprintf('You must set array into key *%s*', $key));

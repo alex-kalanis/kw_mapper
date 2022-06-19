@@ -28,46 +28,46 @@ abstract class ADialect
     /**
      * Create data by properties
      * @param QueryBuilder $builder
-     * @return string|object
      * @throws MapperException
+     * @return string|object
      */
     abstract public function insert(QueryBuilder $builder);
 
     /**
      * Read data described by conditions
      * @param QueryBuilder $builder
-     * @return string|object
      * @throws MapperException
+     * @return string|object
      */
     abstract public function select(QueryBuilder $builder);
 
     /**
      * Update data properties described by conditions
      * @param QueryBuilder $builder
-     * @return string|object
      * @throws MapperException
+     * @return string|object
      */
     abstract public function update(QueryBuilder $builder);
 
     /**
      * Delete data by conditions
      * @param QueryBuilder $builder
-     * @return string|object
      * @throws MapperException
+     * @return string|object
      */
     abstract public function delete(QueryBuilder $builder);
 
     /**
      * Get table structure
      * @param QueryBuilder $builder
-     * @return string|object
      * @throws MapperException
+     * @return string|object
      */
     abstract public function describe(QueryBuilder $builder);
 
     /**
      * Get array of available join operations
-     * @return array
+     * @return string[]
      */
     abstract public function availableJoins(): array;
 

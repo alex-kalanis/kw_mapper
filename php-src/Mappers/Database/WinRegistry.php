@@ -32,6 +32,7 @@ class WinRegistry extends AMapper
     use TContent;
     use TFill;
 
+    /** @var string */
     protected $typeKey = '';
     /** @var Storage\Database\Raw\WinRegistry */
     protected $database = null;
@@ -43,7 +44,7 @@ class WinRegistry extends AMapper
     {
         parent::__construct();
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($this->getSource());
-        $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
+        $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config); // @phpstan-ignore-line
     }
 
     public function getAlias(): string
@@ -72,8 +73,8 @@ class WinRegistry extends AMapper
 
     /**
      * @param Records\ARecord|Records\RegistryRecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function insertRecord(Records\ARecord $record): bool
     {

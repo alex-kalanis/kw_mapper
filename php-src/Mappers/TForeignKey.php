@@ -13,6 +13,7 @@ namespace kalanis\kw_mapper\Mappers;
  */
 trait TForeignKey
 {
+    /** @var array<string, ForeignKey> */
     protected $foreignKeys = [];
     /** @var ForeignKey|null */
     private $foreignKeyClass = null;
@@ -32,7 +33,7 @@ trait TForeignKey
     }
 
     /**
-     * @return ForeignKey[]
+     * @return array<string, ForeignKey>
      */
     public function getForeignKeys(): array
     {

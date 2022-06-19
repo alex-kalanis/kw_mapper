@@ -14,6 +14,7 @@ use kalanis\kw_mapper\MapperException;
  */
 class QueryBuilder
 {
+    /** @var int */
     protected static $uniqId = 0;
     /** @var QueryBuilder\Column */
     protected $column = null;
@@ -28,8 +29,11 @@ class QueryBuilder
     /** @var QueryBuilder\Group */
     protected $group = null;
 
+    /** @var string */
     protected $relation = IQueryBuilder::RELATION_AND;
+    /** @var string */
     protected $baseTable = '';
+    /** @var array<string, int|string|float|null> */
     protected $params = [];
     /** @var QueryBuilder\Column[] */
     protected $columns = [];
@@ -63,11 +67,11 @@ class QueryBuilder
     /**
      * @param string $tableName
      * @param string|int $columnName
-     * @param string $alias
+     * @param string|int $alias
      * @param string $aggregate
      * @throws MapperException
      */
-    public function addColumn(string $tableName, $columnName, string $alias = '', string $aggregate = ''): void
+    public function addColumn(string $tableName, $columnName, $alias = '', string $aggregate = ''): void
     {
         if (!empty($aggregate) && !in_array($aggregate, [
                 IQueryBuilder::AGGREGATE_AVG, IQueryBuilder::AGGREGATE_COUNT,
@@ -134,7 +138,7 @@ class QueryBuilder
      * @param string $tableName
      * @param string|int $columnName
      * @param string $operation
-     * @param mixed $value
+     * @param string|int|float|null $value
      * @throws MapperException
      */
     public function addHavingCondition(string $tableName, $columnName, string $operation, $value = null): void
@@ -154,7 +158,12 @@ class QueryBuilder
         $this->having[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
     }
 
-    protected function multipleByValue(string $columnName, $value)
+    /**
+     * @param string|int $columnName
+     * @param string|int|float|array<string|int|float>|null $value
+     * @return string|string[]
+     */
+    protected function multipleByValue($columnName, $value)
     {
         if (is_array($value)) {
             $keys = [];
@@ -167,7 +176,12 @@ class QueryBuilder
         }
     }
 
-    protected function simpleByValue(string $columnName, $value): string
+    /**
+     * @param string|int $columnName
+     * @param string|int|float|null $value
+     * @return string
+     */
+    protected function simpleByValue($columnName, $value): string
     {
         $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
         static::$uniqId++;
@@ -192,6 +206,10 @@ class QueryBuilder
         $this->ordering[] = $order->setData($tableName, $columnName, $direction);
     }
 
+    /**
+     * @param string $tableName
+     * @param string|int $columnName
+     */
     public function addGroupBy(string $tableName, $columnName): void
     {
         $group = clone $this->group;
@@ -256,7 +274,7 @@ class QueryBuilder
     }
 
     /**
-     * @return string[]|int[]
+     * @return array<string, int|string|float|null>
      */
     public function getParams(): array
     {

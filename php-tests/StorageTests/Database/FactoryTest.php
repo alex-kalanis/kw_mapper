@@ -27,7 +27,7 @@ class FactoryTest extends CommonTestClass
             'bar',
             'baz'
         );
-        $factory = SpecFactory::getInstance();
+        $factory = new SpecFactory();
         $this->expectException(MapperException::class);
         $this->expectExceptionMessage('Wanted source *unknown* not exists!');
         $factory->getDatabase($conf);
@@ -47,7 +47,7 @@ class FactoryTest extends CommonTestClass
             'bar',
             'baz'
         );
-        $factory = SpecFactory::getInstance();
+        $factory = new SpecFactory();
         $this->expectException(MapperException::class);
         $this->expectExceptionMessage('Defined class *\StorageTests\Database\FailedDatabaseClass* is not instance of Storage\ADatabase!');
         $factory->getDatabase($conf);
@@ -67,7 +67,7 @@ class FactoryTest extends CommonTestClass
             'bar',
             'baz'
         );
-        $factory = SpecFactory::getInstance();
+        $factory = new SpecFactory();
         $class = $factory->getDatabase($conf);
         $this->assertInstanceOf('\kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL', $class);
     }

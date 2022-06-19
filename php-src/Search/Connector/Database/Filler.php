@@ -22,12 +22,15 @@ class Filler
 {
     use TFill;
 
+    /** @var string */
     protected $hashDelimiter = "--::\e::--";
-    protected $columnDelimiter = "____";
+    /** @var string */
+    protected $columnDelimiter = '____';
     /** @var ARecord|null */
     protected $basicRecord = null;
     /** @var RecordsInJoin[] */
     protected $recordsInJoin = [];
+    /** @var bool */
     private $fromDatabase = false;
 
     public function __construct(ARecord $basicRecord)
@@ -45,7 +48,7 @@ class Filler
 
     /**
      * @param Join[] $joins
-     * @return string[][]
+     * @return array<string|int, array<string|int|float|null>>
      */
     public function getColumns(array $joins): array
     {
@@ -84,16 +87,17 @@ class Filler
     }
 
     /**
-     * @param iterable $dataSourceRows
+     * @param iterable<string|int, array<string|int, string|int|float>> $dataSourceRows
      * @param mixed $parent
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     public function fillResults(iterable $dataSourceRows, $parent = null): array
     {
         $this->setAsFromDatabase($parent);
-        /** @var ARecord[][] */
+        /** @var array<string, array<string, ARecord>> */
         $aliasedRecords = [];
+        /** @var array<string|int, array<string, string>> */
         $hashedRows = [];
         // parse input data into something processable
         // got records with elementary data and hashes of them
@@ -131,6 +135,7 @@ class Filler
 
         // tell which alias is parent of another - only by hashes
         $parentsAliases = $this->getParentsAliases();
+        /** @var array<string, array<string, array<string, string[]>>> $children */
         $children = [];
         foreach ($hashedRows as &$hashedRow) {
             foreach ($parentsAliases as $currentAlias => &$parentsAlias) {
@@ -181,6 +186,10 @@ class Filler
         return $results;
     }
 
+    /**
+     * @param array<string|int, string|int|float|null> $columns
+     * @return string|null
+     */
     protected function hashRow(array &$columns): ?string
     {
         $cols = implode($this->hashDelimiter, $columns);
@@ -192,9 +201,9 @@ class Filler
 
     /**
      * @param string $alias
-     * @param array $columns
-     * @return ARecord
+     * @param array<string|int, string|int|float|null> $columns
      * @throws MapperException
+     * @return ARecord
      */
     protected function fillRecordFromAlias(string $alias, array &$columns): ARecord
     {
@@ -203,7 +212,7 @@ class Filler
         $properties = array_flip($record->getMapper()->getRelations());
         foreach ($columns as $column => $value) {
             if (isset($properties[$column])) {
-                $property = $properties[$column];
+                $property = strval($properties[$column]);
                 if ($record->offsetExists($property) && ($record->offsetGet($property)) !== $value) {
                     $record->getEntry($property)->setData($value, $this->fromDatabase);
                 }
@@ -214,8 +223,8 @@ class Filler
 
     /**
      * @param string $alias
-     * @return RecordsInJoin
      * @throws MapperException
+     * @return RecordsInJoin
      */
     protected function getRecordForAlias(string $alias): RecordsInJoin
     {
@@ -228,8 +237,8 @@ class Filler
     }
 
     /**
-     * @return RecordsInJoin
      * @throws MapperException
+     * @return RecordsInJoin
      */
     protected function getRecordForRoot(): RecordsInJoin
     {
@@ -241,6 +250,9 @@ class Filler
         throw new MapperException(sprintf('No root record found.'));
     }
 
+    /**
+     * @return array<string, string|null>
+     */
     protected function getParentsAliases(): array
     {
         $result = [];
@@ -250,6 +262,9 @@ class Filler
         return $result;
     }
 
+    /**
+     * @param mixed $class
+     */
     private function setAsFromDatabase($class): void
     {
         if ($class && is_object($class)) {
@@ -262,10 +277,15 @@ class Filler
         $this->fromDatabase = false;
     }
 
+    /**
+     * @param array<string|int, string|int|float> $row
+     * @return array<string, array<string|int, string|int|float>>
+     */
     protected function splitByTables(&$row): array
     {
         $byTables = [];
         foreach ($row as $column => &$data) {
+            $column = strval($column);
             $delimiterPoint = strpos($column, '.'); // look for delimiter, not every time is present
             $delimiterOur = strpos($column, $this->columnDelimiter); // our delimiter, because some databases returns only columns
             if ((false === $delimiterPoint) && (false === $delimiterOur)) {

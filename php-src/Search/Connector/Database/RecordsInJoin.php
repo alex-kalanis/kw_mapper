@@ -15,8 +15,11 @@ class RecordsInJoin
 {
     /** @var ARecord|null */
     protected $record = null;
+    /** @var string|null */
     protected $parentAlias = null;
+    /** @var string */
     protected $storeKey = '';
+    /** @var string */
     protected $knownAs = '';
 
     public function setData(ARecord $record, string $storeKey, ?string $parentAlias, string $knownAs = ''): self

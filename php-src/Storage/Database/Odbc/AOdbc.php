@@ -37,9 +37,9 @@ abstract class AOdbc extends ADatabase implements IPassConnection
 
     /**
      * @param string $query
-     * @param array $params
-     * @return array
+     * @param array<string, mixed> $params
      * @throws MapperException
+     * @return array<string|int, array<int, string|int|float>>
      * @link https://www.php.net/manual/en/function.odbc-prepare.php#71616
      */
     public function query(string $query, array $params): array
@@ -51,9 +51,9 @@ abstract class AOdbc extends ADatabase implements IPassConnection
         $this->connect();
 
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
-        $statement = odbc_prepare($this->connection, $updQuery);
+        $statement = odbc_prepare($this->connection, $updQuery); // @phpstan-ignore-line
 
-        if (odbc_execute($statement, $binds)) {
+        if ((false !== $statement) && odbc_execute($statement, $binds)) { // @phpstan-ignore-line
             $row = [];
 
             if (!odbc_fetch_row($statement)) {
@@ -79,9 +79,9 @@ abstract class AOdbc extends ADatabase implements IPassConnection
 
     /**
      * @param string $query
-     * @param array $params
-     * @return bool
+     * @param array<string, mixed> $params
      * @throws MapperException
+     * @return bool
      */
     public function exec(string $query, array $params): bool
     {
@@ -91,11 +91,14 @@ abstract class AOdbc extends ADatabase implements IPassConnection
 
         $this->connect();
 
-        list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
-        $statement = odbc_prepare($this->connection, $updQuery);
-        $result = odbc_execute($statement, $binds);
-        odbc_free_result($statement);
-        return $result;
+        list($updQuery, $binds, ) = $this->bindFromNamedToQuestions($query, $params);
+        $statement = odbc_prepare($this->connection, strval($updQuery));
+        if (false !== $statement) {
+            $result = odbc_execute($statement, $binds); // @phpstan-ignore-line
+            odbc_free_result($statement);
+            return $result;
+        }
+        return false;
     }
 
     /**
@@ -109,12 +112,17 @@ abstract class AOdbc extends ADatabase implements IPassConnection
     }
 
     /**
-     * @return resource
      * @throws MapperException
+     * @return resource
      */
     protected function connectToSystem()
     {
-        $odbc = odbc_connect($this->config->getLocation(), $this->config->getUser(), $this->config->getPassword(), $this->config->getType());
+        $odbc = odbc_connect(
+            $this->config->getLocation(),
+            $this->config->getUser(),
+            $this->config->getPassword(),
+            empty($this->config->getType()) ? null : intval($this->config->getType())
+        );
         if (false === $odbc) {
             throw new MapperException('ODBC connection error: ' . odbc_errormsg());
         }

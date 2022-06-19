@@ -13,6 +13,7 @@ use kalanis\kw_mapper\MapperException;
  */
 class Factory
 {
+    /** @var array<string, string> */
     protected static $map = [
         IDriverSources::TYPE_PDO_MYSQL => '\kalanis\kw_mapper\Storage\Database\PDO\MySQL',
         IDriverSources::TYPE_PDO_MSSQL => '\kalanis\kw_mapper\Storage\Database\PDO\MSSQL',
@@ -27,17 +28,18 @@ class Factory
         IDriverSources::TYPE_RAW_DBA => '\kalanis\kw_mapper\Storage\Database\Raw\Dba',
     ];
 
+    /** @var array<string, ADatabase> */
     protected static $instances = [];
 
     public static function getInstance(): self
     {
-        return new static();
+        return new self();
     }
 
     /**
      * @param Config $config
-     * @return ADatabase
      * @throws MapperException
+     * @return ADatabase
      */
     public function getDatabase(Config $config): ADatabase
     {

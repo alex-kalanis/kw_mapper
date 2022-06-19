@@ -45,6 +45,10 @@ class Records extends AConnector
         $this->initialRecords = array_filter($initialRecords, [$this, 'filterInitial']);
     }
 
+    /**
+     * @param mixed $record
+     * @return bool
+     */
     public function filterInitial($record): bool
     {
         $class = get_class($this->basicRecord);
@@ -66,8 +70,8 @@ class Records extends AConnector
     /**
      * @param string $table
      * @param string $column
-     * @return string
      * @throws MapperException
+     * @return string
      */
     protected function correctColumn(string $table, string $column)
     {
@@ -95,8 +99,8 @@ class Records extends AConnector
 
     /**
      * @param bool $limited
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     public function getResults(bool $limited = true): array
     {
@@ -120,6 +124,9 @@ class Records extends AConnector
             : $results ;
     }
 
+    /**
+     * @return ARecord[]
+     */
     protected function getInitialRecords(): array
     {
         return $this->initialRecords;
@@ -143,8 +150,8 @@ class Records extends AConnector
     /**
      * @param ARecord[] $records
      * @param Storage\Shared\QueryBuilder\Group[] $grouping
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      * Each one in group must have the same value; one difference = another group
      */
     protected function groupResults(array $records, array $grouping): array
@@ -194,8 +201,8 @@ class Records extends AConnector
 
     /**
      * @param ARecord $result
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function filterCondition(ARecord $result): bool
     {
@@ -209,10 +216,10 @@ class Records extends AConnector
     /**
      * @param string $operation
      * @param mixed $value
-     * @param string[] $params
+     * @param array<string, int|string|float|null> $params
      * @param string[] $columnKeys
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function filterFromManyValues(string $operation, $value, array $params, array $columnKeys): bool
     {
@@ -227,8 +234,8 @@ class Records extends AConnector
      * @param string $operation
      * @param mixed $value
      * @param mixed $expected
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function checkCondition(string $operation, $value, $expected): bool
     {
@@ -267,8 +274,8 @@ class Records extends AConnector
     /**
      * @param ARecord $resultA
      * @param ARecord $resultB
-     * @return int
      * @throws MapperException
+     * @return int
      */
     public function sortOrder(ARecord $resultA, ARecord $resultB): int
     {

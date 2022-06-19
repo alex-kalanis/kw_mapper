@@ -20,9 +20,9 @@ abstract class ASQL extends ADatabase implements IPassConnection
      * Get content from DB
      * SELECT ...
      * @param string $query
-     * @param string[] $params
-     * @return string[]
+     * @param array<string, int|string|float|null> $params
      * @throws MapperException
+     * @return array<string|int, array<int, string|int|float>>
      */
     abstract public function query(string $query, array $params): array;
 
@@ -30,9 +30,9 @@ abstract class ASQL extends ADatabase implements IPassConnection
      * Execute query over DB
      * INSERT, UPDATE, DELETE, ...
      * @param string $query
-     * @param string[] $params
-     * @return bool
+     * @param array<string, int|string|float|null> $params
      * @throws MapperException
+     * @return bool
      */
     abstract public function exec(string $query, array $params): bool;
 

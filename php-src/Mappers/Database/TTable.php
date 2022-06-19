@@ -9,6 +9,7 @@ namespace kalanis\kw_mapper\Mappers\Database;
  */
 trait TTable
 {
+    /** @var string */
     protected $tableName = '';
 
     public function setTable(string $tableName): void

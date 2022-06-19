@@ -17,14 +17,14 @@ class Factory
 {
     public static function getInstance(): self
     {
-        return new static();
+        return new self();
     }
 
     /**
      * @param ARecord $record
      * @param ARecord[] $initialRecords
-     * @return AConnector
      * @throws MapperException
+     * @return AConnector
      */
     public function getConnector(ARecord $record, array $initialRecords = []): AConnector
     {

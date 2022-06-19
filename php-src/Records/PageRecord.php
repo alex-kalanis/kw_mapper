@@ -9,8 +9,8 @@ use kalanis\kw_mapper\Interfaces\IEntryType;
 /**
  * Class PageRecord
  * @package kalanis\kw_mapper\Records
- * @property string path
- * @property string content
+ * @property string $path
+ * @property string $content
  */
 class PageRecord extends ASimpleRecord
 {

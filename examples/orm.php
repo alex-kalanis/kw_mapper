@@ -65,8 +65,8 @@ class UserDBMapper extends Mappers\Database\ADatabase
      *
      * @param string $id
      * @param string $pass
-     * @return UserRecord[]
      * @throws MapperException
+     * @return UserRecord[]
      */
     public function getRecordByIdAndPass(string $id, string $pass): array
     {

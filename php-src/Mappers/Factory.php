@@ -13,13 +13,14 @@ use kalanis\kw_mapper\MapperException;
  */
 class Factory
 {
+    /** @var array<string, AMapper> */
     protected static $instances = [];
 
     /**
      * Which instances of mappers are available
      * @param string $path
-     * @return AMapper
      * @throws MapperException when initialization fails
+     * @return AMapper
      */
     public function getInstance(string $path): AMapper
     {

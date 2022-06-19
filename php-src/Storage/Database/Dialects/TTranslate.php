@@ -16,8 +16,8 @@ trait TTranslate
 {
     /**
      * @param string $operation
-     * @return string
      * @throws MapperException
+     * @return string
      */
     public function translateOperation(string $operation): string
     {
@@ -56,8 +56,8 @@ trait TTranslate
     /**
      * @param string $operation
      * @param string|string[] $columnKey
-     * @return string
      * @throws MapperException
+     * @return string
      */
     public function translateKey(string $operation, $columnKey): string
     {
@@ -83,11 +83,15 @@ trait TTranslate
         }
     }
 
+    /**
+     * @param array<string|int|float>|string|int|float $array
+     * @return array<string|int|float>
+     */
     protected function notEmptyArray($array): array
     {
         if (empty($array)) {
             return [0];
         }
-        return (array)$array;
+        return (array) $array;
     }
 }

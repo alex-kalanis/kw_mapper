@@ -15,7 +15,9 @@ class SeparatedElements implements IFileFormat
 {
     use TNl;
 
+    /** @var string */
     protected $delimitElements = '|';
+    /** @var string */
     protected $delimitLines = PHP_EOL;
 
     public function setDelimiters(string $elements = '|', string $lines = PHP_EOL): self
@@ -29,12 +31,17 @@ class SeparatedElements implements IFileFormat
     {
         $lines = explode($this->delimitLines, $content);
         $records = [];
-        foreach ($lines as &$line) {
-            if (empty($line)) {
-                continue;
-            }
+        if (false !== $lines) {
+            foreach ($lines as &$line) {
+                if (empty($line)) {
+                    continue;
+                }
 
-            $records[] = array_map([$this, 'unescapeNl'], explode($this->delimitElements, $line));
+                $items = explode($this->delimitElements, strval($line));
+                if (false !== $items) {
+                    $records[] = array_map([$this, 'unescapeNl'], $items);
+                }
+            }
         }
         return $records;
     }
@@ -43,6 +50,7 @@ class SeparatedElements implements IFileFormat
     {
         $lines = [];
         foreach ($records as &$record) {
+            $record = (array) $record;
             ksort($record);
             $record[] = ''; // separator on end
             $lines[] = implode($this->delimitElements, array_map([$this, 'escapeNl'], $record));

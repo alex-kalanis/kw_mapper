@@ -35,10 +35,10 @@ abstract class ADatabase
 
     /**
      * Add another attributes which will be set after db connection
-     * @param $attribute
-     * @param $value
+     * @param string|int $attribute
+     * @param string|int $value
      */
-    public function addAttribute($attribute, $value)
+    public function addAttribute($attribute, $value): void
     {
         $this->attributes[$attribute] = $value;
     }

@@ -1,5 +1,13 @@
 # kw_mapper
 
+[![Build Status](https://travis-ci.org/alex-kalanis/kw_mapper.svg?branch=master)](https://travis-ci.org/alex-kalanis/kw_mapper)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/alex-kalanis/kw_mapper/v/stable.svg?v=1)](https://packagist.org/packages/alex-kalanis/kw_mapper)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
+[![Downloads](https://img.shields.io/packagist/dt/alex-kalanis/kw_mapper.svg?v1)](https://packagist.org/packages/alex-kalanis/kw_mapper)
+[![License](https://poser.pugx.org/alex-kalanis/kw_mapper/license.svg?v=1)](https://packagist.org/packages/alex-kalanis/kw_mapper)
+[![Code Coverage](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/badges/coverage.png?b=master&v=1)](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/?branch=master)
+
 Mapping records and their entries onto other object like tables or files. you can choose
 from multiple sources - raw files, SQL and NoSQL databases.
 
@@ -34,7 +42,7 @@ storage. But then remember that every storage behaves differently for unwanted i
 ```
 {
     "require": {
-        "alex-kalanis/kw_mapper": "1.0"
+        "alex-kalanis/kw_mapper": ">=0.12"
     }
 }
 ```

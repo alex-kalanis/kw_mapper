@@ -24,7 +24,7 @@ class MySQLi extends ASQL
     /** @var \mysqli_stmt|null */
     protected $lastStatement;
 
-    public function disconnect()
+    public function disconnect(): void
     {
         if ($this->isConnected()) {
             $this->connection->close();
@@ -47,16 +47,16 @@ class MySQLi extends ASQL
 
         $statement = $this->connection->stmt_init();
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
-        $statement->prepare($updQuery);
+        $statement->prepare(strval($updQuery));
         if (!empty($binds)) {
-            $statement->bind_param(implode('', $types), ...$binds);
+            $statement->bind_param(implode('', $types), ...$binds); // @phpstan-ignore-line
         }
         $statement->execute();
         $result = $statement->get_result();
 
         $this->lastStatement = $statement;
 
-        return $result->fetch_all($fetchType);
+        return $result ? $result->fetch_all($fetchType) : [];
     }
 
     public function exec(string $query, array $params): bool
@@ -69,9 +69,9 @@ class MySQLi extends ASQL
 
         $statement = $this->connection->stmt_init();
         list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
-        $statement->prepare($updQuery);
+        $statement->prepare(strval($updQuery));
         if (!empty($binds)) {
-            $statement->bind_param(implode('', $types), ...$binds);
+            $statement->bind_param(implode('', $types), ...$binds); // @phpstan-ignore-line
         }
         $this->lastStatement = $statement;
 
@@ -89,8 +89,8 @@ class MySQLi extends ASQL
     }
 
     /**
-     * @return \mysqli
      * @throws MapperException
+     * @return \mysqli
      */
     protected function connectToServer(): \mysqli
     {
@@ -120,12 +120,12 @@ class MySQLi extends ASQL
 
     public function lastInsertId(): ?string
     {
-        return $this->lastStatement ? $this->lastStatement->insert_id : null ;
+        return $this->lastStatement ? strval($this->lastStatement->insert_id) : null ;
     }
 
     public function rowCount(): ?int
     {
-        return $this->lastStatement ? $this->lastStatement->num_rows : null ;
+        return $this->lastStatement ? intval($this->lastStatement->num_rows) : null ;
     }
 
     public function beginTransaction(): bool
@@ -134,16 +134,16 @@ class MySQLi extends ASQL
             $this->connection = $this->connectToServer();
         }
 
-        return (bool)$this->connection->begin_transaction();
+        return (bool) $this->connection->begin_transaction();
     }
 
     public function commit(): bool
     {
-        return (bool)$this->connection->commit();
+        return (bool) $this->connection->commit();
     }
 
     public function rollBack(): bool
     {
-        return (bool)$this->connection->rollBack();
+        return (bool) $this->connection->rollBack();
     }
 }

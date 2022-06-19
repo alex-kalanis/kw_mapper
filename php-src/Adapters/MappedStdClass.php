@@ -36,7 +36,8 @@ class MappedStdClass extends stdClass implements ICanFill
             return $this->{self::SIMPLE};
         }
         $result = [];
-        foreach ($this as $key => $value) {
+        // @phpstan-ignore-next-line
+        foreach ($this as $key => $value) { // traversable over stdClass
             $result[$key] = $value;
         }
         return $result;

@@ -12,17 +12,18 @@ use kalanis\kw_mapper\MapperException;
  */
 class Factory
 {
+    /** @var array<string, ADialect> */
     protected static $instances = [];
 
     public static function getInstance(): self
     {
-        return new static();
+        return new self();
     }
 
     /**
      * @param string $path
-     * @return ADialect
      * @throws MapperException
+     * @return ADialect
      */
     public function getDialectClass(string $path): ADialect
     {

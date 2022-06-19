@@ -62,8 +62,8 @@ trait TDialectProps
 
     /**
      * @param QueryBuilder\Property[] $properties
-     * @return string
      * @throws MapperException
+     * @return string
      */
     public function makeSimplePropertyList(array $properties): string
     {
@@ -77,8 +77,8 @@ trait TDialectProps
 
     /**
      * @param QueryBuilder\Property[] $properties
-     * @return string
      * @throws MapperException
+     * @return string
      */
     public function makeFullPropertyList(array $properties): string
     {
@@ -92,8 +92,8 @@ trait TDialectProps
 
     /**
      * @param QueryBuilder\Property[] $properties
-     * @return string
      * @throws MapperException
+     * @return string
      */
     public function makePropertyEntries(array $properties): string
     {
@@ -159,15 +159,15 @@ trait TDialectProps
 
     /**
      * @param QueryBuilder\Condition $condition
-     * @return string
      * @throws MapperException
+     * @return string
      */
     abstract public function singleSimpleCondition(QueryBuilder\Condition $condition): string;
 
     /**
      * @param QueryBuilder\Condition $condition
-     * @return string
      * @throws MapperException
+     * @return string
      */
     abstract public function singleFullCondition(QueryBuilder\Condition $condition): string;
 

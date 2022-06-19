@@ -46,15 +46,15 @@ class Database extends AConnector
         if (empty($this->basicRecord->getMapper()->getPrimaryKeys())) {
             // @codeCoverageIgnoreStart
             // no PKs in table
-            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), reset($relations), 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), strval(reset($relations)), 'count', IQueryBuilder::AGGREGATE_COUNT);
             // @codeCoverageIgnoreEnd
         } else {
             $pks = $this->basicRecord->getMapper()->getPrimaryKeys();
-            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), $relations[reset($pks)], 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), strval($relations[strval(reset($pks))]), 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
-        $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
-        if (empty($lines) || !(is_iterable($lines) || is_array($lines))) {
+        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
+        if (empty($lines) || !is_iterable($lines)) {
             // @codeCoverageIgnoreStart
             // only when something horribly fails
             return 0;
@@ -69,13 +69,13 @@ class Database extends AConnector
         $this->queryBuilder->clearColumns();
         $this->filler->initTreeSolver($this->recordsInJoin);
         foreach ($this->filler->getColumns($this->queryBuilder->getJoins()) as list($table, $column, $alias)) {
-            $this->queryBuilder->addColumn($table, $column, $alias);
+            $this->queryBuilder->addColumn(strval($table), strval($column), strval($alias));
         }
 
-        $select = $this->dialect->select($this->queryBuilder);
+        $select = strval($this->dialect->select($this->queryBuilder));
 //print_r(str_split($select, 100));
         $rows = $this->database->query($select, $this->queryBuilder->getParams());
-        if (empty($rows) || !(is_iterable($rows) || is_array($rows))) {
+        if (empty($rows) || !is_iterable($rows)) {
             return [];
         }
 //print_r($rows);

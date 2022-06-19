@@ -22,11 +22,14 @@ abstract class ARecord implements ArrayAccess, Iterator
 {
     use TMapper;
 
+    /** @var string|int|null */
     private $key = null;
     /** @var Entry[] */
     protected $entries = [];
 
-    protected static $types = [IEntryType::TYPE_BOOLEAN, IEntryType::TYPE_INTEGER, IEntryType::TYPE_FLOAT, IEntryType::TYPE_STRING, IEntryType::TYPE_SET, IEntryType::TYPE_ARRAY, IEntryType::TYPE_OBJECT];
+    /** @var int[] */
+    protected static $types = [IEntryType::TYPE_BOOLEAN, IEntryType::TYPE_INTEGER, IEntryType::TYPE_FLOAT, IEntryType::TYPE_STRING,
+                               IEntryType::TYPE_SET, IEntryType::TYPE_ARRAY, IEntryType::TYPE_OBJECT];
 
     /**
      * Mapper constructor.
@@ -45,17 +48,17 @@ abstract class ARecord implements ArrayAccess, Iterator
     /**
      * @param string $name
      * @param int $type
-     * @param null $defaultParam
+     * @param string|int|array<string|int, string|int>|null $defaultParam
      * @throws MapperException
      */
-    final protected function addEntry($name, int $type, $defaultParam = null)
+    final protected function addEntry($name, int $type, $defaultParam = null): void
     {
         $this->checkDefault($type, $defaultParam);
         $this->entries[$name] = Entry::getInstance()->setType($type)->setParams($defaultParam);
     }
 
     /**
-     * @param iterable $data
+     * @param iterable<string|int, string|int|float|object> $data
      */
     public function loadWithData(iterable $data): void
     {
@@ -67,9 +70,9 @@ abstract class ARecord implements ArrayAccess, Iterator
     }
 
     /**
-     * @param string $name
-     * @return Entry
+     * @param string|int $name
      * @throws MapperException
+     * @return Entry
      */
     final public function getEntry($name): Entry
     {
@@ -90,15 +93,15 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param string|int $name
      * @param mixed $value
      */
-    final public function __set($name, $value)
+    final public function __set($name, $value): void
     {
         $this->offsetSet($name, $value);
     }
 
     /**
      * @param string|int $name
-     * @return int|ICanFill|string|null
      * @throws MapperException
+     * @return int|ICanFill|string|null
      */
     final public function __get($name)
     {
@@ -106,8 +109,8 @@ abstract class ARecord implements ArrayAccess, Iterator
     }
 
     /**
-     * @return int|ICanFill|string|null
      * @throws MapperException
+     * @return int|ICanFill|string|null
      */
     #[\ReturnTypeWillChange]
     final public function current()
@@ -145,8 +148,8 @@ abstract class ARecord implements ArrayAccess, Iterator
 
     /**
      * @param mixed $offset
-     * @return int|ICanFill|mixed|string|null
      * @throws MapperException
+     * @return int|ICanFill|mixed|string|null
      */
     #[\ReturnTypeWillChange]
     final public function offsetGet($offset)
@@ -166,7 +169,9 @@ abstract class ARecord implements ArrayAccess, Iterator
                 if (empty($data->getData())) {
                     return null;
                 }
-                return $data->getData()->dumpData();
+                /** @var ICanFill $class */
+                $class = $data->getData();
+                return $class->dumpData();
             default:
                 // @codeCoverageIgnoreStart
                 // happens only when someone is evil enough and change type directly on entry
@@ -185,20 +190,21 @@ abstract class ARecord implements ArrayAccess, Iterator
     }
 
     /**
-     * @param $offset
+     * @param mixed $offset
      * @throws MapperException
      */
-    final protected function offsetCheck($offset)
+    final protected function offsetCheck($offset): void
     {
         if (!$this->offsetExists($offset)) {
             throw new MapperException(sprintf('Unknown key *%s*', $offset));
         }
     }
 
-    final protected function reloadClass(Entry $data)
+    final protected function reloadClass(Entry $data): void
     {
         if (empty($data->getData())) {
             $dataClass = $data->getParams();
+            /** @var ICanFill $classInstance */
             $classInstance = new $dataClass;
             $data->setData($classInstance);
         }
@@ -206,10 +212,10 @@ abstract class ARecord implements ArrayAccess, Iterator
 
     /**
      * @param int $type
-     * @param $default
+     * @param string|int|float|object|array<string|int|float|object> $default
      * @throws MapperException
      */
-    private function checkDefault(int $type, $default)
+    private function checkDefault(int $type, $default): void
     {
         switch ($type) {
             case IEntryType::TYPE_INTEGER:
@@ -235,7 +241,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param int $type
      * @throws MapperException
      */
-    private function checkLengthNumeric($value, int $type)
+    private function checkLengthNumeric($value, int $type): void
     {
         if (!is_numeric($value)) {
             throw new MapperException(sprintf('You must set length as number for type *%d*', $type));
@@ -247,7 +253,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param int $type
      * @throws MapperException
      */
-    private function checkObjectString($value, int $type)
+    private function checkObjectString($value, int $type): void
     {
         if (!is_string($value)) {
             throw new MapperException(sprintf('You must set available string representing object for type *%d*', $type));
@@ -259,7 +265,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @param int $type
      * @throws MapperException
      */
-    private function checkObjectInstance($value, int $type)
+    private function checkObjectInstance($value, int $type): void
     {
         $classForTest = new $value();
         if (!$classForTest instanceof ICanFill) {

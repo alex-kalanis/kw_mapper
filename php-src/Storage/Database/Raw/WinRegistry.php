@@ -26,6 +26,7 @@ class WinRegistry extends ADatabase
 {
     protected $extension = 'win32std';
 
+    /** @var int[] */
     protected static $allowedParts = [
         IRegistry::HKEY_CLASSES_ROOT,
         IRegistry::HKEY_CURRENT_CONFIG,
@@ -34,6 +35,7 @@ class WinRegistry extends ADatabase
         IRegistry::HKEY_USERS,
     ];
 
+    /** @var array<string, int> */
     protected static $allowedTypes = [
         IRegistry::REG_DWORD => REG_DWORD,
         IRegistry::REG_SZ => REG_SZ,
@@ -59,8 +61,8 @@ class WinRegistry extends ADatabase
     /**
      * @param int $part
      * @param string $key
-     * @return string[][]
      * @throws MapperException
+     * @return string[][]
      */
     public function values(int $part, string $key): array
     {
@@ -91,8 +93,8 @@ class WinRegistry extends ADatabase
     /**
      * @param int $part
      * @param string $key
-     * @return string[][]
      * @throws MapperException
+     * @return string[][]
      */
     public function subtree(int $part, string $key): array
     {
@@ -121,8 +123,8 @@ class WinRegistry extends ADatabase
      * @param string $key
      * @param string $type content type flag
      * @param mixed $content content itself
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function exec(string $action, int $part, string $key, string $type = IRegistry::REG_NONE, $content = ''): bool
     {
@@ -142,19 +144,18 @@ class WinRegistry extends ADatabase
         if (empty($resource)) {
             throw new MapperException(sprintf('Cannot access registry key *%s*', $key));
         }
+        @reg_close_key($resource);
 
         if (IDriverSources::ACTION_INSERT == $action) {
-            reg_set_value($resource, static::$allowedTypes[$type], $content);
+            reg_set_value($part, $key, static::$allowedTypes[$type], $content);
         } elseif (IDriverSources::ACTION_UPDATE == $action) {
-            reg_set_value($resource, static::$allowedTypes[$type], $content);
+            reg_set_value($part, $key, static::$allowedTypes[$type], $content);
         } elseif (IDriverSources::ACTION_DELETE == $action) {
             throw new MapperException('Are your really want to delete data from Registry?');
         } else {
-            @reg_close_key($resource);
             return false;
         }
 
-        @reg_close_key($resource);
         return true;
     }
 }

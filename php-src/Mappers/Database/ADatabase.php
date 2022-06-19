@@ -53,7 +53,7 @@ abstract class ADatabase extends AMapper
                 $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
             }
         }
-        return $this->database->exec($this->dialect->insert($this->queryBuilder), $this->queryBuilder->getParams());
+        return $this->database->exec(strval($this->dialect->insert($this->queryBuilder)), $this->queryBuilder->getParams());
     }
 
     protected function updateRecord(ARecord $record): bool
@@ -72,13 +72,13 @@ abstract class ADatabase extends AMapper
                 }
             }
         }
-        return $this->database->exec($this->dialect->update($this->queryBuilder), $this->queryBuilder->getParams());
+        return $this->database->exec(strval($this->dialect->update($this->queryBuilder)), $this->queryBuilder->getParams());
     }
 
     /**
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function updateRecordByPk(ARecord $record): bool
     {
@@ -113,7 +113,7 @@ abstract class ADatabase extends AMapper
                 }
             }
         }
-        return $this->database->exec($this->dialect->update($this->queryBuilder), $this->queryBuilder->getParams());
+        return $this->database->exec(strval($this->dialect->update($this->queryBuilder)), $this->queryBuilder->getParams());
     }
 
     protected function loadRecord(ARecord $record): bool
@@ -139,7 +139,7 @@ abstract class ADatabase extends AMapper
         $this->queryBuilder->setLimits(0,1);
 
         // query itself
-        $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
+        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
         if (empty($lines)) {
             return false;
         }
@@ -155,8 +155,8 @@ abstract class ADatabase extends AMapper
 
     /**
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function loadRecordByPk(ARecord $record): bool
     {
@@ -192,7 +192,7 @@ abstract class ADatabase extends AMapper
 
         // query itself
         $this->queryBuilder->setLimits(0,1);
-        $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
+        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
         if (empty($lines)) {
             return false;
         }
@@ -217,7 +217,10 @@ abstract class ADatabase extends AMapper
         }
 
         if (empty($this->primaryKeys)) {
-            $this->queryBuilder->addColumn($this->getTable(), reset($this->relations), 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $relation = reset($this->relations);
+            if (false !== $relation) {
+                $this->queryBuilder->addColumn($this->getTable(), $relation, 'count', IQueryBuilder::AGGREGATE_COUNT);
+            }
         } else {
 //            foreach ($this->primaryKeys as $primaryKey) {
 //                $this->queryBuilder->addColumn($this->getTable(), $primaryKey, '', IQueryBuilder::AGGREGATE_COUNT);
@@ -226,7 +229,7 @@ abstract class ADatabase extends AMapper
             $this->queryBuilder->addColumn($this->getTable(), $this->relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
-        $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
+        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
         if (empty($lines) || !is_iterable($lines)) {
             // @codeCoverageIgnoreStart
             return 0;
@@ -249,13 +252,13 @@ abstract class ADatabase extends AMapper
                 $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
-        return $this->database->exec($this->dialect->delete($this->queryBuilder), $this->queryBuilder->getParams());
+        return $this->database->exec(strval($this->dialect->delete($this->queryBuilder)), $this->queryBuilder->getParams());
     }
 
     /**
      * @param ARecord $record
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     protected function deleteRecordByPk(ARecord $record): bool
     {
@@ -282,7 +285,7 @@ abstract class ADatabase extends AMapper
             return false;
         }
 
-        return $this->database->exec($this->dialect->delete($this->queryBuilder), $this->queryBuilder->getParams());
+        return $this->database->exec(strval($this->dialect->delete($this->queryBuilder)), $this->queryBuilder->getParams());
     }
 
     public function loadMultiple(ARecord $record): array
@@ -301,7 +304,7 @@ abstract class ADatabase extends AMapper
         }
 
         // query itself
-        $lines = $this->database->query($this->dialect->select($this->queryBuilder), $this->queryBuilder->getParams());
+        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
         if (empty($lines)) {
             return [];
         }

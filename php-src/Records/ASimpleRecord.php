@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Records;
 
 
+use kalanis\kw_mapper\Interfaces\ICanFill;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 
@@ -34,6 +35,7 @@ abstract class ASimpleRecord extends ARecord
                 return;
             case IEntryType::TYPE_OBJECT:
                 $this->reloadClass($data);
+                /** @var ICanFill $class */
                 $class = $data->getData();
                 $class->fillData($value);
                 return; // fill data elsewhere

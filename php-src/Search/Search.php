@@ -18,8 +18,8 @@ class Search extends ASearch
      * Property is not exact to the value
      * @param string $property
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function notExact(string $property, $value)
     {
@@ -32,8 +32,8 @@ class Search extends ASearch
      * Property is exact to the value
      * @param string $property
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function exact(string $property, $value)
     {
@@ -46,8 +46,8 @@ class Search extends ASearch
      * @param string $property
      * @param string $value
      * @param bool $equals
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function from(string $property, $value, bool $equals = true)
     {
@@ -60,8 +60,8 @@ class Search extends ASearch
      * @param string $property
      * @param string $value
      * @param bool $equals
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function to(string $property, $value, bool $equals = true)
     {
@@ -74,8 +74,8 @@ class Search extends ASearch
      * Property is like value
      * @param string $property
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function like(string $property, $value)
     {
@@ -88,8 +88,8 @@ class Search extends ASearch
      * Property is not like value
      * @param string $property
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function notLike(string $property, $value)
     {
@@ -102,8 +102,8 @@ class Search extends ASearch
      * Property match regexp pattern - DATABASE DEPENDENT
      * @param string $property
      * @param string $pattern
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function regexp(string $property, string $pattern)
     {
@@ -117,8 +117,8 @@ class Search extends ASearch
      * @param string $property
      * @param string $min
      * @param string $max
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function between(string $property, $min, $max)
     {
@@ -130,8 +130,8 @@ class Search extends ASearch
     /**
      * Property is null
      * @param string $property
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function null(string $property)
     {
@@ -143,8 +143,8 @@ class Search extends ASearch
     /**
      * Property is not null
      * @param string $property
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function notNull(string $property)
     {
@@ -156,9 +156,9 @@ class Search extends ASearch
     /**
      * Property is in values
      * @param string $property
-     * @param array $values
-     * @return $this
+     * @param array<string|int|float> $values
      * @throws MapperException
+     * @return $this
      */
     public function in(string $property, array $values)
     {
@@ -170,9 +170,9 @@ class Search extends ASearch
     /**
      * Property is not in values
      * @param string $property
-     * @param array $values
-     * @return $this
+     * @param array<string|int|float> $values
      * @throws MapperException
+     * @return $this
      */
     public function notIn(string $property, array $values)
     {
@@ -227,8 +227,8 @@ class Search extends ASearch
      * Add ordering by property
      * @param string $property
      * @param string $direction
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function orderBy(string $property, string $direction = IQueryBuilder::ORDER_ASC)
     {
@@ -240,8 +240,8 @@ class Search extends ASearch
     /**
      * Add grouping by property
      * @param string $property
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function groupBy(string $property)
     {
@@ -256,8 +256,8 @@ class Search extends ASearch
      * @param string $joinType
      * @param string $parentAlias
      * @param string $customAlias
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function child(string $childAlias, string $joinType = IQueryBuilder::JOIN_LEFT, string $parentAlias = '', string $customAlias = '')
     {
@@ -269,8 +269,8 @@ class Search extends ASearch
      * That child is not set for chosen parent
      * @param string $childAlias
      * @param string $property
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function childNotExist(string $childAlias, string $property)
     {

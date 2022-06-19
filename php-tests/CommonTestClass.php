@@ -1,6 +1,7 @@
 <?php
 
 use kalanis\kw_mapper\Interfaces\IEntryType;
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
 use kalanis\kw_mapper\Mappers\Database\ADatabase;
 use kalanis\kw_mapper\Mappers\File\ATable;
@@ -244,5 +245,109 @@ class XMockMapper extends AMapper
     protected function deleteRecord(ARecord $record): bool
     {
         return false;
+    }
+}
+
+// just fallback for MS Win system - usually defined in external library
+
+if (!defined('REG_DWORD')) {
+    define('REG_DWORD', 1);
+}
+if (!defined('REG_SZ')) {
+    define('REG_SZ', 5);
+}
+if (!defined('REG_EXPAND_SZ')) {
+    define('REG_EXPAND_SZ', 2);
+}
+if (!defined('REG_MULTI_SZ')) {
+    define('REG_MULTI_SZ', 3);
+}
+if (!defined('REG_BINARY')) {
+    define('REG_BINARY', 0);
+}
+if (!defined('REG_NONE')) {
+    define('REG_NONE', 4);
+}
+
+
+if (!function_exists('reg_close_key')) {
+    /**
+     * @param resource $resource
+     * @throws MapperException
+     * @return void
+     */
+    function reg_close_key($resource) {
+        throw new MapperException('No win32std library!');
+    }
+}
+if (!function_exists('reg_create_key')) {
+    /**
+     * @param int $part
+     * @param string $subKey
+     * @param int|null $samDesired
+     * @throws MapperException
+     * @return mixed
+     */
+    function reg_create_key($part, $subKey, $samDesired = null)
+    {
+        throw new MapperException('No win32std library!');
+    }
+}
+if (!function_exists('reg_enum_key')) {
+    /**
+     * @param int $part
+     * @param int $index
+     * @throws MapperException
+     * @return mixed
+     */
+    function reg_enum_key($part, $index = -1) {
+        throw new MapperException('No win32std library!');
+    }
+}
+if (!function_exists('reg_enum_value')) {
+    /**
+     * @param resource $resource
+     * @param int $index
+     * @throws MapperException
+     * @return mixed
+     */
+    function reg_enum_value($resource, $index = -1) {
+        throw new MapperException('No win32std library!');
+    }
+}
+if (!function_exists('reg_open_key')) {
+    /**
+     * @param int $part
+     * @param string $subKey
+     * @param int|null $samDesired
+     * @throws MapperException
+     * @return mixed
+     */
+    function reg_open_key($part, $subKey, $samDesired = null) {
+        throw new MapperException('No win32std library!');
+    }
+}
+if (!function_exists('reg_set_value')) {
+    /**
+     * @param int $part
+     * @param string $valueName
+     * @param int $typeId
+     * @param mixed $value
+     * @throws MapperException
+     * @return void
+     */
+    function reg_set_value($part, $valueName, $typeId, $value) {
+        throw new MapperException('No win32std library!');
+    }
+}
+if (!function_exists('reg_get_value')) {
+    /**
+     * @param int $part
+     * @param string $valueName
+     * @throws MapperException
+     * @return mixed
+     */
+    function reg_get_value($part, $valueName) {
+        throw new MapperException('No win32std library!');
     }
 }

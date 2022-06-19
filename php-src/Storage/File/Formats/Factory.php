@@ -15,13 +15,13 @@ class Factory
 {
     public static function getInstance(): self
     {
-        return new static();
+        return new self();
     }
 
     /**
      * @param string $path
-     * @return IFileFormat
      * @throws MapperException
+     * @return IFileFormat
      */
     public function getFormatClass(string $path): IFileFormat
     {

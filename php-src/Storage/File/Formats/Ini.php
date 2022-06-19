@@ -33,14 +33,14 @@ class Ini implements IFileFormat
     {
         $lines = [];
         foreach ($records as $key => &$record) {
-            $lines[$key] = array_map([$this, 'escapeNl'], $record);
+            $lines[$key] = array_map([$this, 'escapeNl'], (array) $record);
         }
         return $this->write_ini_string($lines);
     }
 
     /**
      * Write an ini configuration file
-     * @param array $array
+     * @param array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>> $array
      * @return string
      * @link https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
      * @codeCoverageIgnore I have zero morale to check this one

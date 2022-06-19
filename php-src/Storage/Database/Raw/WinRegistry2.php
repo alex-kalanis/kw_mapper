@@ -34,6 +34,7 @@ class WinRegistry2 extends ADatabase implements IPassConnection
     /** @var ComRegistry|null */
     protected $connection = null;
 
+    /** @var array<int, string> */
     protected static $allowedParts = [
         IRegistry::HKEY_CLASSES_ROOT => 'HKCR',
         IRegistry::HKEY_CURRENT_CONFIG => 'HKEY_CURRENT_CONFIG',
@@ -42,6 +43,7 @@ class WinRegistry2 extends ADatabase implements IPassConnection
         IRegistry::HKEY_USERS => 'HKEY_USERS',
     ];
 
+    /** @var array<string, string> */
     protected static $allowedTypes = [
         IRegistry::REG_DWORD => 'REG_DWORD',
         IRegistry::REG_SZ => 'REG_SZ',
@@ -67,8 +69,8 @@ class WinRegistry2 extends ADatabase implements IPassConnection
     /**
      * @param int $part
      * @param string $key  beware of tailing slashes!
-     * @return mixed
      * @throws MapperException
+     * @return mixed
      */
     public function value(int $part, string $key)
     {
@@ -123,8 +125,8 @@ class WinRegistry2 extends ADatabase implements IPassConnection
      * @param string $key
      * @param string $type content type flag
      * @param mixed $content content itself
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function exec(string $action, int $part, string $key, string $type = IRegistry::REG_NONE, $content = ''): bool
     {

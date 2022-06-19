@@ -9,6 +9,7 @@ namespace kalanis\kw_mapper\Mappers;
  */
 trait TSource
 {
+    /** @var string */
     protected $tableSource = '';
 
     public function setSource(string $tableSource): void

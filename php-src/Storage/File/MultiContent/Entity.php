@@ -14,6 +14,7 @@ class Entity
 {
     /** @var IFileFormat|null */
     protected $formatClass = null;
+    /** @var string[] */
     protected $storage = [];
 
     public function __construct(IFileFormat $formatClass)
@@ -28,17 +29,23 @@ class Entity
     {
     }
 
+    /**
+     * @return string[]
+     */
     public function get(): array
     {
         return $this->storage;
     }
 
+    /**
+     * @param string[] $content
+     */
     public function set(array $content): void
     {
         $this->storage = $content;
     }
 
-    public function getFormat(): IFileFormat
+    public function getFormat(): ?IFileFormat
     {
         return $this->formatClass;
     }

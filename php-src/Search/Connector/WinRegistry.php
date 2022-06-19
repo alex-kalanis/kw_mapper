@@ -4,6 +4,7 @@ namespace kalanis\kw_mapper\Search\Connector;
 
 
 use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Mappers\Database;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\TFill;
 use kalanis\kw_mapper\Storage;
@@ -41,8 +42,8 @@ class WinRegistry extends AConnector
 
     /**
      * Return only number of subtrees
-     * @return int
      * @throws MapperException
+     * @return int
      */
     public function getCount(): int
     {
@@ -52,8 +53,8 @@ class WinRegistry extends AConnector
 
     /**
      * Returns only keys; values are available via ARecord->loadMultiple()
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     public function getResults(): array
     {
@@ -64,19 +65,19 @@ class WinRegistry extends AConnector
         }
 
         $result = [];
+        /** @var Database\WinRegistry|Database\WinRegistry2 $mapper */
+        $mapper = $this->basicRecord->getMapper();
         $pks = $this->basicRecord->getMapper()->getPrimaryKeys();
         reset($pks);
         $pathEntry = next($pks);
-        $typeEntry = $this->basicRecord->getMapper()->getTypeKey();
-        $contentEntry = $this->basicRecord->getMapper()->getContentKey();
 
         foreach ($targets as $path) {
             $rec = clone $this->basicRecord;
 
-            $entry = $rec->getEntry($pathEntry);
+            $entry = $rec->getEntry(strval($pathEntry));
             $entry->setData($this->typedFillSelection($entry, $path), true);
-            $rec->offsetSet($typeEntry, '');
-            $rec->offsetSet($contentEntry, '');
+            $rec->offsetSet($mapper->getTypeKey(), '');
+            $rec->offsetSet($mapper->getContentKey(), '');
 
             $result[] = $rec;
         }
@@ -84,8 +85,8 @@ class WinRegistry extends AConnector
     }
 
     /**
-     * @return array
      * @throws MapperException
+     * @return string[][]
      */
     protected function multiple(): array
     {

@@ -39,8 +39,8 @@ class Dba extends ADatabase implements IPassConnection
 
     /**
      * @param string $key
-     * @return string[]
      * @throws MapperException
+     * @return array<string|int, string|int|float|null|array<string|int|float|null>>
      */
     public function query(string $key): array
     {
@@ -53,8 +53,11 @@ class Dba extends ADatabase implements IPassConnection
         $results = [];
         $key = dba_firstkey($this->connection);
 
-        while (!is_null($key)) {
-            $results[] = dba_fetch($key, $this->connection);
+        while (false !== $key) {
+            $line = dba_fetch($key, $this->connection);
+            if (false !== $line) {
+                $results[] = $line;
+            }
             $key = dba_nextkey($this->connection);
         }
 
@@ -65,8 +68,8 @@ class Dba extends ADatabase implements IPassConnection
      * @param string $key
      * @param string $action
      * @param string $content
-     * @return bool
      * @throws MapperException
+     * @return bool
      */
     public function exec(string $action, string $key, string $content = ''): bool
     {
@@ -106,8 +109,8 @@ class Dba extends ADatabase implements IPassConnection
     }
 
     /**
-     * @return resource
      * @throws MapperException
+     * @return resource
      */
     protected function connectToServer()
     {

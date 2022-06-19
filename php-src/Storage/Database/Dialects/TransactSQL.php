@@ -19,8 +19,8 @@ class TransactSQL extends ADialect
 
     /**
      * @param QueryBuilder $builder
-     * @return string
      * @throws MapperException
+     * @return string
      * @link https://docs.microsoft.com/en-us/sql/t-sql/statements/insert-transact-sql?view=sql-server-ver15
      */
     public function insert(QueryBuilder $builder)

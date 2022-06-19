@@ -5,6 +5,7 @@ namespace kalanis\kw_mapper\Search\Connector;
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Mappers\ForeignKey;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Storage;
 
@@ -27,8 +28,8 @@ abstract class AConnector
      * @param string $table
      * @param string $column
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function notExact(string $table, string $column, $value): self
     {
@@ -46,8 +47,8 @@ abstract class AConnector
      * @param string $table
      * @param string $column
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function exact(string $table, string $column, $value): self
     {
@@ -66,8 +67,8 @@ abstract class AConnector
      * @param string $column
      * @param string $value
      * @param bool $equals
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function from(string $table, string $column, $value, bool $equals = true): self
     {
@@ -86,8 +87,8 @@ abstract class AConnector
      * @param string $column
      * @param string $value
      * @param bool $equals
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function to(string $table, string $column, $value, bool $equals = true): self
     {
@@ -105,8 +106,8 @@ abstract class AConnector
      * @param string $table
      * @param string $column
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function like(string $table, string $column, $value): self
     {
@@ -124,8 +125,8 @@ abstract class AConnector
      * @param string $table
      * @param string $column
      * @param string $value
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function notLike(string $table, string $column, $value): self
     {
@@ -143,8 +144,8 @@ abstract class AConnector
      * @param string $table
      * @param string $column
      * @param string $pattern
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function regexp(string $table, string $column, string $pattern): self
     {
@@ -163,8 +164,8 @@ abstract class AConnector
      * @param string $column
      * @param string $min
      * @param string $max
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function between(string $table, string $column, $min, $max): self
     {
@@ -177,8 +178,8 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function null(string $table, string $column): self
     {
@@ -194,8 +195,8 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function notNull(string $table, string $column): self
     {
@@ -211,9 +212,9 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @param array $values
-     * @return $this
+     * @param array<string|int|float> $values
      * @throws MapperException
+     * @return $this
      */
     public function in(string $table, string $column, array $values): self
     {
@@ -230,9 +231,9 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @param array $values
-     * @return $this
+     * @param array<string|int|float> $values
      * @throws MapperException
+     * @return $this
      */
     public function notIn(string $table, string $column, array $values): self
     {
@@ -275,8 +276,8 @@ abstract class AConnector
      * @param string $table
      * @param string $column
      * @param string $direction
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function orderBy(string $table, string $column, string $direction = IQueryBuilder::ORDER_ASC): self
     {
@@ -289,8 +290,8 @@ abstract class AConnector
      * Add grouping by
      * @param string $table
      * @param string $column
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function groupBy(string $table, string $column): self
     {
@@ -305,8 +306,8 @@ abstract class AConnector
      * @param string $joinType
      * @param string $parentAlias
      * @param string $customAlias
-     * @return $this
      * @throws MapperException
+     * @return $this
      */
     public function child(string $childAlias, string $joinType = IQueryBuilder::JOIN_LEFT, string $parentAlias = '', string $customAlias = ''): self
     {
@@ -323,6 +324,7 @@ abstract class AConnector
         if (empty($parentRecord)) {
             throw new MapperException(sprintf('Unknown record for parent alias *%s*', $parentAlias));
         }
+        /** @var array<string|int, ForeignKey> $parentKeys */
         $parentKeys = $parentRecord->getMapper()->getForeignKeys();
         if (!isset($parentKeys[$childAlias])) {
             throw new MapperException(sprintf('Unknown alias *%s* in mapper for parent *%s*', $childAlias, $parentAlias));
@@ -363,8 +365,8 @@ abstract class AConnector
      * @param string $table
      * @param string $column
      * @param string $parentAlias
-     * @return $this
      * @throws MapperException
+     * @return $this
      * @codeCoverageIgnore any db with left outer join?
      */
     public function childNotExist(string $childAlias, string $table, string $column, string $parentAlias = ''): self
@@ -381,15 +383,15 @@ abstract class AConnector
 
     /**
      * Return count of all records selected by params
-     * @return int
      * @throws MapperException
+     * @return int
      */
     abstract public function getCount(): int;
 
     /**
      * Return records
-     * @return ARecord[]
      * @throws MapperException
+     * @return ARecord[]
      */
     abstract public function getResults(): array;
 
@@ -402,8 +404,8 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @return string|int
      * @throws MapperException
+     * @return string|int
      */
     protected function correctColumn(string $table, string $column)
     {
