@@ -30,12 +30,17 @@ class SqLiteTest extends CommonTestClass
 {
     /** @var null|SQLite */
     protected $database = null;
+    /** @var bool */
+    protected $skipIt = false;
 
     /**
      * @throws MapperException
      */
     protected function setUp(): void
     {
+        $skipIt = getenv('SQSKIP');
+        $this->skipIt = false !== $skipIt && boolval(intval(strval($skipIt)));
+
         $conf = Config::init()->setTarget(
                     IDriverSources::TYPE_PDO_SQLITE,
                     'test_sqlite_local',
@@ -57,6 +62,11 @@ class SqLiteTest extends CommonTestClass
      */
     public function testProcess(): void
     {
+        if ($this->skipIt) {
+            $this->markTestSkipped('Skipped by config');
+            return;
+        }
+
         $this->database->reconnect();
         $this->assertFalse($this->database->exec('', []));
         $this->database->reconnect();
@@ -99,6 +109,11 @@ class SqLiteTest extends CommonTestClass
      */
     public function testMapped(): void
     {
+        if ($this->skipIt) {
+            $this->markTestSkipped('Skipped by config');
+            return;
+        }
+
         $this->dataRefill();
 
         // now queries - search
@@ -127,6 +142,11 @@ class SqLiteTest extends CommonTestClass
      */
     public function testCrud(): void
     {
+        if ($this->skipIt) {
+            $this->markTestSkipped('Skipped by config');
+            return;
+        }
+
         $this->dataRefill();
 
         // create

@@ -9,21 +9,24 @@ on:
       - master
 
 jobs:
-## disable - no database for tests here
-#  tests:
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        php: [ '7.4', '8.0', '8.1' ]
-#    name: PHP ${{ matrix.php }} tests
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: ${{ matrix.php }}
-#          coverage: none
-#      - run: composer install --no-progress
-#      - run: vendor/bin/phpunit
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      MYSKIP: 1
+      MSSKIP: 1
+      PGSKIP: 1
+    strategy:
+      matrix:
+        php: [ '7.4', '8.0', '8.1' ]
+    name: PHP ${{ matrix.php }} tests
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - run: composer install --no-progress
+      - run: vendor/bin/phpunit
 
   code_style:
     runs-on: ubuntu-latest

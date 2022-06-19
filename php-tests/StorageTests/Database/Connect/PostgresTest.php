@@ -30,6 +30,8 @@ class PostgresTest extends CommonTestClass
 {
     /** @var null|PostgreSQL */
     protected $database = null;
+    /** @var bool */
+    protected $skipIt = false;
 
     /**
      * @throws MapperException
@@ -37,6 +39,9 @@ class PostgresTest extends CommonTestClass
      */
     protected function setUp(): void
     {
+        $skipIt = getenv('PGSKIP');
+        $this->skipIt = false !== $skipIt && boolval(intval(strval($skipIt)));
+
         $location = getenv('PGSERVER');
         $location = false !== $location ? strval($location) : '127.0.0.1' ;
 
@@ -72,6 +77,11 @@ class PostgresTest extends CommonTestClass
      */
     public function testProcess(): void
     {
+        if ($this->skipIt) {
+            $this->markTestSkipped('Skipped by config');
+            return;
+        }
+
         $this->database->reconnect();
         $this->assertFalse($this->database->exec('', []));
         $this->database->reconnect();
@@ -113,6 +123,11 @@ class PostgresTest extends CommonTestClass
      */
     public function testMapped(): void
     {
+        if ($this->skipIt) {
+            $this->markTestSkipped('Skipped by config');
+            return;
+        }
+
         $this->dataRefill();
 
         // now queries - search
@@ -141,6 +156,11 @@ class PostgresTest extends CommonTestClass
      */
     public function testCrud(): void
     {
+        if ($this->skipIt) {
+            $this->markTestSkipped('Skipped by config');
+            return;
+        }
+
         $this->dataRefill();
 
         // create
