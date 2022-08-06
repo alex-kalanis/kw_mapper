@@ -9,8 +9,8 @@ use kalanis\kw_mapper\Interfaces\IRegistry;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
 use kalanis\kw_mapper\Storage\Database\Config;
-use kalanis\kw_mapper\Storage\Database\Shared\DotNet\ComRegistry;
 use kalanis\kw_mapper\Storage\Database\TConnection;
+use kalanis\kw_mapper\Storage\Shared\DotNet\ComRegistry;
 
 
 /**

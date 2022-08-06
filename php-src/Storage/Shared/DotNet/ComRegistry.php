@@ -1,9 +1,9 @@
 <?php
 
-namespace kalanis\kw_mapper\Storage\Database\Shared\DotNet;
+namespace kalanis\kw_mapper\Storage\Shared\DotNet;
 
 
-use COM;
+use \COM;
 
 
 /**

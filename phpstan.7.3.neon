@@ -5,6 +5,10 @@ parameters:
 	scanFiles:
 		- 'php-tests/CommonTestClass.php'
 	excludePaths:
+		# because COM object cannot be found
+		- 'php-src/Storage/Database/Raw/WinRegistry2.php'
+		- 'php-src/Storage/Shared/DotNet/ComRegistry.php'
+		# autoload
 		- 'php-tests/_autoload.php'
 		- 'php-tests/_bootstrap.php'
 		- 'php-tests/CommonTestClass.php'
@@ -13,7 +17,7 @@ parameters:
 	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
 		# known one
-		- '#Constructor of class kalanis\\kw_mapper\\Storage\\Database\\Shared\\DotNet\\ComRegistry has an unused parameter \$moduleName.#'
+		# - '#Constructor of class kalanis\\kw_mapper\\Storage\\Shared\\DotNet\\ComRegistry has an unused parameter \$moduleName.#'
 		- '#does not accept kalanis\\kw_mapper\\Storage\\Database\\ADatabase.#'
 		- '#does not accept kalanis\\kw_mapper\\Storage\\Database\\Dialects\\ADialect.#'
 		# ldap connection problems - php8.0- uses resource, php8.1+ object

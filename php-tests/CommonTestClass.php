@@ -351,3 +351,47 @@ if (!function_exists('reg_get_value')) {
         throw new MapperException('No win32std library!');
     }
 }
+if (!class_exists('COM')) {
+    /**
+     * Class COM
+     * Dummy class replacing COM class on systems which does not have it
+     */
+    class COM
+    {
+        /**
+         * COM constructor.
+         * @param string $module_name
+         * @param string|null $server_name
+         * @param string|null $codepage
+         * @param string|null $typelib
+         */
+        public function __construct ( $module_name, $server_name, $codepage, $typelib ) {}
+
+        /**
+         * @param string $name
+         * @throws MapperException
+         * @return mixed
+         */
+        public function __get ($name) {
+            throw new MapperException('No win32std library!');
+        }
+
+        /**
+         * @param string $name
+         * @param mixed $value
+         * @throws MapperException
+         */
+        public function __set ($name, $value) {
+            throw new MapperException('No win32std library!');
+        }
+
+        /**
+         * @param string $name
+         * @param array<string, mixed> $args
+         * @throws MapperException
+         */
+        public function __call ($name, $args) {
+            throw new MapperException('No win32std library!');
+        }
+    }
+}
