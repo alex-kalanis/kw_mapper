@@ -53,7 +53,7 @@ class Database extends AConnector
             $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), strval($relations[strval(reset($pks))]), 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
-        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
+        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), array_filter($this->queryBuilder->getParams(), [$this, 'filterNullValues']));
         if (empty($lines) || !is_iterable($lines)) {
             // @codeCoverageIgnoreStart
             // only when something horribly fails
@@ -74,12 +74,21 @@ class Database extends AConnector
 
         $select = strval($this->dialect->select($this->queryBuilder));
 //print_r(str_split($select, 100));
-        $rows = $this->database->query($select, $this->queryBuilder->getParams());
+        $rows = $this->database->query($select, array_filter($this->queryBuilder->getParams(), [$this, 'filterNullValues']));
         if (empty($rows) || !is_iterable($rows)) {
             return [];
         }
 //print_r($rows);
 
         return $this->filler->fillResults($rows, $this);
+    }
+
+    /**
+     * @param mixed $value
+     * @return bool
+     */
+    public function filterNullValues($value): bool
+    {
+        return !is_null($value);
     }
 }

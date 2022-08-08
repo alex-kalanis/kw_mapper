@@ -124,13 +124,17 @@ class EscapedDialectTest extends CommonTestClass
         $condition2 = new QueryBuilder\Condition();
         $condition2->setData('', 'mno', IQueryBuilder::OPERATION_NEQ, 'pqr');
 
+        $condition3 = new QueryBuilder\Condition();
+        $condition3->setData('', 'pqr', IQueryBuilder::OPERATION_NULL, 'pqr');
+
         $conditions = [];
         $conditions[] = $condition1;
         $conditions[] = $condition2;
+        $conditions[] = $condition3;
 
         $lib = new XEscDialect();
-        $this->assertEquals(' WHERE `def` = ghi UNIONED BY `mno` != pqr', $lib->makeSimpleConditions($conditions, 'UNIONED BY'));
-        $this->assertEquals(' WHERE `abc`.`def` = ghi UNIONED BY `mno` != pqr', $lib->makeFullConditions($conditions, 'UNIONED BY'));
+        $this->assertEquals(' WHERE `def` = ghi UNIONED BY `mno` != pqr UNIONED BY `pqr` IS NULL ', $lib->makeSimpleConditions($conditions, 'UNIONED BY'));
+        $this->assertEquals(' WHERE `abc`.`def` = ghi UNIONED BY `mno` != pqr UNIONED BY `pqr` IS NULL ', $lib->makeFullConditions($conditions, 'UNIONED BY'));
     }
 
     public function testAllOrdering(): void
