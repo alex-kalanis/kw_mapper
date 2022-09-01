@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Storage\File;
 
 
+use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\Storage;
 
 
@@ -15,7 +16,7 @@ class StorageSingleton
 {
     /** @var self|null */
     protected static $instance = null;
-    /** @var Storage\Storage|null */
+    /** @var IStorage|null */
     private $storage = null;
 
     public static function getInstance(): self
@@ -37,13 +38,12 @@ class StorageSingleton
     {
     }
 
-    public function getStorage(): Storage\Storage
+    public function getStorage(): IStorage
     {
         if (empty($this->storage)) {
             $this->storage = new Storage\Storage(
-                new Storage\Target\Volume(),
-                new Storage\Format\Raw(),
-                new Storage\Key\DefaultKey()
+                new Storage\Key\DefaultKey(),
+                new Storage\Target\Volume()
             );
         }
         return $this->storage;

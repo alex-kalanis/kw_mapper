@@ -123,9 +123,8 @@ class XFailContent extends Mappers\File\PageContent
     public function getStorage(): Storage\Storage
     {
         return new XFailStorage(
-            new Storage\Target\Volume(),
-            new Storage\Format\Raw(),
-            new Storage\Key\DefaultKey()
+            new Storage\Key\DefaultKey(),
+            new Storage\Target\Volume()
         );
     }
 }
@@ -136,9 +135,8 @@ class XFailKeyValue extends Mappers\File\KeyValue
     public function getStorage(): Storage\Storage
     {
         return new XFailStorage(
-            new Storage\Target\Volume(),
-            new Storage\Format\Raw(),
-            new Storage\Key\DefaultKey()
+            new Storage\Key\DefaultKey(),
+            new Storage\Target\Volume()
         );
     }
 }

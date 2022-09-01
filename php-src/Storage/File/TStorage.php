@@ -3,7 +3,7 @@
 namespace kalanis\kw_mapper\Storage\File;
 
 
-use kalanis\kw_storage\Storage\Storage;
+use kalanis\kw_storage\Interfaces\IStorage;
 
 
 /**
@@ -12,10 +12,7 @@ use kalanis\kw_storage\Storage\Storage;
  */
 trait TStorage
 {
-    /**
-     * @return Storage
-     */
-    protected function getStorage(): Storage
+    protected function getStorage(): IStorage
     {
         return StorageSingleton::getInstance()->getStorage();
     }
