@@ -41,6 +41,8 @@ class Factory
             // @codeCoverageIgnoreEnd
         } elseif ($mapper instanceof Mappers\File\ATable) {
             return new FileTable($record);
+        } elseif ($mapper instanceof Mappers\APreset) {
+            return new FileTable($record);
         } elseif (!empty($initialRecords)) {
             $records = new Records($record);
             $records->setInitialRecords($initialRecords);

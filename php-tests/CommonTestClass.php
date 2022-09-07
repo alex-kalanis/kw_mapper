@@ -86,6 +86,7 @@ class TableMapper extends ATable
     }
 }
 
+
 /**
  * Class TableRecord
  * Source file dumped from kw_menu
@@ -146,6 +147,7 @@ class TableIdMapper extends TableNoPkMapper
         $this->addPrimaryKey('id');
     }
 }
+
 
 /**
  * Class XSimpleRecord

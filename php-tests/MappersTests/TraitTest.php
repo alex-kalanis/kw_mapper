@@ -159,7 +159,7 @@ class Content
 
 class Translate
 {
-    use Mappers\File\TTranslate;
+    use Mappers\TTranslate;
 
     public function from(int $type, $content)
     {

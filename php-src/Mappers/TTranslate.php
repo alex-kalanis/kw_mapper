@@ -1,6 +1,6 @@
 <?php
 
-namespace kalanis\kw_mapper\Mappers\File;
+namespace kalanis\kw_mapper\Mappers;
 
 
 use kalanis\kw_mapper\Interfaces\IEntryType;
@@ -8,7 +8,7 @@ use kalanis\kw_mapper\Interfaces\IEntryType;
 
 /**
  * Trait TTranslate
- * @package kalanis\kw_mapper\Mappers\File
+ * @package kalanis\kw_mapper\Mappers
  */
 trait TTranslate
 {
