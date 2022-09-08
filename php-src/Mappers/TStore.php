@@ -80,12 +80,12 @@ trait TStore
 
     /**
      * @throws MapperException
-     * @return array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>>
+     * @return array<string|int, array<string|int, string|int|array<string|int, string|int>>>
      */
     abstract protected function loadFromStorage(): array;
 
     /**
-     * @param array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>> $content
+     * @param array<string|int, array<string|int, string|int|array<string|int, string|int>>> $content
      * @throws MapperException
      * @return bool
      */
