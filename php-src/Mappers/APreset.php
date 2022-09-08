@@ -17,6 +17,7 @@ use kalanis\kw_mapper\Records;
 abstract class APreset extends AMapper
 {
     use TFinder;
+    use TStore;
 
     public function getAlias(): string
     {
@@ -57,7 +58,7 @@ abstract class APreset extends AMapper
         }
 
         $dataLine = & $this->records[reset($matches)];
-        foreach ($this->relations as $objectKey => $recordKey) {
+        foreach ($this->getRelations() as $objectKey => $recordKey) {
             $entry = $record->getEntry($objectKey);
             $entry->setData($dataLine->offsetGet($objectKey), true);
         }
@@ -83,5 +84,16 @@ abstract class APreset extends AMapper
             $result[] = $this->records[$key];
         }
         return $result;
+    }
+
+    /**
+     * @param array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>> $content
+     * @return bool
+     * @throws MapperException
+     * @codeCoverageIgnore should not be accessable
+     */
+    protected function saveToStorage(array $content): bool
+    {
+        throw new MapperException('Cannot save records in predefined array');
     }
 }

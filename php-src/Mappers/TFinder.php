@@ -14,10 +14,6 @@ use kalanis\kw_mapper\Records;
  */
 trait TFinder
 {
-    use TTranslate;
-    use TRelations;
-    use TPrimaryKey;
-
     /** @var Records\ARecord[] */
     protected $records = [];
 
@@ -36,17 +32,17 @@ trait TFinder
         $toProcess = array_combine($toProcess, $toProcess);
 
         // through relations
-        foreach ($this->relations as $objectKey => $recordKey) {
+        foreach ($this->getRelations() as $objectKey => $recordKey) {
             if (!$record->offsetExists($objectKey)) { // nothing with unknown relation key in record
                 // @codeCoverageIgnoreStart
-                if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
+                if ($usePks && in_array($objectKey, $this->getPrimaryKeys())) { // is empty PK
                     return []; // probably error?
                 }
                 continue;
                 // @codeCoverageIgnoreEnd
             }
             if (empty($record->offsetGet($objectKey))) { // nothing with empty data
-                if ($usePks && in_array($objectKey, $this->primaryKeys)) { // is empty PK
+                if ($usePks && in_array($objectKey, $this->getPrimaryKeys())) { // is empty PK
                     return [];
                 }
                 continue;
@@ -56,7 +52,7 @@ trait TFinder
                 if ( !isset($toProcess[$knownKey]) ) { // not twice
                     continue;
                 }
-                if ($usePks && !in_array($objectKey, $this->primaryKeys)) { // is not PK
+                if ($usePks && !in_array($objectKey, $this->getPrimaryKeys())) { // is not PK
                     continue;
                 }
                 if ($wantFromStorage && !$knownRecord->getEntry($objectKey)->isFromStorage()) { // look through only values known in storage
@@ -90,12 +86,12 @@ trait TFinder
     protected function loadOnDemand(Records\ARecord $record): void
     {
         if (empty($this->records)) {
-            $this->loadSource($record);
+            $this->records = $this->loadSource($record);
         } else {
             $test = reset($this->records);
             if (get_class($test) != get_class($record)) { // reload other data - changed record
                 // @codeCoverageIgnoreStart
-                $this->loadSource($record);
+                $this->records = $this->loadSource($record);
             }
             // @codeCoverageIgnoreEnd
         }
@@ -106,25 +102,15 @@ trait TFinder
      * @throws MapperException
      * @return Records\ARecord[]
      */
-    protected function loadSource(Records\ARecord $record): array
-    {
-        $lines = $this->loadFromStorage();
-        $records = [];
-        foreach ($lines as &$line) {
-
-            $item = clone $record;
-
-            foreach ($this->relations as $objectKey => $recordKey) {
-                $entry = $item->getEntry($objectKey);
-                $entry->setData($this->translateTypeFrom($entry->getType(), $line[$recordKey]), true);
-            }
-            $records[] = $item;
-        }
-        return $records;
-    }
+    abstract protected function loadSource(Records\ARecord $record): array;
 
     /**
-     * @return array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>>
+     * @return string[]
      */
-    abstract protected function loadFromStorage(): array;
+    abstract public function getPrimaryKeys(): array;
+
+    /**
+     * @return array<string|int, string|int>
+     */
+    abstract public function getRelations(): array;
 }

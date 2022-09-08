@@ -57,8 +57,10 @@ class TableTest extends CommonTestClass
      */
     public function testOperationsOnMeta(): void
     {
+        $source = $this->initSource();
+
         $data = new \TableRecord();
-        $this->initSource($data);
+        $data->getMapper()->setSource($source);
         $data->getMapper()->orderFromFirst(true);
 
         // clear insert
@@ -100,9 +102,11 @@ class TableTest extends CommonTestClass
      */
     public function testOperationsOnPk(): void
     {
+        $source = $this->initSource($this->getSourceFileClassic());
+
         $data = new \TableIdRecord();
         $data->useIdAsMapper();
-        $this->initSource($data, $this->getSourceFileClassic());
+        $data->getMapper()->setSource($source);
         $data->getMapper()->orderFromFirst(true);
 
         // clear insert
@@ -147,9 +151,11 @@ class TableTest extends CommonTestClass
      */
     public function testOperationsNoPk(): void
     {
+        $source = $this->initSource($this->getSourceFileClassic());
+
         $data = new \TableIdRecord();
         $data->useNoKeyMapper();
-        $this->initSource($data, $this->getSourceFileClassic());
+        $data->getMapper()->setSource($source);
         $data->getMapper()->orderFromFirst(false);
 
         // clear insert
@@ -195,35 +201,46 @@ class TableTest extends CommonTestClass
      */
     public function testNonExistent(): void
     {
-        $data = new \TableRecord();
-        $this->initSource($data);
+        $source = $this->initSource();
+
+        $data1 = new \TableRecord();
+        $data1->getMapper()->setSource($source);
 
         // clear insert
-        $data->file = 'another';
-        $data->title = 'file';
-        $data->desc = 'to load';
-        $data->order = 11;
-        $data->sub = false;
-        $this->assertTrue($data->save()); // insert with PK - no force, not preset, just insert
+        $data1->file = 'another';
+        $data1->title = 'file';
+        $data1->desc = 'to load';
+        $data1->order = 11;
+        $data1->sub = false;
+        $this->assertTrue($data1->save()); // insert with PK - no force, not preset, just insert
 
         // forced exists insert - false
-        $data = new \TableRecord();
-        $data->file = 'unknown.htm';
-        $data->title = 'file';
-        $data->desc = 'to load';
-        $data->order = 11;
-        $data->sub = false;
-        $this->assertFalse($data->save(true)); // insert with PK - use force, exists but cannot update
+        $data2 = new \TableRecord();
+        $data2->file = 'unknown.htm';
+        $data2->title = 'file';
+        $data2->desc = 'to load';
+        $data2->order = 12;
+        $data2->sub = false;
+        $this->assertFalse($data2->save(true)); // insert with PK - use force, exists but cannot update
+
+//        // update non-existent
+//        $data3 = new \TableRecord();
+//        $data3->getEntry('file')->setData('some.htm', true);
+//        $data3->getEntry('title')->setData('part', true);
+//        $data3->desc = 'to store';
+//        $data3->order = 13;
+//        $data3->sub = false;
+//        $this->assertFalse($data3->save()); // insert with PK - use force, exists but cannot update
 
         // update by PK
-        $data = new \TableRecord();
-        $data->file = 'unknown';
-        $this->assertFalse($data->load());
+        $data4 = new \TableRecord();
+        $data4->file = 'unknown';
+        $this->assertFalse($data4->load());
 
         // delete by PK
-        $data = new \TableRecord();
-        $data->file = 'unknown';
-        $this->assertFalse($data->delete());
+        $data5 = new \TableRecord();
+        $data5->file = 'unknown';
+        $this->assertFalse($data5->delete());
     }
 
     /**
@@ -231,19 +248,20 @@ class TableTest extends CommonTestClass
      */
     public function testBefore(): void
     {
-        $data = new TableBefore();
-        $this->initSource($data);
+        $source = $this->initSource();
 
-        $data->file = 'another';
-        $data->title = 'file';
-        $data->desc = 'to load';
-        $data->order = 11;
-        $data->sub = false;
-        $this->assertFalse($data->save()); // save with failing before
+        $data1 = new TableBefore();
+        $data1->getMapper()->setSource($source);
+        $data1->file = 'another';
+        $data1->title = 'file';
+        $data1->desc = 'to load';
+        $data1->order = 21;
+        $data1->sub = false;
+        $this->assertFalse($data1->save()); // save with failing before
 
-        $data = new TableBefore();
-        $data->file = 'dummy2.htm';
-        $this->assertFalse($data->load()); // load with failing before
+        $data2 = new TableBefore();
+        $data2->file = 'dummy2.htm';
+        $this->assertFalse($data2->load()); // load with failing before
     }
 
     /**
@@ -251,27 +269,30 @@ class TableTest extends CommonTestClass
      */
     public function testAfter(): void
     {
-        $data = new TableAfter();
-        $this->initSource($data);
+        $source = $this->initSource();
 
-        $data->file = 'another';
-        $data->title = 'file';
-        $data->desc = 'to load';
-        $data->order = 11;
-        $data->sub = false;
-        $this->assertFalse($data->save()); // save with failing after
+        $data1 = new TableAfter();
+        $data1->getMapper()->setSource($source);
 
-        $data = new TableAfter();
-        $data->file = 'dummy2.htm';
-        $this->assertFalse($data->load()); // load with failing after
+        $data1->file = 'another';
+        $data1->title = 'file';
+        $data1->desc = 'to load';
+        $data1->order = 31;
+        $data1->sub = false;
+        $this->assertFalse($data1->save()); // save with failing after
+
+        $data2 = new TableAfter();
+        $data2->getMapper()->setSource($source);
+        $data2->file = 'dummy2.htm';
+        $this->assertFalse($data2->load()); // load with failing after
     }
 
-    protected function initSource(ARecord $record, string $source = ''): void
+    protected function initSource(string $source = ''): string
     {
         $source = empty($source) ? $this->getSourceFileMeta() : $source ;
         $target = $this->getTestFile();
         copy($source, $target);
-        $record->getMapper()->setSource($target);
+        return $target;
     }
 
     protected function getSourceFileMeta(): string

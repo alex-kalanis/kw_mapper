@@ -7,6 +7,8 @@ use kalanis\kw_mapper\Adapters\DataExchange;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\TFinder;
+use kalanis\kw_mapper\Mappers\TStore;
+use kalanis\kw_mapper\Mappers\TTranslate;
 use kalanis\kw_mapper\Records;
 
 
@@ -18,6 +20,8 @@ use kalanis\kw_mapper\Records;
 abstract class ATable extends AStorage
 {
     use TFinder;
+    use TStore;
+    use TTranslate;
 
     /** @var bool */
     protected $orderFromFirst = true;
@@ -35,14 +39,14 @@ abstract class ATable extends AStorage
      */
     protected function insertRecord(Records\ARecord $record): bool
     {
-        $matches = $this->findMatched($record, !empty($this->primaryKeys));
+        $matches = $this->findMatched($record, !empty($this->getPrimaryKeys()));
         if (!empty($matches)) { // found!!!
             return false;
         }
 
         // pks
         $records = array_map([$this, 'toArray'], $this->records);
-        foreach ($this->primaryKeys as $primaryKey) {
+        foreach ($this->getPrimaryKeys() as $primaryKey) {
             $entry = $record->getEntry($primaryKey);
             if (in_array($entry->getType(), [IEntryType::TYPE_INTEGER, IEntryType::TYPE_FLOAT])) {
                 if (empty($entry->getData())) {
@@ -53,7 +57,7 @@ abstract class ATable extends AStorage
         }
 
         $this->records = $this->orderFromFirst ? array_merge($this->records, [$record]) : array_merge([$record], $this->records);
-        return $this->saveSource();
+        return $this->saveSource($this->records);
     }
 
     /**
@@ -73,19 +77,19 @@ abstract class ATable extends AStorage
      */
     protected function updateRecord(Records\ARecord $record): bool
     {
-        $matches = $this->findMatched($record, !empty($this->primaryKeys), true);
+        $matches = $this->findMatched($record, !empty($this->getPrimaryKeys()), true);
         if (empty($matches)) { // nothing found
             return false;
         }
 
         $dataLine = & $this->records[reset($matches)];
-        foreach ($this->relations as $objectKey => $recordKey) {
-            if (in_array($objectKey, $this->primaryKeys)) {
+        foreach ($this->getRelations() as $objectKey => $recordKey) {
+            if (in_array($objectKey, $this->getPrimaryKeys())) {
                 continue; // no to change pks
             }
             $dataLine->offsetSet($objectKey, $record->offsetGet($objectKey));
         }
-        return $this->saveSource();
+        return $this->saveSource($this->records);
     }
 
     /**
@@ -112,7 +116,7 @@ abstract class ATable extends AStorage
         }
 
         $dataLine = & $this->records[reset($matches)];
-        foreach ($this->relations as $objectKey => $recordKey) {
+        foreach ($this->getRelations() as $objectKey => $recordKey) {
             $entry = $record->getEntry($objectKey);
             $entry->setData($dataLine->offsetGet($objectKey), true);
         }
@@ -136,7 +140,7 @@ abstract class ATable extends AStorage
         foreach ($toDelete as $key) {
             unset($this->records[$key]);
         }
-        return $this->saveSource();
+        return $this->saveSource($this->records);
     }
 
     /**
@@ -153,44 +157,5 @@ abstract class ATable extends AStorage
             $result[] = $this->records[$key];
         }
         return $result;
-    }
-
-    /**
-     * @throws MapperException
-     * @return bool
-     */
-    private function saveSource(): bool
-    {
-        $lines = [];
-        foreach ($this->records as &$record) {
-            $dataLine = [];
-
-            foreach ($this->relations as $objectKey => $recordKey) {
-                $entry = $record->getEntry($objectKey);
-                $dataLine[$recordKey] = $this->translateTypeTo($entry->getType(), $entry->getData());
-            }
-
-            $linePk = $this->generateKeyFromPks($record);
-            if ($linePk) {
-                $lines[$linePk] = $dataLine;
-            } else {
-                $lines[] = $dataLine;
-            }
-        }
-        return $this->saveToStorage($lines);
-    }
-
-    /**
-     * @param Records\ARecord $record
-     * @throws MapperException
-     * @return string|null
-     */
-    private function generateKeyFromPks(Records\ARecord $record): ?string
-    {
-        $toComplete = [];
-        foreach ($this->primaryKeys as $key) {
-            $toComplete[] = $record->offsetGet($key);
-        }
-        return (count(array_filter($toComplete))) ? implode('_', $toComplete) : null ;
     }
 }

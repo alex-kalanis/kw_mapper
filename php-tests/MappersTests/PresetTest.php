@@ -25,6 +25,9 @@ class PresetTest extends CommonTestClass
         $rec->what = 'bar';
         $rec->load();
         $this->assertEquals('err', $rec->when);
+
+        $rec2 = new PresetRecord();
+        $this->assertEquals(3, $rec2->count());
     }
 
     /**
@@ -39,35 +42,35 @@ class PresetTest extends CommonTestClass
         $results = $lib->getResults();
         /** @var PresetRecord $rec */
         $rec = reset($results);
-        $this->assertEquals('', $rec->what);
+        $this->assertEquals('bar', $rec->what);
         $rec = next($results);
-        $this->assertEquals('', $rec->what);
+        $this->assertEquals('baz', $rec->what);
     }
 
     /**
      * @throws MapperException
      */
-    public function testCannotSave(): void
+    public function testCannotInsert(): void
     {
         $rec = new PresetRecord();
         $rec->what = 'out';
         $rec->when = 'nop';
         $this->expectException(MapperException::class);
-        $this->expectExceptionMessage('Unable to read from source');
+        $this->expectExceptionMessage('Cannot insert record into predefined array');
         $rec->save();
     }
 
     /**
      * @throws MapperException
      */
-    public function testCannotSave2(): void
+    public function testCannotUpdate(): void
     {
         $rec = new PresetRecord();
-        $rec->what = 'baz';
+        $rec->getEntry('what')->setData('baz', true);
         $rec->when = 'syn';
         $this->expectException(MapperException::class);
-        $this->expectExceptionMessage('Unable to read from source');
-        $rec->save(true);
+        $this->expectExceptionMessage('Cannot update record in predefined array');
+        $rec->save();
     }
 
     /**
@@ -78,7 +81,7 @@ class PresetTest extends CommonTestClass
         $rec = new PresetRecord();
         $rec->what = 'baz';
         $this->expectException(MapperException::class);
-        $this->expectExceptionMessage('Unable to read from source');
+        $this->expectExceptionMessage('Cannot delete record in predefined array');
         $rec->delete();
     }
 }
