@@ -223,14 +223,14 @@ class TableTest extends CommonTestClass
         $data2->sub = false;
         $this->assertFalse($data2->save(true)); // insert with PK - use force, exists but cannot update
 
-//        // update non-existent
-//        $data3 = new \TableRecord();
-//        $data3->getEntry('file')->setData('some.htm', true);
-//        $data3->getEntry('title')->setData('part', true);
-//        $data3->desc = 'to store';
-//        $data3->order = 13;
-//        $data3->sub = false;
-//        $this->assertFalse($data3->save()); // insert with PK - use force, exists but cannot update
+        // update non-existent
+        $data3 = new \TableRecord();
+        $data3->getEntry('file')->setData('some.htm', true);
+        $data3->getEntry('title')->setData('part', true);
+        $data3->desc = 'to store';
+        $data3->order = 13;
+        $data3->sub = false;
+        $this->assertFalse($data3->save()); // update with PK - not exists, cannot update
 
         // update by PK
         $data4 = new \TableRecord();

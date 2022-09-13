@@ -274,6 +274,7 @@ class RecordTest extends CommonTestClass
         $ex->clearExclude();
         $pack = $ex->export();
 
+        $this->assertNotEmpty($ex->getRecord());
         $this->assertEquals(888, $pack['id']);
         $this->assertEquals(321654897, $pack['name']);
         $this->assertEquals('lkjhgfdsa', $pack['password']);

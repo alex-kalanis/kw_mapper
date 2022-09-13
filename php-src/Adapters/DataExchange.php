@@ -82,4 +82,9 @@ class DataExchange
     {
         return isset($this->excluded[$property]);
     }
+
+    public function getRecord(): ARecord
+    {
+        return $this->record;
+    }
 }

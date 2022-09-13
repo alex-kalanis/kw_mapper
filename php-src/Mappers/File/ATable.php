@@ -82,7 +82,8 @@ abstract class ATable extends AStorage
             return false;
         }
 
-        $dataLine = & $this->records[reset($matches)];
+        reset($matches);
+        $dataLine = & $this->records[key($matches)];
         foreach ($this->getRelations() as $objectKey => $recordKey) {
             if (in_array($objectKey, $this->getPrimaryKeys())) {
                 continue; // no to change pks
@@ -99,8 +100,7 @@ abstract class ATable extends AStorage
      */
     public function countRecord(Records\ARecord $record): int
     {
-        $matches = $this->findMatched($record);
-        return count($matches);
+        return count($this->findMatched($record));
     }
 
     /**
@@ -115,7 +115,8 @@ abstract class ATable extends AStorage
             return false;
         }
 
-        $dataLine = & $this->records[reset($matches)];
+        reset($matches);
+        $dataLine = & $this->records[key($matches)];
         foreach ($this->getRelations() as $objectKey => $recordKey) {
             $entry = $record->getEntry($objectKey);
             $entry->setData($dataLine->offsetGet($objectKey), true);
@@ -137,7 +138,7 @@ abstract class ATable extends AStorage
         }
 
         // remove matched
-        foreach ($toDelete as $key) {
+        foreach ($toDelete as $key => $record) {
             unset($this->records[$key]);
         }
         return $this->saveSource($this->records);
@@ -150,12 +151,6 @@ abstract class ATable extends AStorage
      */
     public function loadMultiple(Records\ARecord $record): array
     {
-        $toLoad = $this->findMatched($record);
-
-        $result = [];
-        foreach ($toLoad as $key) {
-            $result[] = $this->records[$key];
-        }
-        return $result;
+        return array_values($this->findMatched($record));
     }
 }

@@ -103,6 +103,7 @@ abstract class ARecord implements ArrayAccess, Iterator
      * @throws MapperException
      * @return int|ICanFill|string|null
      */
+    #[\ReturnTypeWillChange]
     final public function __get($name)
     {
         return $this->offsetGet($name);

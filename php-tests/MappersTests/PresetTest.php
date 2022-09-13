@@ -84,12 +84,22 @@ class PresetTest extends CommonTestClass
         $this->expectExceptionMessage('Cannot delete record in predefined array');
         $rec->delete();
     }
+
+    /**
+     * @throws MapperException
+     */
+    public function testCannotFind(): void
+    {
+        $rec = new PresetRecord();
+        $rec->what = 'nop';
+        $this->assertFalse($rec->load());
+    }
 }
 
 
 /**
  * Class PresetRecord
- * @package MappersTests\File
+ * @package MappersTests
  * @property int $id
  * @property string $what
  * @property string $when
