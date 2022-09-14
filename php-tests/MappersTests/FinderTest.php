@@ -123,7 +123,7 @@ class XFinder
         return $this->getArrayToCompare($record, $usePks, $wantFromStorage);
     }
 
-    protected function loadSource(): array
+    protected function loadSource(ARecord $record): array
     {
         return [
             $this->getRecord(['id' => 1, 'what' => 'foo', 'when' => 'ack']),
