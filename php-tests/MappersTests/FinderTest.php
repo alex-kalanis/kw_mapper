@@ -15,6 +15,44 @@ use kalanis\kw_mapper\Records\ASimpleRecord;
 class FinderTest extends CommonTestClass
 {
     /**
+     * @param ARecord $source
+     * @param bool $pks
+     * @param bool $storage
+     * @param array $result
+     * @throws MapperException
+     * @dataProvider compareDefaultProvider
+     */
+    public function testWhatCompareDefault(ARecord $source, bool $pks, bool $storage, array $result): void
+    {
+        $lib = new XFinder();
+        $this->assertEquals($result, $lib->arrayToCompare($source, $pks, $storage));
+    }
+
+    public function compareDefaultProvider(): array
+    {
+        $simple = new FinderRecord();
+        $simple->id = 5;
+        $simple->when = 'oof';
+        $simple->what = 'how';
+
+        $loaded = new FinderRecord();
+        $loaded->id = 5;
+        $loaded->getEntry('when')->setData('oof', true);
+        $loaded->what = 'how';
+
+        return [
+            [$simple, false, false, ['id' => 5, 'when' => 'oof', 'what' => 'how']],
+            [$loaded, false, false, ['id' => 5, 'when' => 'oof', 'what' => 'how']],
+            [$simple, false, true, ['id' => 5, 'when' => 'oof', 'what' => 'how']],
+            [$loaded, false, true, ['when' => 'oof']],
+            [$simple, true, false, ['id' => 5]],
+            [$loaded, true, false, ['id' => 5]],
+            [$simple, true, true, ['id' => 5]],
+            [$loaded, true, true, ['id' => 5]],
+        ];
+    }
+
+    /**
      * @throws MapperException
      */
     public function testFindSome(): void
@@ -71,6 +109,18 @@ class XFinder
     public function find(ARecord $record, bool $usePks = false, bool $wantFromStorage = false): array
     {
         return $this->findMatched($record, $usePks, $wantFromStorage);
+    }
+
+    /**
+     * @param ARecord $record
+     * @param bool $usePks
+     * @param bool $wantFromStorage
+     * @throws MapperException
+     * @return array<string|int, mixed>
+     */
+    public function arrayToCompare(ARecord $record, bool $usePks, bool $wantFromStorage): array
+    {
+        return $this->getArrayToCompare($record, $usePks, $wantFromStorage);
     }
 
     protected function loadSource(): array

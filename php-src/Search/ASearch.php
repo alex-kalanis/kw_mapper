@@ -5,6 +5,7 @@ namespace kalanis\kw_mapper\Search;
 
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
+use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
 /**
@@ -22,11 +23,12 @@ abstract class ASearch
     /**
      * @param ARecord $record
      * @param ARecord[] $initialRecords
+     * @param QueryBuilder|null $builder
      * @throws MapperException
      */
-    public function __construct(ARecord $record, array $initialRecords = [])
+    public function __construct(ARecord $record, array $initialRecords = [], ?QueryBuilder $builder = null)
     {
-        $this->connector = Connector\Factory::getInstance()->getConnector($record, $initialRecords);
+        $this->connector = Connector\Factory::getInstance()->getConnector($record, $initialRecords, $builder);
     }
 
     /**

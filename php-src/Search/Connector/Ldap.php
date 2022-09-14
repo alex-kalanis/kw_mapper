@@ -28,16 +28,17 @@ class Ldap extends AConnector
 
     /**
      * @param ARecord $record
+     * @param Storage\Shared\QueryBuilder|null $builder
      * @throws MapperException
      */
-    public function __construct(ARecord $record)
+    public function __construct(ARecord $record, ?Storage\Shared\QueryBuilder $builder = null)
     {
         $this->basicRecord = $record;
         $this->initRecordLookup($record);
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
         $this->dialect = new Storage\Database\Dialects\LdapQueries();
-        $this->queryBuilder = new Storage\Shared\QueryBuilder();
+        $this->queryBuilder = $builder ?: new Storage\Shared\QueryBuilder();
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
     }
 

@@ -27,14 +27,14 @@ class Database extends AConnector
      * @param ARecord $record
      * @throws MapperException
      */
-    public function __construct(ARecord $record)
+    public function __construct(ARecord $record, ?Storage\Shared\QueryBuilder $builder = null)
     {
         $this->basicRecord = $record;
         $this->initRecordLookup($record);
         $config = Storage\Database\ConfigStorage::getInstance()->getConfig($record->getMapper()->getSource());
         $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
         $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());
-        $this->queryBuilder = new Storage\Database\QueryBuilder($this->dialect);
+        $this->queryBuilder = $builder ?: new Storage\Database\QueryBuilder($this->dialect);
         $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
         $this->filler = new Database\Filler($this->basicRecord);
     }

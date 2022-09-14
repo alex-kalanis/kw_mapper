@@ -6,6 +6,7 @@ namespace kalanis\kw_mapper\Search\Connector;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records\ARecord;
+use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 
 /**
@@ -23,21 +24,22 @@ class Factory
     /**
      * @param ARecord $record
      * @param ARecord[] $initialRecords
+     * @param QueryBuilder|null $builder
      * @throws MapperException
      * @return AConnector
      */
-    public function getConnector(ARecord $record, array $initialRecords = []): AConnector
+    public function getConnector(ARecord $record, array $initialRecords = [], ?QueryBuilder $builder = null): AConnector
     {
         $mapper = $record->getMapper();
         if ($mapper instanceof Mappers\Database\ADatabase) {
-            return new Database($record);
+            return new Database($record, $builder);
         } elseif ($mapper instanceof Mappers\Database\ALdap) {
             // @codeCoverageIgnoreStart
-            return new Ldap($record);
+            return new Ldap($record, $builder);
             // @codeCoverageIgnoreEnd
         } elseif ($mapper instanceof Mappers\Database\WinRegistry) {
             // @codeCoverageIgnoreStart
-            return new WinRegistry($record);
+            return new WinRegistry($record, $builder);
             // @codeCoverageIgnoreEnd
         } elseif ($mapper instanceof Mappers\File\ATable) {
             return new FileTable($record);

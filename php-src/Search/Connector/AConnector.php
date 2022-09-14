@@ -367,7 +367,6 @@ abstract class AConnector
      * @param string $parentAlias
      * @throws MapperException
      * @return $this
-     * @codeCoverageIgnore any db with left outer join?
      */
     public function childNotExist(string $childAlias, string $table, string $column, string $parentAlias = ''): self
     {

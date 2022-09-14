@@ -84,7 +84,7 @@ abstract class APreset extends AMapper
      * @param array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>> $content
      * @throws MapperException
      * @return bool
-     * @codeCoverageIgnore should not be accessable
+     * @codeCoverageIgnore should not be accessible
      */
     protected function saveToStorage(array $content): bool
     {

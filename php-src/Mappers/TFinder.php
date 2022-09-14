@@ -11,7 +11,6 @@ use kalanis\kw_mapper\Records;
  * Trait TFinder
  * @package kalanis\kw_mapper\Mappers
  * Abstract for manipulation with file content as table
- * @todo: extra testing - has problems when it got mixed-loaded content (part from storage, part to change)
  */
 trait TFinder
 {

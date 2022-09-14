@@ -14,6 +14,7 @@ use kalanis\kw_mapper\Storage\Database\Config;
 use kalanis\kw_mapper\Storage\Database\ConfigStorage;
 use kalanis\kw_mapper\Storage\Database\DatabaseSingleton;
 use kalanis\kw_mapper\Storage\Database\PDO\SQLite;
+use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 use PDO;
 
 
@@ -135,6 +136,17 @@ class SqLiteCircularTest extends CommonTestClass
     /**
      * @throws MapperException
      */
+    public function testNonExistingChildPass(): void
+    {
+        $this->dataRefill();
+
+        $search = new Search(new SQLiteNameTestRecord(), [], new QueryBuilder()); // different QueryBuilder just for testing purposes
+        $this->assertNotEmpty($search->childNotExist('pars', 'par'));
+    }
+
+    /**
+     * @throws MapperException
+     */
     public function testConnectChildNotParent(): void
     {
         $search = new Search(new SQLiteNameTestRecord());
@@ -209,10 +221,10 @@ class SqLiteCircularTest extends CommonTestClass
 
 /**
  * Class SQLiteNameTestRecord
- * @property int id
- * @property string name
- * @property int par
- * @property SQLiteNameTestRecord[] pars
+ * @property int $id
+ * @property string $name
+ * @property int $par
+ * @property SQLiteNameTestRecord[] $pars
  */
 class SQLiteNameTestRecord extends ASimpleRecord
 {
