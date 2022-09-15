@@ -72,7 +72,7 @@ trait TMapper
     final public function save(bool $forceInsert = false): bool
     {
         $this->checkMapper();
-        return $this->mapper->save($this->getSelf(), $forceInsert);
+        return $this->mapper->/** @scrutinizer ignore-call */save($this->getSelf(), $forceInsert);
     }
 
     /**
@@ -82,7 +82,7 @@ trait TMapper
     final public function load(): bool
     {
         $this->checkMapper();
-        return $this->mapper->load($this->getSelf());
+        return $this->mapper->/** @scrutinizer ignore-call */load($this->getSelf());
     }
 
     /**
@@ -92,7 +92,7 @@ trait TMapper
     final public function delete(): bool
     {
         $this->checkMapper();
-        return $this->mapper->delete($this->getSelf());
+        return $this->mapper->/** @scrutinizer ignore-call */delete($this->getSelf());
     }
 
     /**
@@ -102,7 +102,7 @@ trait TMapper
     final public function count(): int
     {
         $this->checkMapper();
-        return $this->mapper->countRecord($this->getSelf());
+        return $this->mapper->/** @scrutinizer ignore-call */countRecord($this->getSelf());
     }
 
     /**
@@ -112,11 +112,16 @@ trait TMapper
     final public function loadMultiple(): array
     {
         $this->checkMapper();
-        return $this->mapper->loadMultiple($this->getSelf());
+        return $this->mapper->/** @scrutinizer ignore-call */loadMultiple($this->getSelf());
     }
 
+    /**
+     * @throws MapperException
+     * @return Mappers\AMapper
+     */
     public function getMapper(): Mappers\AMapper
     {
+        $this->checkMapper();
         return $this->mapper;
     }
 

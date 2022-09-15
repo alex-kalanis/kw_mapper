@@ -401,6 +401,11 @@ abstract class AConnector
     abstract public function getResults(): array;
 
 
+    /**
+     * @param string $table
+     * @throws MapperException
+     * @return string
+     */
     protected function correctTable(string $table): string
     {
         return empty($table) ? $this->basicRecord->getMapper()->getAlias() : $table ;

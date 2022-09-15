@@ -4,7 +4,7 @@ namespace kalanis\kw_mapper\Search\Connector;
 
 
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\Database;
+use kalanis\kw_mapper\Mappers\Database as DbMapper;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\TFill;
 use kalanis\kw_mapper\Storage;
@@ -66,7 +66,7 @@ class WinRegistry extends AConnector
         }
 
         $result = [];
-        /** @var Database\WinRegistry|Database\WinRegistry2 $mapper */
+        /** @var DbMapper\WinRegistry|DbMapper\WinRegistry2 $mapper */
         $mapper = $this->basicRecord->getMapper();
         $pks = $this->basicRecord->getMapper()->getPrimaryKeys();
         reset($pks);

@@ -24,6 +24,10 @@ class Records extends AConnector
     /** @var null|Storage\Shared\QueryBuilder\Order */
     protected $sortingOrder = null;
 
+    /**
+     * @param ARecord $record
+     * @throws MapperException
+     */
     public function __construct(ARecord $record)
     {
         $this->basicRecord = $record;
@@ -206,6 +210,7 @@ class Records extends AConnector
      */
     public function filterCondition(ARecord $result): bool
     {
+        /** @scrutinizer ignore-call */
         $columnKey = $this->condition->getColumnKey();
         return is_array($columnKey)
             ? $this->filterFromManyValues($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams(), $columnKey)
@@ -279,6 +284,9 @@ class Records extends AConnector
      */
     public function sortOrder(ARecord $resultA, ARecord $resultB): int
     {
+        if (empty($this->sortingOrder)) {
+            throw new MapperException('You must set how it will be sorted!');
+        }
         $sortingDirection = empty($this->sortingOrder->getDirection()) ? IQueryBuilder::ORDER_ASC : $this->sortingOrder->getDirection();
         $a = $resultA->offsetGet($this->sortingOrder->getColumnName());
         $b = $resultB->offsetGet($this->sortingOrder->getColumnName());

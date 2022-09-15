@@ -41,7 +41,7 @@ abstract class AFile extends AStorage
      */
     protected function updateRecord(ARecord $record): bool
     {
-        $this->setSource($record->offsetGet($this->getPathFromPk($record)));
+        $this->setSource(strval($record->offsetGet($this->getPathFromPk($record))));
         return $this->saveToStorage([$record->offsetGet($this->getContentKey())]);
     }
 
@@ -52,7 +52,7 @@ abstract class AFile extends AStorage
      */
     public function countRecord(ARecord $record): int
     {
-        $this->setSource($record->offsetGet($this->getPathFromPk($record)));
+        $this->setSource(strval($record->offsetGet($this->getPathFromPk($record))));
         return intval(!empty($this->loadFromStorage()));
     }
 
@@ -63,7 +63,7 @@ abstract class AFile extends AStorage
      */
     protected function loadRecord(ARecord $record): bool
     {
-        $this->setSource($record->offsetGet($this->getPathFromPk($record)));
+        $this->setSource(strval($record->offsetGet($this->getPathFromPk($record))));
         $stored = $this->loadFromStorage();
         $record->getEntry($this->getContentKey())->setData(reset($stored), true);
         return true;
@@ -76,7 +76,7 @@ abstract class AFile extends AStorage
      */
     protected function deleteRecord(ARecord $record): bool
     {
-        $path = $record->offsetGet($this->getPathFromPk($record));
+        $path = strval($record->offsetGet($this->getPathFromPk($record)));
         try {
             if ($this->getStorage()->exists($path)) {
                 return $this->getStorage()->remove($path);

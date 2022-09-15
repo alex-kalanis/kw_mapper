@@ -86,7 +86,7 @@ abstract class APreset extends AMapper
      * @return bool
      * @codeCoverageIgnore should not be accessible
      */
-    protected function saveToStorage(array $content): bool
+    protected function saveToStorage(/** @scrutinizer ignore-unused */ array $content): bool
     {
         throw new MapperException('Cannot save records in predefined array');
     }

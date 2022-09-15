@@ -25,7 +25,7 @@ class KeyValue extends AFile
     public function loadMultiple(ARecord $record): array
     {
         $inPath = $this->getPathFromPk($record);
-        $path = $record->offsetGet($inPath);
+        $path = strval($record->offsetGet($inPath));
         $records = [];
         try {
             foreach ($this->getStorage()->lookup($path) as $contentKey) {

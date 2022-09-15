@@ -24,7 +24,7 @@ abstract class AMongo extends AMapper
 
     /** @var Storage\Database\Raw\MongoDb */
     protected $database = null;
-    /** @var Storage\Shared\QueryBuilder|null */
+    /** @var Storage\Shared\QueryBuilder */
     protected $queryBuilder = null;
     /** @var Storage\Database\Dialects\MongoDb */
     protected $dialect = null;

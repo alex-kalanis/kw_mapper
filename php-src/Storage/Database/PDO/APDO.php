@@ -80,8 +80,9 @@ abstract class APDO extends ASQL
 
     public function lastInsertId(): ?string
     {
+        /** @scrutinizer ignore-call */
         $id = $this->connection->lastInsertId();
-        return false === $id ? null : strval($id);
+        return (false === $id) ? null : strval($id);
     }
 
     public function rowCount(): ?int

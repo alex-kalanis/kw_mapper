@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Search\Connector\Database;
 
 
+use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 
 
@@ -16,6 +17,10 @@ trait TRecordsInJoins
     /** @var RecordsInJoin[] */
     protected $recordsInJoin = [];
 
+    /**
+     * @param ARecord $record
+     * @throws MapperException
+     */
     public function initRecordLookup(ARecord $record): void
     {
         $rec = new RecordsInJoin();
@@ -28,6 +33,12 @@ trait TRecordsInJoins
         $this->recordsInJoin[$record->getMapper()->getAlias()] = $rec;
     }
 
+    /**
+     * @param string $storeKey
+     * @param string $knownAs
+     * @throws MapperException
+     * @return RecordsInJoin|null
+     */
     public function recordLookup(string $storeKey, string $knownAs = ''): ?RecordsInJoin
     {
         if (isset($this->recordsInJoin[$storeKey])) {

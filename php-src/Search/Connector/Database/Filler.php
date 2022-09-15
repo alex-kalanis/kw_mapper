@@ -26,7 +26,7 @@ class Filler
     protected $hashDelimiter = "--::\e::--";
     /** @var string */
     protected $columnDelimiter = '____';
-    /** @var ARecord|null */
+    /** @var ARecord */
     protected $basicRecord = null;
     /** @var RecordsInJoin[] */
     protected $recordsInJoin = [];
@@ -49,6 +49,7 @@ class Filler
     /**
      * Get all necessary columns which will be added and used in query
      * @param Join[] $joins
+     * @throws MapperException
      * @return array<string|int, array<string|int|float|null>>
      */
     public function getColumns(array $joins): array
@@ -282,6 +283,7 @@ class Filler
 
     /**
      * @param array<string|int, string|int|float> $row
+     * @throws MapperException
      * @return array<string, array<string|int, string|int|float>>
      */
     protected function splitByTables(&$row): array
