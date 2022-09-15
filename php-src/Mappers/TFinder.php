@@ -29,12 +29,6 @@ trait TFinder
         $this->loadOnDemand($record);
 
         $toProcess = array_combine(array_keys($this->records), array_values($this->records)); // copy array - records will be removed when don't match
-        if (false === $toProcess) {
-            // @codeCoverageIgnoreStart
-            // failed array_combine - copy
-            return [];
-        }
-        // @codeCoverageIgnoreEnd
         $toCompare = $this->getArrayToCompare($record, $usePks, $wantFromStorage);
 
         if ($usePks) { // nothing to get when any necessary primary key is unknown
