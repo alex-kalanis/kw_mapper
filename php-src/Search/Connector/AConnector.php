@@ -400,7 +400,6 @@ abstract class AConnector
      */
     abstract public function getResults(): array;
 
-
     /**
      * @param string $table
      * @throws MapperException
@@ -420,6 +419,11 @@ abstract class AConnector
     protected function correctColumn(string $table, string $column)
     {
         $record = !empty($table) ? $this->recordLookup($table)->getRecord() : $this->basicRecord ;
+        if (empty($record)) {
+            // @codeCoverageIgnoreStart
+            throw new MapperException(sprintf('Unknown relation table *%s*', $table));
+        }
+        // @codeCoverageIgnoreEnd
         $relations = $record->getMapper()->getRelations();
         if (empty($relations[$column])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for table *%s*', $column, $table));

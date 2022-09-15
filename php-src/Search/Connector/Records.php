@@ -210,7 +210,9 @@ class Records extends AConnector
      */
     public function filterCondition(ARecord $result): bool
     {
-        /** @scrutinizer ignore-call */
+        if (empty($this->condition)) {
+            throw new MapperException('You must set conditions first!');
+        }
         $columnKey = $this->condition->getColumnKey();
         return is_array($columnKey)
             ? $this->filterFromManyValues($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams(), $columnKey)

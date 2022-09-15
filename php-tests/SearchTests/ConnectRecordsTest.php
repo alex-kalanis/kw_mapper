@@ -62,6 +62,21 @@ class ConnectRecordsTest extends CommonTestClass
         $this->expectExceptionMessage('You must set how it will be sorted!');
         $lib->sortOrder($record1, $record2);
     }
+
+    /**
+     * @throws MapperException
+     */
+    public function testConditionFail(): void
+    {
+        $record1 = new \XSimpleRecord();
+        $record1->useMock();
+        $record1->title = 'abc';
+
+        $lib = new XSortRecords($record1);
+        $this->expectException(MapperException::class);
+        $this->expectExceptionMessage('You must set conditions first!');
+        $lib->filterCondition($record1);
+    }
 }
 
 
