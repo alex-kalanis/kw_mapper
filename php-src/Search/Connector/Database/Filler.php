@@ -47,6 +47,7 @@ class Filler
     }
 
     /**
+     * Get all necessary columns which will be added and used in query
      * @param Join[] $joins
      * @return array<string|int, array<string|int|float|null>>
      */
@@ -87,6 +88,8 @@ class Filler
     }
 
     /**
+     * Fill results from db response in lines to record tree with objects
+     * Really ugly method which will need to stay this way, because it makes a tree from a flat table
      * @param iterable<string|int, array<string|int, string|int|float>> $dataSourceRows
      * @param mixed $parent
      * @throws MapperException

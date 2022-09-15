@@ -42,7 +42,7 @@ storage. But then remember that every storage behaves differently for unwanted i
 ```
 {
     "require": {
-        "alex-kalanis/kw_mapper": ">=0.12"
+        "alex-kalanis/kw_mapper": ">=1.0"
     }
 }
 ```
@@ -71,5 +71,5 @@ by which the db will limit selection.
 
 Another one is when you define children with the same alias - you cannot ask for
 them in one query or it will mesh together and you got corrupted data. In better
-case. For this case are available children methods which allows you to define
+case. For this case there are available children methods which allows you to define
 alias to pass data when it's necessary to join from already used table. 

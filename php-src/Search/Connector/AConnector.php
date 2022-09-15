@@ -338,12 +338,18 @@ abstract class AConnector
         $childTableAlias = empty($customAlias) ? $childAlias : $customAlias;
         $childLookup = $this->recordLookup($childTableAlias, $childAlias);
         if (empty($childLookup) || empty($childLookup->getRecord())) {
+            // might never happens - part already checked, so it must exists
+            // @codeCoverageIgnoreStart
             throw new MapperException(sprintf('Unknown record for child alias *%s*', $childAlias));
         }
+        // @codeCoverageIgnoreEnd
         $childRecord = $childLookup->getRecord();
         $childRelations = $childRecord->getMapper()->getRelations();
         if (empty($childRelations[$parentKey->getRemoteEntryKey()])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for child *%s*', $parentKey->getRemoteEntryKey(), $childAlias));
+        }
+        if ($parentRecord->getMapper()->getSource() != $childRecord->getMapper()->getSource()) {
+            throw new MapperException(sprintf('Parent *%s* and child *%s* must both have the same source', $parentAlias, $childAlias));
         }
 
         $this->queryBuilder->addJoin(
