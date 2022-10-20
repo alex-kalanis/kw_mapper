@@ -208,7 +208,7 @@ class SQLiteNameTestRecord extends ASimpleRecord
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('name', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\SQLiteTestMapper');
+        $this->setMapper(SQLiteTestMapper::class);
     }
 }
 
@@ -239,7 +239,7 @@ class SQLiteNameTestRecordBadPk extends ASimpleRecord
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('name', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\SQLiteTestMapperBadPk');
+        $this->setMapper(SQLiteTestMapperBadPk::class);
     }
 }
 
@@ -271,7 +271,7 @@ class SQLiteNameTestRecordNoPk extends ASimpleRecord
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('name', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\SQLiteTestMapperNoPk');
+        $this->setMapper(SQLiteTestMapperNoPk::class);
     }
 }
 

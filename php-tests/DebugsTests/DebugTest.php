@@ -94,7 +94,7 @@ class PedigreeUpdateRecord extends Records\AStrictRecord
         $this->addEntry('text', IEntryType::TYPE_STRING, 8192);
         $this->addEntry('parents', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
         $this->addEntry('children', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\DebugsTests\PedigreeUpdateMapper');
+        $this->setMapper(PedigreeUpdateMapper::class);
     }
 }
 
@@ -119,8 +119,8 @@ class PedigreeUpdateMapper extends Mappers\Database\ADatabase
         $this->setRelation('blood', 'kp_blood');
         $this->setRelation('text', 'kp_text');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('parents', '\DebugsTests\PedigreeRelateRecord', 'id', 'childId');
-        $this->addForeignKey('children', '\DebugsTests\PedigreeRelateRecord', 'id', 'parentId');
+        $this->addForeignKey('parents', PedigreeRelateRecord::class, 'id', 'childId');
+        $this->addForeignKey('children', PedigreeRelateRecord::class, 'id', 'parentId');
     }
 }
 
@@ -142,7 +142,7 @@ class PedigreeRelateRecord extends Records\AStrictRecord
         $this->addEntry('parentId', IEntryType::TYPE_INTEGER, 2048);
         $this->addEntry('oldes', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
         $this->addEntry('sires', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\DebugsTests\PedigreeRelateMapper');
+        $this->setMapper(PedigreeRelateMapper::class);
     }
 }
 
@@ -157,8 +157,8 @@ class PedigreeRelateMapper extends Mappers\Database\ADatabase
         $this->setRelation('childId', 'kp_id_child');
         $this->setRelation('parentId', 'kp_id_parent');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('oldes', '\DebugsTests\PedigreeUpdateRecord', 'parentId', 'id');
-        $this->addForeignKey('sires', '\DebugsTests\PedigreeUpdateRecord', 'childId', 'id');
+        $this->addForeignKey('oldes', PedigreeUpdateRecord::class, 'parentId', 'id');
+        $this->addForeignKey('sires', PedigreeUpdateRecord::class, 'childId', 'id');
     }
 }
 
@@ -203,7 +203,7 @@ class PedigreeRecord extends Records\AStrictRecord
         $this->addEntry('sex', IEntryType::TYPE_SET, ['female','male']);
         $this->addEntry('blood', IEntryType::TYPE_SET, ['our','other']);
         $this->addEntry('text', IEntryType::TYPE_STRING, 8192);
-        $this->setMapper('\DebugsTests\PedigreeMapper');
+        $this->setMapper(PedigreeMapper::class);
     }
 }
 
