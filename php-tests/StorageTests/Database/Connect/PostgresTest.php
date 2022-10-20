@@ -248,11 +248,11 @@ class PostgresTest extends CommonTestClass
 
 /**
  * Class PostgresTestRecord
- * @property int id
- * @property int time_start
- * @property int time_end
- * @property int status
- * @property string command
+ * @property int $id
+ * @property int $time_start
+ * @property int $time_end
+ * @property int $status
+ * @property string $command
  */
 class PostgresTestRecord extends ASimpleRecord
 {
@@ -263,7 +263,7 @@ class PostgresTestRecord extends ASimpleRecord
         $this->addEntry('time_end', IEntryType::TYPE_INTEGER, 99999999);
         $this->addEntry('status', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('command', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\Connect\PostgresTestMapper');
+        $this->setMapper(PostgresTestMapper::class);
     }
 }
 

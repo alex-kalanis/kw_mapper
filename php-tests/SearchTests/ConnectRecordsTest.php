@@ -10,6 +10,12 @@ use CommonTestClass;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder\Order;
 
 
+/**
+ * Class ConnectRecordsTest
+ * @package SearchTests
+ * @requires extension PDO
+ * @requires extension pdo_sqlite
+ */
 class ConnectRecordsTest extends CommonTestClass
 {
     /**

@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Storage\Database\PDO;
 
 
+use kalanis\kw_mapper\Storage\Database\Dialects;
 use PDO;
 
 
@@ -16,7 +17,7 @@ class SQLite extends APDO
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\SQLite';
+        return Dialects\SQLite::class;
     }
 
     protected function connectToServer(): PDO

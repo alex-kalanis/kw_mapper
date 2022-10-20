@@ -12,6 +12,12 @@ use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_mapper\Storage;
 
 
+/**
+ * Class ConnectDifferentSourcesTest
+ * @package SearchTests
+ * @requires extension PDO
+ * @requires extension pdo_sqlite
+ */
 class ConnectDifferentSourcesTest extends AConnectTests
 {
     /**
@@ -44,7 +50,7 @@ class XConnectRecordDifferentStorageChild extends ASimpleRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 512);
         $this->addEntry('prtId', IEntryType::TYPE_INTEGER, 64); // ID of remote
         $this->addEntry('prts', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\SearchTests\XConnectMapperDifferentStorageChild');
+        $this->setMapper(XConnectMapperDifferentStorageChild::class);
     }
 }
 
@@ -60,6 +66,6 @@ class XConnectMapperDifferentStorageChild extends ADatabase
         $this->setRelation('name', 'kmct_name');
         $this->setRelation('prtId', 'kmpt_id');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('prts', '\SearchTests\XConnectRecordParent', 'prtId', 'id');
+        $this->addForeignKey('prts', XConnectRecordParent::class, 'prtId', 'id');
     }
 }

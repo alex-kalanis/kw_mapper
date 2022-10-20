@@ -6,9 +6,7 @@ namespace StorageTests\Database;
 use CommonTestClass;
 use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Storage\Database\Config;
-use kalanis\kw_mapper\Storage\Database\DatabaseSingleton;
-use kalanis\kw_mapper\Storage\Database\Factory;
+use kalanis\kw_mapper\Storage\Database;
 
 
 class FactoryTest extends CommonTestClass
@@ -18,7 +16,7 @@ class FactoryTest extends CommonTestClass
      */
     public function testFactoryNoClass(): void
     {
-        $conf = Config::init()->setTarget(
+        $conf = Database\Config::init()->setTarget(
             'unknown',
             'test_conf',
             ':--memory--:',
@@ -38,7 +36,7 @@ class FactoryTest extends CommonTestClass
      */
     public function testFactoryBadClass(): void
     {
-        $conf = Config::init()->setTarget(
+        $conf = Database\Config::init()->setTarget(
             'failed_one',
             'test_conf',
             ':--memory--:',
@@ -49,7 +47,7 @@ class FactoryTest extends CommonTestClass
         );
         $factory = new SpecFactory();
         $this->expectException(MapperException::class);
-        $this->expectExceptionMessage('Defined class *\StorageTests\Database\FailedDatabaseClass* is not instance of Storage\ADatabase!');
+        $this->expectExceptionMessage('Defined class *StorageTests\Database\FailedDatabaseClass* is not instance of Storage\ADatabase!');
         $factory->getDatabase($conf);
     }
 
@@ -58,7 +56,7 @@ class FactoryTest extends CommonTestClass
      */
     public function testFactoryRun(): void
     {
-        $conf = Config::init()->setTarget(
+        $conf = Database\Config::init()->setTarget(
             IDriverSources::TYPE_PDO_POSTGRES,
             'test_conf',
             ':--memory--:',
@@ -69,7 +67,7 @@ class FactoryTest extends CommonTestClass
         );
         $factory = new SpecFactory();
         $class = $factory->getDatabase($conf);
-        $this->assertInstanceOf('\kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL', $class);
+        $this->assertInstanceOf(Database\PDO\PostgreSQL::class, $class);
     }
 
     /**
@@ -77,7 +75,7 @@ class FactoryTest extends CommonTestClass
      */
     public function testConnectSingleton(): void
     {
-        $conf = Config::init()->setTarget(
+        $conf = Database\Config::init()->setTarget(
             IDriverSources::TYPE_PDO_MYSQL,
             'another_conf',
             ':--memory--:',
@@ -89,7 +87,7 @@ class FactoryTest extends CommonTestClass
         XSingleton::clear();
         $lib = XSingleton::getInstance();
         $obj = $lib->getDatabase($conf);
-        $this->assertInstanceOf('\kalanis\kw_mapper\Storage\Database\ADatabase', $obj);
+        $this->assertInstanceOf(Database\ADatabase::class, $obj);
         $obj->addAttribute('fix', 'something');
     }
 }
@@ -97,24 +95,24 @@ class FactoryTest extends CommonTestClass
 
 class FailedDatabaseClass
 {
-    public function __construct(Config $config)
+    public function __construct(Database\Config $config)
     {
         // intentionally nothing to do and not instance of ADatabase
     }
 }
 
 
-class SpecFactory extends Factory
+class SpecFactory extends Database\Factory
 {
     protected static $map = [
-        IDriverSources::TYPE_PDO_POSTGRES => '\kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL',
-        IDriverSources::TYPE_PDO_SQLITE => '\kalanis\kw_mapper\Storage\Database\PDO\SQLite',
-        'failed_one' => '\StorageTests\Database\FailedDatabaseClass',
+        IDriverSources::TYPE_PDO_POSTGRES => Database\PDO\PostgreSQL::class,
+        IDriverSources::TYPE_PDO_SQLITE => Database\PDO\SQLite::class,
+        'failed_one' => FailedDatabaseClass::class,
     ];
 }
 
 
-class XSingleton extends DatabaseSingleton
+class XSingleton extends Database\DatabaseSingleton
 {
     public static function clear(): void
     {

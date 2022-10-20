@@ -111,7 +111,7 @@ class PresetRecord extends ASimpleRecord
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 10);
         $this->addEntry('what', IEntryType::TYPE_STRING, 32);
         $this->addEntry('when', IEntryType::TYPE_STRING, 32);
-        $this->setMapper('\MappersTests\PresetMapper');
+        $this->setMapper(PresetMapper::class);
     }
 }
 

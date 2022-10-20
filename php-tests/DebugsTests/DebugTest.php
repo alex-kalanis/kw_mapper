@@ -58,21 +58,21 @@ var_dump(['all', $search->getResults()]);
 
 /**
  * Class PedigreeUpdateRecord
- * @property int id
- * @property string key
- * @property string name
- * @property string kennel
- * @property string birth
- * @property string address
- * @property string trials
- * @property string photo
- * @property int photoX
- * @property int photoY
- * @property string breed
- * @property string sex
- * @property string text
- * @property \DebugsTests\PedigreeRelateRecord[] parents
- * @property \DebugsTests\PedigreeRelateRecord[] children
+ * @property int $id
+ * @property string $key
+ * @property string $name
+ * @property string $kennel
+ * @property string $birth
+ * @property string $address
+ * @property string $trials
+ * @property string $photo
+ * @property int $photoX
+ * @property int $photoY
+ * @property string $breed
+ * @property string $sex
+ * @property string $text
+ * @property \DebugsTests\PedigreeRelateRecord[] $parents
+ * @property \DebugsTests\PedigreeRelateRecord[] $children
  */
 class PedigreeUpdateRecord extends Records\AStrictRecord
 {
@@ -127,11 +127,11 @@ class PedigreeUpdateMapper extends Mappers\Database\ADatabase
 
 /**
  * Class PedigreeRelateRecord
- * @property int id
- * @property int childId
- * @property int parentId
- * @property \DebugsTests\PedigreeUpdateRecord[] parents
- * @property \DebugsTests\PedigreeUpdateRecord[] children
+ * @property int $id
+ * @property int $childId
+ * @property int $parentId
+ * @property \DebugsTests\PedigreeUpdateRecord[] $parents
+ * @property \DebugsTests\PedigreeUpdateRecord[] $children
  */
 class PedigreeRelateRecord extends Records\AStrictRecord
 {
@@ -165,22 +165,22 @@ class PedigreeRelateMapper extends Mappers\Database\ADatabase
 
 /**
  * Class PedigreeRecord
- * @property string id
- * @property string name
- * @property string kennel
- * @property string birth
- * @property string father
- * @property string mother
- * @property string fatherId
- * @property string motherId
- * @property string address
- * @property string trials
- * @property string photo
- * @property string photoX
- * @property string photoY
- * @property string breed
- * @property string sex
- * @property string text
+ * @property string $id
+ * @property string $name
+ * @property string $kennel
+ * @property string $birth
+ * @property string $father
+ * @property string $mother
+ * @property string $fatherId
+ * @property string $motherId
+ * @property string $address
+ * @property string $trials
+ * @property string $photo
+ * @property string $photoX
+ * @property string $photoY
+ * @property string $breed
+ * @property string $sex
+ * @property string $text
  */
 class PedigreeRecord extends Records\AStrictRecord
 {

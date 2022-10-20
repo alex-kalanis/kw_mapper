@@ -234,7 +234,7 @@ class SQLiteNameTestRecord extends ASimpleRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 250);
         $this->addEntry('par', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('pars', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\StorageTests\Database\DeepQuery\SQLiteNameTestMapper');
+        $this->setMapper(SQLiteNameTestMapper::class);
     }
 }
 
@@ -249,6 +249,6 @@ class SQLiteNameTestMapper extends ADatabase
         $this->setRelation('name', 'x_name');
         $this->setRelation('par', 'x_par');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('pars', '\StorageTests\Database\DeepQuery\SQLiteNameTestRecord', 'par', 'id');
+        $this->addForeignKey('pars', SQLiteNameTestRecord::class, 'par', 'id');
     }
 }

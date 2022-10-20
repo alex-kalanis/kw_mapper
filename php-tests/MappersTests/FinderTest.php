@@ -160,7 +160,7 @@ class FinderRecord extends ASimpleRecord
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 10);
         $this->addEntry('what', IEntryType::TYPE_STRING, 32);
         $this->addEntry('when', IEntryType::TYPE_STRING, 32);
-        $this->setMapper('\MappersTests\FinderMapper'); // probably not necessary here
+        $this->setMapper(FinderMapper::class); // probably not necessary here
     }
 }
 
@@ -200,7 +200,7 @@ class PlusFinderRecord extends FinderRecord
         parent::addEntries();
         $this->addEntry('extra', IEntryType::TYPE_STRING, 32);
         $this->addEntry('plus', IEntryType::TYPE_BOOLEAN, false);
-        $this->setMapper('\MappersTests\PlusFinderMapper'); // probably not necessary here
+        $this->setMapper(PlusFinderMapper::class); // probably not necessary here
     }
 }
 

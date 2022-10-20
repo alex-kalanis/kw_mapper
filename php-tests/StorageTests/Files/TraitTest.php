@@ -5,9 +5,10 @@ namespace StorageTests\Files;
 
 use CommonTestClass;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\File;
+use kalanis\kw_mapper\Mappers\File\PageContent;
 use kalanis\kw_mapper\Records\PageRecord;
-use kalanis\kw_mapper\Storage;
+use kalanis\kw_mapper\Storage\File;
+use kalanis\kw_storage\Storage\Storage;
 
 
 class TraitTest extends CommonTestClass
@@ -25,8 +26,8 @@ class TraitTest extends CommonTestClass
         // set once, propagate everywhere
         $data1 = new CStorage();
         $data2 = new StoragePage();
-        $this->assertInstanceOf('\kalanis\kw_storage\Storage\Storage', $data1->getStore());
-        $this->assertInstanceOf('\kalanis\kw_storage\Storage\Storage', $data2->getStore());
+        $this->assertInstanceOf(Storage::class, $data1->getStore());
+        $this->assertInstanceOf(Storage::class, $data2->getStore());
         $this->assertEquals($data1->getStore(), $data2->getStore());
     }
 
@@ -49,13 +50,13 @@ class TraitTest extends CommonTestClass
 
 class Nl
 {
-    use Storage\File\Formats\TNl;
+    use File\Formats\TNl;
 }
 
 
 class CStorage
 {
-    use Storage\File\TStorage;
+    use File\TStorage;
 
     public function getStore()
     {
@@ -66,11 +67,11 @@ class CStorage
 
 class XFormat
 {
-    use Storage\File\TFormat;
+    use File\TFormat;
 }
 
 
-class StoragePage extends File\PageContent
+class StoragePage extends PageContent
 {
     public function getStore()
     {

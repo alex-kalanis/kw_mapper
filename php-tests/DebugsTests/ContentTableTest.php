@@ -7,6 +7,7 @@ use CommonTestClass;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records\ASimpleRecord;
+use kalanis\kw_mapper\Storage;
 
 
 class ContentTableTest extends CommonTestClass
@@ -36,10 +37,10 @@ class ContentTableTest extends CommonTestClass
 /**
  * Class ShortMessage
  * @package DebugsTests
- * @property int id
- * @property int date
- * @property string title
- * @property string content
+ * @property int $id
+ * @property int $date
+ * @property string $title
+ * @property string $content
  */
 class ShortMessage extends ASimpleRecord
 {
@@ -49,7 +50,7 @@ class ShortMessage extends ASimpleRecord
         $this->addEntry('date', IEntryType::TYPE_INTEGER, PHP_INT_MAX);
         $this->addEntry('title', IEntryType::TYPE_STRING, 1024);
         $this->addEntry('content', IEntryType::TYPE_STRING, 8192);
-        $this->setMapper('\DebugsTests\ShortMessageMapper');
+        $this->setMapper(ShortMessageMapper::class);
     }
 }
 
@@ -59,7 +60,7 @@ class ShortMessageMapper extends Mappers\File\ATable
     protected function setMap(): void
     {
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' .  DIRECTORY_SEPARATOR . 'index.short');
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setFormat(Storage\File\Formats\SeparatedElements::class);
         $this->orderFromFirst(false);
         $this->setRelation('id', 0);
         $this->setRelation('date', 1);

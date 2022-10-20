@@ -5,6 +5,7 @@ namespace kalanis\kw_mapper\Storage\Database\Raw;
 
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ASQL;
+use kalanis\kw_mapper\Storage\Database\Dialects;
 use kalanis\kw_mapper\Storage\Database\TBindNames;
 
 
@@ -34,7 +35,7 @@ class MySQLi extends ASQL
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\MySQL';
+        return Dialects\MySQL::class;
     }
 
     public function query(string $query, array $params, int $fetchType = MYSQLI_ASSOC): array

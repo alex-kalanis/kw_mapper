@@ -317,7 +317,7 @@ class TableBefore extends \TableRecord
     protected function addEntries(): void
     {
         parent::addEntries();
-        $this->setMapper('\MappersTests\File\TableBeforeMapper');
+        $this->setMapper(TableBeforeMapper::class);
     }
 }
 
@@ -341,7 +341,7 @@ class TableAfter extends \TableRecord
     protected function addEntries(): void
     {
         parent::addEntries();
-        $this->setMapper('\MappersTests\File\TableAfterMapper');
+        $this->setMapper(TableAfterMapper::class);
     }
 }
 

@@ -24,7 +24,7 @@ class RecordsTest extends CommonTestClass
         $this->assertEquals(1, count($record->getRecordsInJoin()));
         $child = $record->recordLookup('prt');
         $this->assertEquals(2, count($record->getRecordsInJoin()));
-        $this->assertInstanceOf('\SearchTests\XaRecordParent', $child->getRecord());
+        $this->assertInstanceOf(XaRecordParent::class, $child->getRecord());
         $this->assertEquals($child, $record->recordLookup('prt'));
         $this->assertEmpty($record->recordLookup('unknown'));
     }
@@ -51,7 +51,7 @@ class XaRecordParent extends ASimpleRecord
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 512);
         $this->addEntry('name', IEntryType::TYPE_STRING, 512);
         $this->addEntry('chld', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\SearchTests\XaMapperParent');
+        $this->setMapper(XaMapperParent::class);
     }
 }
 
@@ -72,7 +72,7 @@ class XaRecordChild extends ASimpleRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 512);
         $this->addEntry('prtId', IEntryType::TYPE_INTEGER, 64); // ID of remote
         $this->addEntry('prt', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\SearchTests\XaMapperChild');
+        $this->setMapper(XaMapperChild::class);
     }
 }
 
@@ -86,7 +86,7 @@ class XaMapperParent extends ADatabase
         $this->setRelation('id', 'kmpt_id');
         $this->setRelation('name', 'kmpt_name');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('chld', '\SearchTests\XaRecordChild', 'chldId', 'id');
+        $this->addForeignKey('chld', XaRecordChild::class, 'chldId', 'id');
     }
 }
 
@@ -101,6 +101,6 @@ class XaMapperChild extends ADatabase
         $this->setRelation('name', 'kmct_name');
         $this->setRelation('prtId', 'kmpt_id');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('prt', '\SearchTests\XaRecordParent', 'prtId', 'id');
+        $this->addForeignKey('prt', XaRecordParent::class, 'prtId', 'id');
     }
 }

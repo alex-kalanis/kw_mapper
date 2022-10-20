@@ -6,7 +6,7 @@ namespace SearchTests;
 use CommonTestClass;
 use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Search\Connector\Factory;
+use kalanis\kw_mapper\Search\Connector;
 use kalanis\kw_mapper\Storage\Database\Config;
 use kalanis\kw_mapper\Storage\Database\ConfigStorage;
 
@@ -36,9 +36,9 @@ class FactoryTest extends CommonTestClass
     {
         $record = new \XSimpleRecord();
         $record->useDatabase();
-        $lib = Factory::getInstance();
+        $lib = Connector\Factory::getInstance();
         $conn = $lib->getConnector($record);
-        $this->assertInstanceOf('\kalanis\kw_mapper\Search\Connector\Database', $conn);
+        $this->assertInstanceOf(Connector\Database::class, $conn);
     }
 
     /**
@@ -48,9 +48,9 @@ class FactoryTest extends CommonTestClass
     {
         $record = new \XSimpleRecord();
         $record->useFile();
-        $lib = Factory::getInstance();
+        $lib = Connector\Factory::getInstance();
         $conn = $lib->getConnector($record);
-        $this->assertInstanceOf('\kalanis\kw_mapper\Search\Connector\FileTable', $conn);
+        $this->assertInstanceOf(Connector\FileTable::class, $conn);
     }
 
     /**
@@ -78,9 +78,9 @@ class FactoryTest extends CommonTestClass
         $record4->id = 4;
         $record4->title = 'jkl';
 
-        $lib = Factory::getInstance();
+        $lib = Connector\Factory::getInstance();
         $conn = $lib->getConnector($record1, [$record1, $record2, $record3, $record4]);
-        $this->assertInstanceOf('\kalanis\kw_mapper\Search\Connector\Records', $conn);
+        $this->assertInstanceOf(Connector\Records::class, $conn);
     }
 
     /**
@@ -91,7 +91,7 @@ class FactoryTest extends CommonTestClass
         $record = new \XSimpleRecord();
         $record->useMock();
 
-        $lib = Factory::getInstance();
+        $lib = Connector\Factory::getInstance();
         $this->expectException(MapperException::class);
         $lib->getConnector($record);
     }

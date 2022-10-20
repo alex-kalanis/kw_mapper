@@ -1,5 +1,6 @@
 <?php
 
+use kalanis\kw_mapper\Adapters;
 use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
@@ -28,10 +29,10 @@ Storage\Database\ConfigStorage::getInstance()->addConfig(
 
 /**
  * Class UserRecord
- * @property int id
- * @property string name
- * @property string password
- * @property bool enabled
+ * @property int $id
+ * @property string $name
+ * @property string $password
+ * @property bool $enabled
  */
 class UserRecord extends Records\AStrictRecord
 {
@@ -41,7 +42,7 @@ class UserRecord extends Records\AStrictRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 128);
         $this->addEntry('password', IEntryType::TYPE_STRING, 128);
         $this->addEntry('enabled', IEntryType::TYPE_BOOLEAN);
-        $this->setMapper('\UserDBMapper');
+        $this->setMapper(UserDBMapper::class);
     }
 }
 
@@ -90,7 +91,7 @@ class UserFileMapper extends Mappers\File\ATable
     protected function setMap(): void
     {
         $this->setSource('users.txt');
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setFormat(Storage\File\Formats\SeparatedElements::class);
         $this->setRelation('id', 0);
         $this->setRelation('name', 1);
         $this->setRelation('password', 2);
@@ -102,11 +103,11 @@ class UserFileMapper extends Mappers\File\ATable
 
 /**
  * Class EntryRecord
- * @property int id
- * @property string title
- * @property string content
- * @property kalanis\kw_mapper\Adapters\MappedStdClass details
- * @property int user
+ * @property int $id
+ * @property string $title
+ * @property string $content
+ * @property kalanis\kw_mapper\Adapters\MappedStdClass $details
+ * @property int $user
  * @property UserRecord[] users
  */
 class EntryRecord extends Records\AStrictRecord
@@ -116,10 +117,10 @@ class EntryRecord extends Records\AStrictRecord
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 65536);
         $this->addEntry('title', IEntryType::TYPE_STRING, 128);
         $this->addEntry('content', IEntryType::TYPE_STRING, 65536);
-        $this->addEntry('details', IEntryType::TYPE_OBJECT, '\kalanis\kw_mapper\Adapters\MappedStdClass');
+        $this->addEntry('details', IEntryType::TYPE_OBJECT, Adapters\MappedStdClass::class);
         $this->addEntry('user', IEntryType::TYPE_INTEGER, 2048);
         $this->addEntry('users', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\EntryDBMapper');
+        $this->setMapper(EntryDBMapper::class);
     }
 }
 
@@ -136,7 +137,7 @@ class EntryDBMapper extends Mappers\Database\ADatabase
         $this->setRelation('details', 'e_details');
         $this->setRelation('user', 'u_id');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('users', '\UserRecord', 'user', 'id');
+        $this->addForeignKey('users', UserRecord::class, 'user', 'id');
     }
 
     /**

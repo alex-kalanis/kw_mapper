@@ -12,6 +12,12 @@ use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_mapper\Storage;
 
 
+/**
+ * Class ConnectRelationKeysTest
+ * @package SearchTests
+ * @requires extension PDO
+ * @requires extension pdo_sqlite
+ */
 class ConnectRelationKeysTest extends AConnectTests
 {
     /**
@@ -55,7 +61,7 @@ class XConnectRecordBadRelationChild extends ASimpleRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 512);
         $this->addEntry('prtId', IEntryType::TYPE_INTEGER, 64); // ID of remote
         $this->addEntry('prts', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\SearchTests\XConnectMapperBadRelationChild');
+        $this->setMapper(XConnectMapperBadRelationChild::class);
     }
 }
 
@@ -71,7 +77,7 @@ class XConnectMapperBadRelationChild extends ADatabase
         $this->setRelation('prtId', 'kmpt_id');
         $this->addPrimaryKey('id');
         // local entry key alias is different from any available relation keys - cannot connect them together
-        $this->addForeignKey('parents', '\SearchTests\XConnectRecordParent', 'parentId', 'id');
+        $this->addForeignKey('parents', XConnectRecordParent::class, 'parentId', 'id');
     }
 }
 
@@ -92,7 +98,7 @@ class XConnectRecordBadEntryChild extends ASimpleRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 512);
         $this->addEntry('prtId', IEntryType::TYPE_INTEGER, 64); // ID of remote
         $this->addEntry('prts', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\SearchTests\XConnectMapperBadEntryChild');
+        $this->setMapper(XConnectMapperBadEntryChild::class);
     }
 }
 
@@ -108,6 +114,6 @@ class XConnectMapperBadEntryChild extends ADatabase
         $this->setRelation('prtId', 'kmpt_id');
         $this->addPrimaryKey('id');
         // remote entry key is unknown in remote record - cannot connect them together
-        $this->addForeignKey('prts', '\SearchTests\XConnectRecordParent', 'prtId', 'unknown');
+        $this->addForeignKey('prts', XConnectRecordParent::class, 'prtId', 'unknown');
     }
 }

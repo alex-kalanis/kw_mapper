@@ -7,6 +7,7 @@ use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\Interfaces\IRegistry;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
+use kalanis\kw_mapper\Storage\Database\Dialects;
 use kalanis\kw_mapper\Storage\Database\Config;
 
 
@@ -55,7 +56,7 @@ class WinRegistry extends ADatabase
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\EmptyDialect';
+        return Dialects\EmptyDialect::class;
     }
 
     /**

@@ -15,17 +15,17 @@ class Factory
 {
     /** @var array<string, string> */
     protected static $map = [
-        IDriverSources::TYPE_PDO_MYSQL => '\kalanis\kw_mapper\Storage\Database\PDO\MySQL',
-        IDriverSources::TYPE_PDO_MSSQL => '\kalanis\kw_mapper\Storage\Database\PDO\MSSQL',
-        IDriverSources::TYPE_PDO_ORACLE => '\kalanis\kw_mapper\Storage\Database\PDO\Oracle',
-        IDriverSources::TYPE_PDO_POSTGRES => '\kalanis\kw_mapper\Storage\Database\PDO\PostgreSQL',
-        IDriverSources::TYPE_PDO_SQLITE => '\kalanis\kw_mapper\Storage\Database\PDO\SQLite',
-        IDriverSources::TYPE_RAW_MYSQLI => '\kalanis\kw_mapper\Storage\Database\Raw\MySQLi',
-        IDriverSources::TYPE_RAW_MONGO => '\kalanis\kw_mapper\Storage\Database\Raw\MongoDb',
-        IDriverSources::TYPE_RAW_LDAP => '\kalanis\kw_mapper\Storage\Database\Raw\Ldap',
-        IDriverSources::TYPE_RAW_WINREG => '\kalanis\kw_mapper\Storage\Database\Raw\WinRegistry',
-        IDriverSources::TYPE_RAW_WINREG2 => '\kalanis\kw_mapper\Storage\Database\Raw\WinRegistry2',
-        IDriverSources::TYPE_RAW_DBA => '\kalanis\kw_mapper\Storage\Database\Raw\Dba',
+        IDriverSources::TYPE_PDO_MYSQL => PDO\MySQL::class,
+        IDriverSources::TYPE_PDO_MSSQL => PDO\MSSQL::class,
+        IDriverSources::TYPE_PDO_ORACLE => PDO\Oracle::class,
+        IDriverSources::TYPE_PDO_POSTGRES => PDO\PostgreSQL::class,
+        IDriverSources::TYPE_PDO_SQLITE => PDO\SQLite::class,
+        IDriverSources::TYPE_RAW_MYSQLI => Raw\MySQLi::class,
+        IDriverSources::TYPE_RAW_MONGO => Raw\MongoDb::class,
+        IDriverSources::TYPE_RAW_LDAP => Raw\Ldap::class,
+        IDriverSources::TYPE_RAW_WINREG => Raw\WinRegistry::class,
+        IDriverSources::TYPE_RAW_WINREG2 => Raw\WinRegistry2::class,
+        IDriverSources::TYPE_RAW_DBA => Raw\Dba::class,
     ];
 
     /** @var array<string, ADatabase> */

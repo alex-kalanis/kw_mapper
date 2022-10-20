@@ -38,8 +38,8 @@ class MapperTest extends CommonTestClass
     public function testFactory(): void
     {
         $data = new Mappers\Factory();
-        $instance = $data->getInstance('\kalanis\kw_mapper\Mappers\File\PageContent');
-        $this->assertInstanceOf('\kalanis\kw_mapper\Mappers\AMapper', $instance);
+        $instance = $data->getInstance(Mappers\File\PageContent::class);
+        $this->assertInstanceOf(Mappers\AMapper::class, $instance);
     }
 
     /**
@@ -59,7 +59,7 @@ class MapperTest extends CommonTestClass
     {
         $data = new Mappers\Factory();
         $this->expectException(MapperException::class);
-        $data->getInstance('\stdClass');
+        $data->getInstance(\stdClass::class);
     }
 
     /**
@@ -152,8 +152,8 @@ class MapperTest extends CommonTestClass
 /**
  * Class RecordForMapper
  * @package RecordsTests
- * @property string path
- * @property string content
+ * @property string $path
+ * @property string $content
  */
 class RecordForMapper extends ASimpleRecord
 {
@@ -164,7 +164,7 @@ class RecordForMapper extends ASimpleRecord
     {
         $this->addEntry('path', IEntryType::TYPE_STRING, 512);
         $this->addEntry('content', IEntryType::TYPE_STRING, PHP_INT_MAX);
-        $this->setMapper('\kalanis\kw_mapper\Mappers\File\PageContent');
+        $this->setMapper(Mappers\File\PageContent::class);
     }
 }
 

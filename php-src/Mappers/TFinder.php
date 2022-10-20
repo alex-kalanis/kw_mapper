@@ -14,7 +14,7 @@ use kalanis\kw_mapper\Records;
  */
 trait TFinder
 {
-    /** @var Records\ARecord[] */
+    /** @var array<Records\ARecord<int|string, Records\Entry>>|Records\ARecord[] */
     protected $records = [];
 
     /**
@@ -29,6 +29,12 @@ trait TFinder
         $this->loadOnDemand($record);
 
         $toProcess = array_combine(array_keys($this->records), array_values($this->records)); // copy array - records will be removed when don't match
+        if (false === $toProcess) {
+            // @codeCoverageIgnoreStart
+            // php7-
+            throw new MapperException('Combine on field went wrong. Call php support.');
+        }
+        // @codeCoverageIgnoreEnd
         $toCompare = $this->getArrayToCompare($record, $usePks, $wantFromStorage);
 
         if ($usePks) { // nothing to get when any necessary primary key is unknown

@@ -249,11 +249,11 @@ class MsSqlTest extends CommonTestClass
 
 /**
  * Class MsSqlTestRecord
- * @property int id
- * @property int timeStart
- * @property int timeEnd
- * @property int status
- * @property string command
+ * @property int $id
+ * @property int $timeStart
+ * @property int $timeEnd
+ * @property int $status
+ * @property string $command
  */
 class MsSqlTestRecord extends ASimpleRecord
 {
@@ -264,7 +264,7 @@ class MsSqlTestRecord extends ASimpleRecord
         $this->addEntry('timeEnd', IEntryType::TYPE_INTEGER, 99999999);
         $this->addEntry('status', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('command', IEntryType::TYPE_STRING, 250);
-        $this->setMapper('\StorageTests\Database\Connect\MsSqlTestMapper');
+        $this->setMapper(MsSqlTestMapper::class);
     }
 }
 

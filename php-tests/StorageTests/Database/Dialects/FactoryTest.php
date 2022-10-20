@@ -4,6 +4,7 @@ namespace StorageTests\Database\Dialects;
 
 
 use CommonTestClass;
+use kalanis\kw_mapper\Adapters;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\Dialects;
 
@@ -27,7 +28,7 @@ class FactoryTest extends CommonTestClass
     {
         $factory = Dialects\Factory::getInstance();
         $this->expectException(MapperException::class);
-        $factory->getDialectClass('\kalanis\kw_mapper\Adapters\MappedStdClass');
+        $factory->getDialectClass(Adapters\MappedStdClass::class);
     }
 
     /**
@@ -36,9 +37,9 @@ class FactoryTest extends CommonTestClass
     public function testFactoryRun(): void
     {
         $factory = Dialects\Factory::getInstance();
-        $className = '\kalanis\kw_mapper\Storage\Database\Dialects\SQLite';
+        $className = Dialects\SQLite::class;
         $class = $factory->getDialectClass($className);
-        $this->assertInstanceOf('\kalanis\kw_mapper\Storage\Database\Dialects\ADialect', $class);
+        $this->assertInstanceOf(Dialects\ADialect::class, $class);
         // multiple times - one instance
         $this->assertEquals($class, $factory->getDialectClass($className));
     }

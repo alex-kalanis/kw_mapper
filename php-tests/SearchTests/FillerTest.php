@@ -504,7 +504,7 @@ class XRecordParent extends ASimpleRecord
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 512);
         $this->addEntry('name', IEntryType::TYPE_STRING, 512);
         $this->addEntry('chld', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\SearchTests\XMapperParent');
+        $this->setMapper(XMapperParent::class);
     }
 }
 
@@ -525,7 +525,7 @@ class XRecordChild extends ASimpleRecord
         $this->addEntry('name', IEntryType::TYPE_STRING, 512);
         $this->addEntry('prtId', IEntryType::TYPE_INTEGER, 64); // ID of remote
         $this->addEntry('prt', IEntryType::TYPE_ARRAY); // FK - makes the array of entries every time
-        $this->setMapper('\SearchTests\XMapperChild');
+        $this->setMapper(XMapperChild::class);
     }
 }
 
@@ -539,7 +539,7 @@ class XMapperParent extends ADatabase
         $this->setRelation('id', 'kmpt_id');
         $this->setRelation('name', 'kmpt_name');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('chld', '\SearchTests\XRecordChild', 'chldId', 'id');
+        $this->addForeignKey('chld', XRecordChild::class, 'chldId', 'id');
     }
 }
 
@@ -554,6 +554,6 @@ class XMapperChild extends ADatabase
         $this->setRelation('name', 'kmct_name');
         $this->setRelation('prtId', 'kmpt_id');
         $this->addPrimaryKey('id');
-        $this->addForeignKey('prt', '\SearchTests\XRecordParent', 'prtId', 'id');
+        $this->addForeignKey('prt', XRecordParent::class, 'prtId', 'id');
     }
 }

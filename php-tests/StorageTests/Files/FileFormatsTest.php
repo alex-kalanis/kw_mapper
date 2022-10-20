@@ -4,7 +4,8 @@ namespace StorageTests\Files;
 
 
 use CommonTestClass;
-use kalanis\kw_mapper\Interfaces\IEntryType;
+use kalanis\kw_mapper\Adapters;
+use kalanis\kw_mapper\Interfaces;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\File\Formats;
 
@@ -28,7 +29,7 @@ class FileFormatsTest extends CommonTestClass
     {
         $factory = Formats\Factory::getInstance();
         $this->expectException(MapperException::class);
-        $factory->getFormatClass('\kalanis\kw_mapper\Adapters\MappedStdClass');
+        $factory->getFormatClass(Adapters\MappedStdClass::class);
     }
 
     /**
@@ -37,10 +38,9 @@ class FileFormatsTest extends CommonTestClass
     public function testFactoryRun(): void
     {
         $factory = Formats\Factory::getInstance();
-        $className = '\kalanis\kw_mapper\Storage\File\Formats\SinglePage';
-        $class = $factory->getFormatClass($className);
-        $this->assertInstanceOf('\kalanis\kw_mapper\Interfaces\IFileFormat', $class);
-        $this->assertEquals($class, $factory->getFormatClass($className));
+        $class = $factory->getFormatClass(Formats\SinglePage::class);
+        $this->assertInstanceOf(Interfaces\IFileFormat::class, $class);
+        $this->assertEquals($class, $factory->getFormatClass(Formats\SinglePage::class));
     }
 
     /**
@@ -122,12 +122,12 @@ class FileFormatsTest extends CommonTestClass
     public function typesToProvider(): array
     {
         return [
-            'obj1' => ['a' => '0', 'b' => IEntryType::TYPE_BOOLEAN, 'c' => false],
-            'obj2' => ['a' => '1', 'b' => IEntryType::TYPE_BOOLEAN, 'c' => true],
-            'obj3' => ['a' => '10', 'b' => IEntryType::TYPE_STRING, 'c' => null],
-            'obj4' => ['a' => '15', 'b' => IEntryType::TYPE_INTEGER, 'c' => 15],
-            'obj5' => ['a' => '18.8', 'b' => IEntryType::TYPE_FLOAT, 'c' => 18.8],
-            'obj6' => ['a' => 'lkjhgdf', 'b' => IEntryType::TYPE_STRING, 'c' => 'lkjhgdf'],
+            'obj1' => ['a' => '0', 'b' => Interfaces\IEntryType::TYPE_BOOLEAN, 'c' => false],
+            'obj2' => ['a' => '1', 'b' => Interfaces\IEntryType::TYPE_BOOLEAN, 'c' => true],
+            'obj3' => ['a' => '10', 'b' => Interfaces\IEntryType::TYPE_STRING, 'c' => null],
+            'obj4' => ['a' => '15', 'b' => Interfaces\IEntryType::TYPE_INTEGER, 'c' => 15],
+            'obj5' => ['a' => '18.8', 'b' => Interfaces\IEntryType::TYPE_FLOAT, 'c' => 18.8],
+            'obj6' => ['a' => 'lkjhgdf', 'b' => Interfaces\IEntryType::TYPE_STRING, 'c' => 'lkjhgdf'],
         ];
     }
 }

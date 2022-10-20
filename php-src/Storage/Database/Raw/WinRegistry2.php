@@ -9,6 +9,7 @@ use kalanis\kw_mapper\Interfaces\IRegistry;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
 use kalanis\kw_mapper\Storage\Database\Config;
+use kalanis\kw_mapper\Storage\Database\Dialects;
 use kalanis\kw_mapper\Storage\Database\TConnection;
 use kalanis\kw_mapper\Storage\Shared\DotNet\ComRegistry;
 
@@ -63,7 +64,7 @@ class WinRegistry2 extends ADatabase implements IPassConnection
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\EmptyDialect';
+        return Dialects\EmptyDialect::class;
     }
 
     /**

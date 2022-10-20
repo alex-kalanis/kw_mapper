@@ -8,6 +8,7 @@ use kalanis\kw_mapper\Mappers\File\ATable;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\ASimpleRecord;
 use kalanis\kw_mapper\Storage\Database;
+use kalanis\kw_mapper\Storage\File;
 use kalanis\kw_mapper\Storage\Shared;
 use PHPUnit\Framework\TestCase;
 
@@ -66,7 +67,7 @@ class TableRecord extends ASimpleRecord
         $this->addEntry('title', IEntryType::TYPE_STRING, 512);
         $this->addEntry('desc', IEntryType::TYPE_STRING, 512);
         $this->addEntry('sub', IEntryType::TYPE_BOOLEAN);
-        $this->setMapper('\TableMapper');
+        $this->setMapper(TableMapper::class);
     }
 }
 
@@ -75,7 +76,7 @@ class TableMapper extends ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setFormat(File\Formats\SeparatedElements::class);
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.meta');
         $this->setRelation('file', 0);
         $this->setRelation('order', 1);
@@ -109,12 +110,12 @@ class TableIdRecord extends ASimpleRecord
 
     public function useIdAsMapper(): void
     {
-        $this->setMapper('\TableIdMapper');
+        $this->setMapper(TableIdMapper::class);
     }
 
     public function useNoKeyMapper(): void
     {
-        $this->setMapper('\TableNoPkMapper');
+        $this->setMapper(TableNoPkMapper::class);
     }
 
     public function setAnotherMapper(string $name): void
@@ -128,7 +129,7 @@ class TableNoPkMapper extends ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setFormat(File\Formats\SeparatedElements::class);
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.data');
         $this->setRelation('id', 0);
         $this->setRelation('file', 1);
@@ -165,17 +166,17 @@ class XSimpleRecord extends ASimpleRecord
 
     public function useDatabase(): void
     {
-        $this->setMapper('\XDatabaseMapper');
+        $this->setMapper(XDatabaseMapper::class);
     }
 
     public function useFile(): void
     {
-        $this->setMapper('\XFileMapper');
+        $this->setMapper(XFileMapper::class);
     }
 
     public function useMock(): void
     {
-        $this->setMapper('\XMockMapper');
+        $this->setMapper(XMockMapper::class);
     }
 }
 
@@ -196,7 +197,7 @@ class XFileMapper extends ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SeparatedElements');
+        $this->setFormat(File\Formats\SeparatedElements::class);
         $this->setSource('dummy');
         $this->setRelation('id', 'id');
         $this->setRelation('title', 'title');

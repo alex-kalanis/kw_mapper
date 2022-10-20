@@ -6,6 +6,7 @@ namespace kalanis\kw_mapper\Storage\Database\Raw;
 use kalanis\kw_mapper\Interfaces\IPassConnection;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Storage\Database\ADatabase;
+use kalanis\kw_mapper\Storage\Database\Dialects;
 use kalanis\kw_mapper\Storage\Database\TConnection;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 use MongoDB\Driver;
@@ -30,7 +31,7 @@ class MongoDb extends ADatabase implements IPassConnection
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\MongoDb';
+        return Dialects\MongoDb::class;
     }
 
     /**

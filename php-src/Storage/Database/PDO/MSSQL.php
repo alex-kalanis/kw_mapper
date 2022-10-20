@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Storage\Database\PDO;
 
 
+use kalanis\kw_mapper\Storage\Database\Dialects;
 use PDO;
 
 
@@ -18,7 +19,7 @@ class MSSQL extends APDO
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\TransactSQL';
+        return Dialects\TransactSQL::class;
     }
 
     protected function connectToServer(): PDO

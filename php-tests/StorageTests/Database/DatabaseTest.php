@@ -17,6 +17,12 @@ use kalanis\kw_mapper\Storage\Database\PDO\SQLite;
 use PDO;
 
 
+/**
+ * Class DatabaseTest
+ * @package StorageTests\Database
+ * @requires extension PDO
+ * @requires extension pdo_sqlite
+ */
 class DatabaseTest extends CommonTestClass
 {
     /** @var null|SQLite */
@@ -193,8 +199,8 @@ class DatabaseTest extends CommonTestClass
 
 /**
  * Class SQLiteNameTestRecord
- * @property int id
- * @property string name
+ * @property int $id
+ * @property string $name
  */
 class SQLiteNameTestRecord extends ASimpleRecord
 {
@@ -224,8 +230,8 @@ class SQLiteTestMapper extends ADatabase
 
 /**
  * Class SQLiteNameTestRecord
- * @property int id
- * @property string name
+ * @property int $id
+ * @property string $name
  */
 class SQLiteNameTestRecordBadPk extends ASimpleRecord
 {
@@ -256,8 +262,8 @@ class SQLiteTestMapperBadPk extends ADatabase
 
 /**
  * Class SQLiteNameTestRecordNoPk
- * @property int id
- * @property string name
+ * @property int $id
+ * @property string $name
  */
 class SQLiteNameTestRecordNoPk extends ASimpleRecord
 {

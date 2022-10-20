@@ -9,6 +9,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records\ASimpleRecord;
 use kalanis\kw_mapper\Records\PageRecord;
+use kalanis\kw_mapper\Storage\File\Formats;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\Storage;
 use kalanis\kw_storage\StorageException;
@@ -175,8 +176,8 @@ class XFailStorage extends Storage\Storage
 /**
  * Class KeyValueRecord
  * @package MappersTests\File
- * @property string key
- * @property string content
+ * @property string $key
+ * @property string $content
  */
 class KeyValueRecord extends ASimpleRecord
 {
@@ -184,7 +185,7 @@ class KeyValueRecord extends ASimpleRecord
     {
         $this->addEntry('key', IEntryType::TYPE_STRING, 512);
         $this->addEntry('content', IEntryType::TYPE_STRING, PHP_INT_MAX);
-        $this->setMapper('\MappersTests\File\KeyValueMapper');
+        $this->setMapper(KeyValueMapper::class);
     }
 }
 
@@ -195,6 +196,6 @@ class KeyValueMapper extends Mappers\File\PageContent
     {
         $this->setPathKey('key');
         $this->setContentKey('content');
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SinglePage');
+        $this->setFormat(Formats\SinglePage::class);
     }
 }

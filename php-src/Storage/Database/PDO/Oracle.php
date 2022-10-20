@@ -3,6 +3,7 @@
 namespace kalanis\kw_mapper\Storage\Database\PDO;
 
 
+use kalanis\kw_mapper\Storage\Database\Dialects;
 use PDO;
 
 
@@ -17,7 +18,7 @@ class Oracle extends APDO
 
     public function languageDialect(): string
     {
-        return '\kalanis\kw_mapper\Storage\Database\Dialects\Oracle';
+        return Dialects\Oracle::class;
     }
 
     protected function connectToServer(): PDO

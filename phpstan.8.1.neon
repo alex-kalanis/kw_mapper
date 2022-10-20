@@ -35,3 +35,7 @@ parameters:
 			message: '#Else branch is unreachable because ternary operator condition is always true.#'
 			path: 'php-src/Storage/Database/PDO/APDO.php'
 			# php7 also returns back false, php8 just arrays
+		-
+			message: '#Strict comparison using \=\=\= between false and array\<kalanis\\kw_mapper\\Records\\ARecord\> will always evaluate to false.#'
+			path: 'php-src/Mappers/TFinder.php'
+			# php7 also returns back false, php8 just arrays
