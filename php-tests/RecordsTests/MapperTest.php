@@ -38,7 +38,7 @@ class MapperTest extends CommonTestClass
     public function testFactory(): void
     {
         $data = new Mappers\Factory();
-        $instance = $data->getInstance(Mappers\File\PageContent::class);
+        $instance = $data->getInstance(Mappers\Storage\PageContent::class);
         $this->assertInstanceOf(Mappers\AMapper::class, $instance);
     }
 
@@ -164,7 +164,7 @@ class RecordForMapper extends ASimpleRecord
     {
         $this->addEntry('path', IEntryType::TYPE_STRING, 512);
         $this->addEntry('content', IEntryType::TYPE_STRING, PHP_INT_MAX);
-        $this->setMapper(Mappers\File\PageContent::class);
+        $this->setMapper(Mappers\Storage\PageContent::class);
     }
 }
 

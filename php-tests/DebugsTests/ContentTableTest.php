@@ -55,12 +55,12 @@ class ShortMessage extends ASimpleRecord
 }
 
 
-class ShortMessageMapper extends Mappers\File\ATable
+class ShortMessageMapper extends Mappers\Storage\ATable
 {
     protected function setMap(): void
     {
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' .  DIRECTORY_SEPARATOR . 'index.short');
-        $this->setFormat(Storage\File\Formats\SeparatedElements::class);
+        $this->setFormat(Storage\Shared\FormatFiles\SeparatedElements::class);
         $this->orderFromFirst(false);
         $this->setRelation('id', 0);
         $this->setRelation('date', 1);

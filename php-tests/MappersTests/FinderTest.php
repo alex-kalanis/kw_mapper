@@ -95,9 +95,9 @@ class FinderTest extends CommonTestClass
 
 class XFinder
 {
-    use Mappers\TFinder;
-    use Mappers\TPrimaryKey;
-    use Mappers\TRelations;
+    use Mappers\Shared\TFinder;
+    use Mappers\Shared\TPrimaryKey;
+    use Mappers\Shared\TRelations;
 
     /**
      * @param ARecord $record

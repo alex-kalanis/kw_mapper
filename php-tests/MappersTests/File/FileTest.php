@@ -4,31 +4,20 @@ namespace MappersTests\File;
 
 
 use CommonTestClass;
+use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Interfaces\IProcessFiles;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records\ASimpleRecord;
-use kalanis\kw_mapper\Records\PageRecord;
-use kalanis\kw_mapper\Storage\File\Formats;
-use kalanis\kw_storage\Interfaces\IStorage;
-use kalanis\kw_storage\Storage;
-use kalanis\kw_storage\StorageException;
-use Traversable;
+use kalanis\kw_mapper\Storage\Shared\FormatFiles;
 
 
 class FileTest extends CommonTestClass
 {
-    public function tearDown(): void
-    {
-        $path = $this->getTestFile();
-        if (is_file($path)) {
-            @unlink($path);
-        }
-    }
-
     public function testContentOk(): void
     {
-        $path = $this->getTestFile();
+        $path = $this->getTestFile1();
         $lib = new Mappers\File\PageContent();
         $lib->setSource($path);
         $this->assertEquals($path, $lib->getAlias());
@@ -37,13 +26,40 @@ class FileTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testCannotLoad(): void
+    public function testContentOkLoad(): void
     {
-        $rec = new PageRecord();
-        $rec->path = $this->getTestFile();
-        $rec->content = 'okmijnuhbzgvtfcrdxesy';
+        $rec = new XPageContent();
+        $rec->key = $this->getTestFile1();
+        $this->assertTrue($rec->load());
+        $this->assertNotEmpty($rec->loadMultiple());
+    }
 
-        $lib = new XFailContent();
+    /**
+     * @throws MapperException
+     */
+    public function testContentOkSave(): void
+    {
+        $rec = new XPageContent();
+        $rec->key = $this->getTestFile1();
+        $rec->content = 'okmijnuhbzgvtfcrdxesy';
+        $this->assertTrue($rec->save());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testLoad(): void
+    {
+        $rec = new XPageContent();
+        $rec->key = $this->getTestFile1();
+
+        $lib = new XPageContentMapper();
+        $lib->passOnTest();
+        $this->assertNotEmpty($lib->load($rec));
+        $lib->setCombinedPath($this->getTestFile2());
+        $this->assertEquals($this->getTestFile2(), $lib->getExtPath());
+
+        $lib->dieOnTest();
         $this->expectException(MapperException::class);
         $this->expectExceptionMessage('Unable to read from source');
         $lib->load($rec);
@@ -52,13 +68,17 @@ class FileTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testCannotSave(): void
+    public function testSave(): void
     {
-        $rec = new PageRecord();
-        $rec->path = $this->getTestFile();
+        $rec = new XPageContent();
+        $rec->key = $this->getTestFile1();
         $rec->content = 'okmijnuhbzgvtfcrdxesy';
 
-        $lib = new XFailContent();
+        $lib = new XPageContentMapper();
+        $lib->passOnTest();
+        $this->assertTrue($lib->save($rec));
+
+        $lib->dieOnTest();
         $this->expectException(MapperException::class);
         $this->expectExceptionMessage('Unable to write into source');
         $lib->save($rec);
@@ -67,135 +87,142 @@ class FileTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testCannotDelete(): void
+    public function testDelete(): void
     {
-        $rec = new PageRecord();
-        $rec->path = $this->getTestFile();
+        $rec = new XPageContent();
+        $rec->key = $this->getTestFile1();
         $rec->content = 'okmijnuhbzgvtfcrdxesy';
 
-        $lib = new XFailContent();
-        $this->assertFalse($lib->delete($rec));
-        $rec->path = 'cannot_be_found';
+        $lib = new XPageContentMapper();
+        $lib->passOnTest();
         $this->assertTrue($lib->delete($rec));
+
+        $lib->dieOnTest();
+        $this->assertFalse($lib->delete($rec));
     }
 
-    /**
-     * @throws MapperException
-     */
-    public function testCannotSearch(): void
-    {
-        $rec = new KeyValueRecord();
-        $rec->key = $this->getTestFile();
-        $rec->content = 'okmijnuhbzgvtfcrdxesy';
-
-        $lib = new XFailKeyValue();
-        $result = $lib->loadMultiple($rec);
-        $this->assertEmpty($result);
-        $this->assertEquals([], $result);
-    }
-
-    /**
-     * @throws MapperException
-     */
-    public function testSearchDir(): void
-    {
-        $rec = new KeyValueRecord();
-        $rec->key = $this->getTestDir();
-        $rec->content = '';
-
-        $lib = new Mappers\File\KeyValue();
-        $result = $lib->loadMultiple($rec);
-        $this->assertNotEmpty($result);
-    }
-
-    protected function getTestFile(): string
+    protected function getTestFile1(): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'fileTest.txt';
     }
 
-    protected function getTestDir(): string
+    protected function getTestFile2(): array
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target' . DIRECTORY_SEPARATOR;
+        return [__DIR__, '..', '..', 'data', 'fileTest.txt'];
     }
 }
 
 
-class XFailContent extends Mappers\File\PageContent
+class XAccessFilePass implements IProcessFiles
 {
-    public function getStorage(): IStorage
+    public function findFreeName(array $path, string $name, string $suffix): string
     {
-        return new XFailStorage(
-            new Storage\Key\DefaultKey(),
-            new Storage\Target\Volume()
-        );
+        return '';
+    }
+
+    public function saveFile(array $entry, $content): bool
+    {
+        return true;
+    }
+
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
+    {
+        $stream = fopen('php://memory', 'r+');
+        fputs($stream, 'testing string 1234567890abcdefghijklmnopqrstuvwxyz');
+        rewind($stream);
+        return $stream;
+    }
+
+    public function copyFile(array $source, array $dest): bool
+    {
+        return true;
+    }
+
+    public function moveFile(array $source, array $dest): bool
+    {
+        return true;
+    }
+
+    public function deleteFile(array $entry): bool
+    {
+        return true;
     }
 }
 
 
-class XFailKeyValue extends Mappers\File\KeyValue
+class XAccessFileDie implements IProcessFiles
 {
-    public function getStorage(): IStorage
+    public function findFreeName(array $path, string $name, string $suffix): string
     {
-        return new XFailStorage(
-            new Storage\Key\DefaultKey(),
-            new Storage\Target\Volume()
-        );
+        return '';
+    }
+
+    public function saveFile(array $entry, $content): bool
+    {
+        throw new FilesException('Cannot access here');
+    }
+
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
+    {
+        throw new FilesException('Cannot access here');
+    }
+
+    public function copyFile(array $source, array $dest): bool
+    {
+        return false;
+    }
+
+    public function moveFile(array $source, array $dest): bool
+    {
+        return false;
+    }
+
+    public function deleteFile(array $entry): bool
+    {
+        throw new FilesException('Cannot access here');
     }
 }
 
 
-class XFailStorage extends Storage\Storage
-{
-    public function read(string $sharedKey)
-    {
-        throw new StorageException('XFail mock fail read');
-    }
-
-    public function write(string $sharedKey, $data, ?int $timeout = null): bool
-    {
-        throw new StorageException('XFail mock fail write');
-    }
-
-    public function remove(string $sharedKey): bool
-    {
-        throw new StorageException('XFail mock fail write');
-    }
-
-    public function lookup(string $mask): Traversable
-    {
-        throw new StorageException('XFail mock fail lookup');
-    }
-
-    public function exists(string $sharedKey): bool
-    {
-        return ('cannot_be_found' != $sharedKey);
-    }
-}
-
-
-/**
- * Class KeyValueRecord
- * @package MappersTests\File
- * @property string $key
- * @property string $content
- */
-class KeyValueRecord extends ASimpleRecord
-{
-    protected function addEntries(): void
-    {
-        $this->addEntry('key', IEntryType::TYPE_STRING, 512);
-        $this->addEntry('content', IEntryType::TYPE_STRING, PHP_INT_MAX);
-        $this->setMapper(KeyValueMapper::class);
-    }
-}
-
-
-class KeyValueMapper extends Mappers\File\PageContent
+class XPageContentMapper extends Mappers\File\PageContent
 {
     protected function setMap(): void
     {
         $this->setPathKey('key');
         $this->setContentKey('content');
-        $this->setFormat(Formats\SinglePage::class);
+        $this->setFormat(FormatFiles\SinglePage::class);
+        $this->setFileAccessor(new XAccessFilePass());
+    }
+
+    public function passOnTest(): void
+    {
+        $this->setFileAccessor(new XAccessFilePass());
+    }
+
+    public function dieOnTest(): void
+    {
+        $this->setFileAccessor(new XAccessFileDie());
+    }
+
+    public function getExtPath(): array
+    {
+        return $this->getPath();
+    }
+}
+
+
+/**
+ * Class XPageContent
+ * @package MappersTests\Storage
+ * @property string $key
+ * @property string $content
+ */
+class XPageContent extends ASimpleRecord
+{
+    protected function addEntries(): void
+    {
+        $this->addEntry('key', IEntryType::TYPE_STRING, 512);
+        $this->addEntry('content', IEntryType::TYPE_STRING, PHP_INT_MAX);
+        $this->setMapper(XPageContentMapper::class);
     }
 }

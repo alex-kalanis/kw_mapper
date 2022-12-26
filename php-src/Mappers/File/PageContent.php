@@ -4,6 +4,7 @@ namespace kalanis\kw_mapper\Mappers\File;
 
 
 use kalanis\kw_mapper\Records;
+use kalanis\kw_mapper\Storage\Shared\FormatFiles\SinglePage;
 
 
 /**
@@ -17,7 +18,7 @@ class PageContent extends AFile
     {
         $this->setPathKey('path');
         $this->setContentKey('content');
-        $this->setFormat('\kalanis\kw_mapper\Storage\File\Formats\SinglePage');
+        $this->setFormat(SinglePage::class);
     }
 
     public function loadMultiple(Records\ARecord $record): array

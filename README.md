@@ -31,18 +31,37 @@ There is many available storages:
  - Csv file
  - Ini file
  - Yaml file
+ - Json string
  - and with a little tweaking a bit more (Odbc, Dba with their connections, Oracle, Ldap, ...)
 
 It's also possible to limit user with its input on Record level or leave him with limits on
 storage. But then remember that every storage behaves differently for unwanted input!
 
+#### Main difference
+
+What is the main difference against its competitors? At first datasources.
+On competitors you can usually have only one datasource - preset database.
+This can have more datasources. So usually more connections to databases.
+You can have main storage in Postgres, yet authentication can run from LDAP
+and ask for remote data in JSON.
+
+Another one is files. This mapper was build with files in mind. The file
+itself behave just like another datasource. Its content can be accessed
+as raw one or as another table.
+
+With both of these things this mapper is good for transformation of data from
+one storage to another.
+
+Next one is access to raw queries only per mapper. That makes you comply with
+each datasource engine separately for your customized queries. So you cannot
+use the same complicated "join" query for both files and database.
 
 ## PHP Installation
 
 ```
 {
     "require": {
-        "alex-kalanis/kw_mapper": ">=1.0"
+        "alex-kalanis/kw_mapper": ">=2.0"
     }
 }
 ```
@@ -62,6 +81,8 @@ familiar with composer)
 4.) Extend your libraries by interfaces inside the package.
 
 5.) Just call setting and render
+
+If you want to know more, just open ```examples/``` directory and see the code there.
 
 ## Caveats
 

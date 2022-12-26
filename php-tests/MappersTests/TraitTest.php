@@ -153,13 +153,13 @@ class TraitTest extends CommonTestClass
 
 class Content
 {
-    use Mappers\File\TContent;
+    use Mappers\Shared\TContent;
 }
 
 
 class Translate
 {
-    use Mappers\TTranslate;
+    use Mappers\Shared\TTranslate;
 
     public function from(int $type, $content)
     {
@@ -181,23 +181,23 @@ class Table
 
 class Pk
 {
-    use Mappers\TPrimaryKey;
+    use Mappers\Shared\TPrimaryKey;
 }
 
 
 class Fk
 {
-    use Mappers\TForeignKey;
+    use Mappers\Shared\TForeignKey;
 }
 
 
 class Relations
 {
-    use Mappers\TRelations;
+    use Mappers\Shared\TRelations;
 }
 
 
 class Source
 {
-    use Mappers\TSource;
+    use Mappers\Shared\TSource;
 }

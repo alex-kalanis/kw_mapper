@@ -4,11 +4,11 @@ use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
 use kalanis\kw_mapper\Mappers\Database\ADatabase;
-use kalanis\kw_mapper\Mappers\File\ATable;
+use kalanis\kw_mapper\Mappers\File;
+use kalanis\kw_mapper\Mappers\Storage;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\ASimpleRecord;
 use kalanis\kw_mapper\Storage\Database;
-use kalanis\kw_mapper\Storage\File;
 use kalanis\kw_mapper\Storage\Shared;
 use PHPUnit\Framework\TestCase;
 
@@ -72,11 +72,11 @@ class TableRecord extends ASimpleRecord
 }
 
 
-class TableMapper extends ATable
+class TableMapper extends Storage\ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat(File\Formats\SeparatedElements::class);
+        $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.meta');
         $this->setRelation('file', 0);
         $this->setRelation('order', 1);
@@ -125,11 +125,11 @@ class TableIdRecord extends ASimpleRecord
 }
 
 
-class TableNoPkMapper extends ATable
+class TableNoPkMapper extends Storage\ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat(File\Formats\SeparatedElements::class);
+        $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.data');
         $this->setRelation('id', 0);
         $this->setRelation('file', 1);
@@ -169,6 +169,11 @@ class XSimpleRecord extends ASimpleRecord
         $this->setMapper(XDatabaseMapper::class);
     }
 
+    public function useStorage(): void
+    {
+        $this->setMapper(XStorageMapper::class);
+    }
+
     public function useFile(): void
     {
         $this->setMapper(XFileMapper::class);
@@ -193,11 +198,25 @@ class XDatabaseMapper extends ADatabase
 }
 
 
-class XFileMapper extends ATable
+class XStorageMapper extends Storage\ATable
 {
     protected function setMap(): void
     {
-        $this->setFormat(File\Formats\SeparatedElements::class);
+        $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
+        $this->setSource('dummy');
+        $this->setRelation('id', 'id');
+        $this->setRelation('title', 'title');
+        $this->addPrimaryKey('id');
+    }
+}
+
+
+class XFileMapper extends File\ATable
+{
+    protected function setMap(): void
+    {
+        $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
+        $this->setFileAccessor(new \kalanis\kw_files\Processing\Volume\ProcessFile());
         $this->setSource('dummy');
         $this->setRelation('id', 'id');
         $this->setRelation('title', 'title');

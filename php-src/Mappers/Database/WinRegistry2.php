@@ -6,7 +6,7 @@ namespace kalanis\kw_mapper\Mappers\Database;
 use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
-use kalanis\kw_mapper\Mappers\File\TContent;
+use kalanis\kw_mapper\Mappers\Shared\TContent;
 use kalanis\kw_mapper\Records;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\TFill;

@@ -44,6 +44,18 @@ class FactoryTest extends CommonTestClass
     /**
      * @throws MapperException
      */
+    public function testStorage(): void
+    {
+        $record = new \XSimpleRecord();
+        $record->useStorage();
+        $lib = Connector\Factory::getInstance();
+        $conn = $lib->getConnector($record);
+        $this->assertInstanceOf(Connector\FileTable::class, $conn);
+    }
+
+    /**
+     * @throws MapperException
+     */
     public function testFile(): void
     {
         $record = new \XSimpleRecord();

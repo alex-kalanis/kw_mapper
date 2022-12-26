@@ -16,8 +16,8 @@ use kalanis\kw_mapper\Records;
  */
 abstract class APreset extends AMapper
 {
-    use TFinder;
-    use TStore;
+    use Shared\TFinder;
+    use Shared\TStore;
 
     public function getAlias(): string
     {

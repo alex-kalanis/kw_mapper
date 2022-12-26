@@ -86,12 +86,12 @@ class UserDBMapper extends Mappers\Database\ADatabase
 }
 
 
-class UserFileMapper extends Mappers\File\ATable
+class UserFileMapper extends Mappers\Storage\ATable
 {
     protected function setMap(): void
     {
         $this->setSource('users.txt');
-        $this->setFormat(Storage\File\Formats\SeparatedElements::class);
+        $this->setFormat(Storage\Shared\FormatFiles\SeparatedElements::class);
         $this->setRelation('id', 0);
         $this->setRelation('name', 1);
         $this->setRelation('password', 2);

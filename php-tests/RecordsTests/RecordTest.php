@@ -9,7 +9,7 @@ use kalanis\kw_mapper\Interfaces;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records;
-use kalanis\kw_mapper\Storage\File\Formats;
+use kalanis\kw_mapper\Storage\Shared\FormatFiles;
 
 
 class RecordTest extends CommonTestClass
@@ -385,12 +385,12 @@ class FailedUserRecord6 extends Records\AStrictRecord
 }
 
 
-class UserFileMapper extends Mappers\File\ATable
+class UserFileMapper extends Mappers\Storage\ATable
 {
     protected function setMap(): void
     {
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'users.txt');
-        $this->setFormat(Formats\SeparatedElements::class);
+        $this->setFormat(FormatFiles\SeparatedElements::class);
         $this->setRelation('id', 0);
         $this->setRelation('name', 1);
         $this->setRelation('password', 2);

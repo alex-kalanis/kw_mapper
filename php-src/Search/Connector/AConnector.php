@@ -5,7 +5,7 @@ namespace kalanis\kw_mapper\Search\Connector;
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\ForeignKey;
+use kalanis\kw_mapper\Mappers\Shared\ForeignKey;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Storage;
 

@@ -41,6 +41,8 @@ class Factory
             // @codeCoverageIgnoreStart
             return new WinRegistry($record, $builder);
             // @codeCoverageIgnoreEnd
+        } elseif ($mapper instanceof Mappers\Storage\ATable) {
+            return new FileTable($record);
         } elseif ($mapper instanceof Mappers\File\ATable) {
             return new FileTable($record);
         } elseif ($mapper instanceof Mappers\APreset) {

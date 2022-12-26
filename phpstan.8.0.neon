@@ -27,13 +27,13 @@ parameters:
 		- '#ldap_get_entries expects resource, object\|resource given.#'
 		- '#of function ldap_[a-z_]+ expects resource, object\|resource given.#'
 		-
-			message: '#Cannot access offset int\|string on array#'
-			path: 'php-src/Mappers/File/ATable.php'
+			message: '#Parameter \#1 \$callback of function array_map expects#'
+			path: 'php-src/Storage/Shared/FormatFiles/Csv.php'
 		-
 			message: '#Else branch is unreachable because ternary operator condition is always true.#'
 			path: 'php-src/Storage/Database/PDO/APDO.php'
 			# php7 also returns back false, php8 just arrays
 		-
 			message: '#Strict comparison using \=\=\= between false and array\<kalanis\\kw_mapper\\Records\\ARecord\> will always evaluate to false.#'
-			path: 'php-src/Mappers/TFinder.php'
+			path: 'php-src/Mappers/Shared/TFinder.php'
 			# php7 also returns back false, php8 just arrays

@@ -15,10 +15,10 @@ use kalanis\kw_mapper\Records\ARecord;
  */
 abstract class AMapper
 {
-    use TForeignKey;
-    use TPrimaryKey;
-    use TRelations;
-    use TSource;
+    use Shared\TForeignKey;
+    use Shared\TPrimaryKey;
+    use Shared\TRelations;
+    use Shared\TSource;
 
     /**
      * @throws MapperException

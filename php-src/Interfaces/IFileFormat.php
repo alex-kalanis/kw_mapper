@@ -16,12 +16,12 @@ interface IFileFormat
     /**
      * @param string $content
      * @throws MapperException
-     * @return array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>>
+     * @return array<string|int, array<string|int, string|int|float|bool|array<string|int, string|int|float|bool>>>
      */
     public function unpack(string $content): array;
 
     /**
-     * @param array<string|int, string|int|float|array<string|int, string|int|array<string|int, string|int>>> $content
+     * @param array<string|int, array<string|int, string|int|float|bool|array<string|int, string|int|float|bool>>> $content
      * @throws MapperException
      * @return string
      */

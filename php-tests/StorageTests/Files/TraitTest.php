@@ -4,18 +4,21 @@ namespace StorageTests\Files;
 
 
 use CommonTestClass;
+use kalanis\kw_files\Interfaces\IProcessFiles;
+use kalanis\kw_files\Processing\Volume\ProcessFile;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\File\PageContent;
+use kalanis\kw_mapper\Mappers\Storage\PageContent;
 use kalanis\kw_mapper\Records\PageRecord;
-use kalanis\kw_mapper\Storage\File;
-use kalanis\kw_storage\Storage\Storage;
+use kalanis\kw_mapper\Storage;
+use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Storage\Storage as Store;
 
 
 class TraitTest extends CommonTestClass
 {
     public function testStoragePkFail(): void
     {
-        $data = new StoragePage();
+        $data = new StorageStoragePage();
         $data->noPks();
         $this->expectException(MapperException::class);
         $data->load(new PageRecord());
@@ -25,10 +28,44 @@ class TraitTest extends CommonTestClass
     {
         // set once, propagate everywhere
         $data1 = new CStorage();
-        $data2 = new StoragePage();
-        $this->assertInstanceOf(Storage::class, $data1->getStore());
-        $this->assertInstanceOf(Storage::class, $data2->getStore());
+        $data2 = new StorageStoragePage();
+        $this->assertInstanceOf(Store::class, $data1->getStore());
+        $this->assertInstanceOf(Store::class, $data2->getStore());
         $this->assertEquals($data1->getStore(), $data2->getStore());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testFileInstances(): void
+    {
+        // set once, propagate everywhere
+        $data1 = new CFile();
+        $data1->setAccessor(new ProcessFile());
+        $data2 = new StorageStoragePage();
+        $this->assertInstanceOf(IProcessFiles::class, $data1->getStore());
+        $this->assertNotEquals($data1->getStore(), $data2->getStore());
+    }
+
+    public function testFilePaths(): void
+    {
+        $data1 = new CFile();
+        $this->assertEmpty($data1->getPt());
+        $pt = ['uhb', 'efvb', 'gsr', 'aht'];
+        $data1->setPt($pt);
+        $this->assertEquals($pt, $data1->getPt());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testFileInstanceFails(): void
+    {
+        $data1 = new CFile();
+        $data1->setAccessor(null);
+        $this->expectException(MapperException::class);
+        $this->expectExceptionMessage('You must set the files accessor - instance of *IProcessFiles* - first!');
+        $data1->getStore();
     }
 
     public function testNewLines(): void
@@ -50,28 +87,64 @@ class TraitTest extends CommonTestClass
 
 class Nl
 {
-    use File\Formats\TNl;
+    use Storage\Shared\FormatFiles\TNl;
 }
 
 
 class CStorage
 {
-    use File\TStorage;
+    use Storage\Storage\TStorage;
 
-    public function getStore()
+    public function getStore(): IStorage
     {
         return $this->getStorage();
     }
 }
 
 
-class XFormat
+class CFile
 {
-    use File\TFormat;
+    use Storage\File\TFile;
+
+    public function setAccessor(?IProcessFiles $file): void
+    {
+        $this->setFileAccessor($file);
+    }
+
+    /**
+     * @throws MapperException
+     * @return IProcessFiles
+     */
+    public function getStore(): IProcessFiles
+    {
+        return $this->getFileAccessor();
+    }
+
+    /**
+     * @param string[] $pt
+     */
+    public function setPt(array $pt): void
+    {
+        $this->setPath($pt);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPt(): array
+    {
+        return $this->getPath();
+    }
 }
 
 
-class StoragePage extends PageContent
+class XFormat
+{
+    use Storage\Shared\TFormat;
+}
+
+
+class StorageStoragePage extends PageContent
 {
     public function getStore()
     {

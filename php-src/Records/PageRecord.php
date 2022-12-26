@@ -4,7 +4,7 @@ namespace kalanis\kw_mapper\Records;
 
 
 use kalanis\kw_mapper\Interfaces\IEntryType;
-use kalanis\kw_mapper\Mappers\File\PageContent;
+use kalanis\kw_mapper\Mappers\Storage\PageContent;
 
 
 /**
