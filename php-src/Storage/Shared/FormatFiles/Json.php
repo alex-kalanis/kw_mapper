@@ -24,6 +24,12 @@ class Json implements IFileFormat
 
     public function pack(array $records): string
     {
-        return json_encode($records);
+        $result = json_encode($records);
+        if (false === $result && json_last_error()) {
+            // @codeCoverageIgnoreStart
+            throw new MapperException('Cannot parse JSON output - ' . json_last_error_msg());
+        }
+        // @codeCoverageIgnoreEnd
+        return strval($result);
     }
 }
