@@ -112,6 +112,11 @@ trait TFinder
         return $wantFromStorage ? (empty($stored) ? $written : $stored) : array_merge($stored, $written);
     }
 
+    protected function clearSource(): void
+    {
+        $this->records = [];
+    }
+
     /**
      * @param Records\ARecord $record
      * @throws MapperException

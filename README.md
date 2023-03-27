@@ -37,15 +37,15 @@ There is many available storages:
 It's also possible to limit user with its input on Record level or leave him with limits on
 storage. But then remember that every storage behaves differently for unwanted input!
 
-#### Main difference
+### The main differences
 
-What is the main difference against its competitors? At first datasources.
+What is the main differences against its competitors? At first datasources.
 On competitors you can usually have only one datasource - preset database.
 This can have more datasources. So usually more connections to databases.
 You can have main storage in Postgres, yet authentication can run from LDAP
 and ask for remote data in JSON.
 
-Another one is files. This mapper was build with files in mind. The file
+Another one is the files. This mapper was build with files in mind. The file
 itself behave just like another datasource. Its content can be accessed
 as raw one or as another table.
 
@@ -54,7 +54,18 @@ one storage to another.
 
 Next one is access to raw queries only per mapper. That makes you comply with
 each datasource engine separately for your customized queries. So you cannot
-use the same complicated "join" query for both files and database.
+use the same complicated "join" query for both files and database of different
+kinds.
+
+Then here is a deep join. So you can use *Search* to access deeper stored
+records in some datasources and filter by them in built query. No shallow
+lookups through only relations of current record anymore!
+
+Another one is in relations. Here is it an array. Always. No additional checks
+or definitions if that come from 1:1, 1:N or M:N. It's an array. Period.
+It can be empty, it can contain something. It's more universal than with
+the definitions like oneToMany. It has been proven that this is the more
+simple way. In the parent project.
 
 ## PHP Installation
 
@@ -94,3 +105,10 @@ Another one is when you define children with the same alias - you cannot ask for
 them in one query or it will mesh together and you got corrupted data. In better
 case. For this case there are available children methods which allows you to define
 alias to pass data when it's necessary to join from already used table. 
+
+### Possible future things
+
+- Accessing the data across the datasources as one big bulk of data. Not like
+  now when the query across the datasources will fail. As expected.
+- Extending available datasources with its dialects
+- Extending processing and coverage over the platform-specific datasources.

@@ -41,7 +41,7 @@ class Entry
     /**
      * @param null|int|string|float|bool|array<int|string, int|string|float|bool|ARecord|array<int|string, int|string>>|ICanFill $data
      * @param bool $isFromStorage
-     * @return Entry
+     * @return $this
      */
     public function setData($data, bool $isFromStorage = false): self
     {
@@ -62,7 +62,7 @@ class Entry
 
     /**
      * @param string|int|array<string|int, string|int>|null $params
-     * @return Entry
+     * @return $this
      */
     public function setParams($params): self
     {

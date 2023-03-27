@@ -35,8 +35,9 @@ trait TFileTable
      */
     protected function insertRecord(Records\ARecord $record): bool
     {
+        $this->clearSource();
         $matches = $this->findMatched($record, !empty($this->getPrimaryKeys()));
-        if (!empty($matches)) { // found!!!
+        if (!empty($matches)) { // already found!!!
             return false;
         }
 
@@ -73,6 +74,7 @@ trait TFileTable
      */
     protected function updateRecord(Records\ARecord $record): bool
     {
+        $this->clearSource();
         $matches = $this->findMatched($record, !empty($this->getPrimaryKeys()), true);
         if (empty($matches)) { // nothing found
             return false;
@@ -106,6 +108,7 @@ trait TFileTable
      */
     protected function loadRecord(Records\ARecord $record): bool
     {
+        $this->clearSource();
         $matches = $this->findMatched($record);
         if (empty($matches)) { // nothing found
             return false;
@@ -124,10 +127,11 @@ trait TFileTable
      * @param Records\ARecord|Records\PageRecord $record
      * @throws MapperException
      * @return bool
-     * Scan array and remove items that have set equal values as that in passed record
+     * Scan array and remove items that have set equal values as these in passed record
      */
     protected function deleteRecord(Records\ARecord $record): bool
     {
+        $this->clearSource();
         $toDelete = $this->findMatched($record);
         if (empty($toDelete)) {
             return false;

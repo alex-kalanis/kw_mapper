@@ -1,13 +1,13 @@
 <?php
 
-namespace StorageTests\Database;
+namespace StorageTests\Database\DeepQuery;
 
 
 use CommonTestClass;
 use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
-use kalanis\kw_mapper\Mappers\Database\ADatabase;
+use kalanis\kw_mapper\Mappers\Database\AReadWriteDatabase;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\ASimpleRecord;
 use kalanis\kw_mapper\Storage\Database\Config;
@@ -18,34 +18,103 @@ use PDO;
 
 
 /**
- * Class DatabaseTest
+ * Class ReadWriteDatabaseTest
  * @package StorageTests\Database
  * @requires extension PDO
  * @requires extension pdo_sqlite
  */
-class DatabaseTest extends CommonTestClass
+class ReadWriteDatabaseTest extends CommonTestClass
 {
     /** @var null|SQLite */
-    protected $database = null;
+    protected $readDatabase = null;
+    /** @var null|SQLite */
+    protected $writeDatabase = null;
 
     /**
      * @throws MapperException
      */
     protected function setUp(): void
     {
-        $conf = Config::init()->setTarget(
+        $readConf = Config::init()->setTarget(
             IDriverSources::TYPE_PDO_SQLITE,
-            'test_sqlite_local_test',
-            ':memory:',
+            'test_sqlite_local_read_test',
+            'file:memdb1?mode=memory&cache=shared',
             0,
             null,
             null,
             ''
         );
-        $conf->setParams(86000, true);
-        ConfigStorage::getInstance()->addConfig($conf);
-        $this->database = DatabaseSingleton::getInstance()->getDatabase($conf);
-        $this->database->addAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $readConf->setParams(86000, true);
+
+        $this->readDatabase = DatabaseSingleton::getInstance()->getDatabase($readConf);
+        $this->readDatabase->addAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+        ConfigStorage::getInstance()->addConfig($readConf);
+        $writeConf = Config::init()->setTarget(
+            IDriverSources::TYPE_PDO_SQLITE,
+            'test_sqlite_local_write_test',
+            'file:memdb2?mode=memory&cache=shared',
+            0,
+            null,
+            null,
+            ''
+        );
+        $writeConf->setParams(86000, true);
+        ConfigStorage::getInstance()->addConfig($writeConf);
+
+        $this->writeDatabase = DatabaseSingleton::getInstance()->getDatabase($readConf);
+        $this->writeDatabase->addAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testProcess(): void
+    {
+        $this->dataRefill();
+
+        $rec = new SQLiteBasicTestRecord();
+        $this->assertNotEmpty($rec->getMapper()->getAlias());
+
+        $rec->id = 15;
+        $rec->name = 'store';
+        $this->assertTrue($rec->getMapper()->xInsertRecord($rec));
+
+        $rec->getEntry('id')->setData(15, true); // intentionally re-set as already known
+        $rec->name = 'update';
+        $this->assertTrue($rec->getMapper()->xUpdateRecord($rec));
+
+        $del = new SQLiteBasicTestRecord();
+        $del->id = 15;
+        $this->assertTrue($del->getMapper()->xDeleteRecord($del));
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testProcessNoPk(): void
+    {
+        $this->dataRefill();
+
+        $rec = new SQLiteBasicTestRecordNoPk();
+        $this->assertNotEmpty($rec->getMapper()->getAlias());
+
+        $rec->id = 7777;
+        $rec->name = 'store';
+        $this->assertTrue($rec->getMapper()->xInsertRecord($rec));
+
+        $rec->getEntry('id')->setData(7777, true); // intentionally re-set as already known
+        $rec->name = 'update';
+        $this->assertTrue($rec->getMapper()->xUpdateRecord($rec));
+
+        $upd = new SQLiteBasicTestRecordNoPk();
+        $upd->getEntry('id')->setData(7777, true);
+        $upd->name = 'unstore';
+        $this->assertTrue($upd->getMapper()->xUpdateRecord($upd));
+
+        $del = new SQLiteBasicTestRecordNoPk();
+        $del->id = 7777;
+        $this->assertTrue($del->getMapper()->xDeleteRecord($del));
     }
 
     /**
@@ -55,7 +124,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecord();
+        $rec = new SQLiteBasicTestRecord();
         $this->assertFalse($rec->getMapper()->xInsertRecord($rec));
     }
 
@@ -66,7 +135,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecord();
+        $rec = new SQLiteBasicTestRecord();
         $rec->getEntry('id')->setData(15, true);
         $rec->getEntry('name')->setData('out', true);
         $this->assertFalse($rec->getMapper()->xUpdateRecord($rec));
@@ -79,7 +148,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecord();
+        $rec = new SQLiteBasicTestRecord();
         $rec->getEntry('id')->setData(15);
         $rec->getEntry('name')->setData('out');
         $this->assertFalse($rec->getMapper()->xUpdateRecord($rec));
@@ -92,7 +161,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordBadPk();
+        $rec = new SQLiteBasicTestRecordBadPk();
         $rec->id = 15;
         $rec->name = 'out';
         $this->assertFalse($rec->getMapper()->xUpdateRecordByPk($rec));
@@ -105,7 +174,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordNoPk();
+        $rec = new SQLiteBasicTestRecordNoPk();
         $rec->id = 25;
         $rec->name = 'out';
         $this->assertFalse($rec->getMapper()->xUpdateRecordByPk($rec));
@@ -118,9 +187,12 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecord();
+        $rec = new SQLiteBasicTestRecord();
         $rec->id = 35;
         $this->assertFalse($rec->getMapper()->xLoadRecord($rec));
+
+        $next = new SQLiteBasicTestRecordBadPk();
+        $this->assertFalse($next->getMapper()->xLoadRecord($next));
     }
 
     /**
@@ -130,7 +202,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordBadPk();
+        $rec = new SQLiteBasicTestRecordBadPk();
         $rec->id = 45;
         $this->assertFalse($rec->getMapper()->xLoadRecordByPk($rec));
     }
@@ -142,12 +214,9 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordNoPk();
+        $rec = new SQLiteBasicTestRecordNoPk();
         $rec->id = 55;
         $this->assertFalse($rec->getMapper()->xLoadRecordByPk($rec));
-
-        $next = new SQLiteNameTestRecordNoPk();
-        $this->assertFalse($next->getMapper()->xLoadRecord($next));
     }
 
     /**
@@ -157,7 +226,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecord();
+        $rec = new SQLiteBasicTestRecord();
         $rec->id = 65;
         $this->assertTrue($rec->getMapper()->xDeleteRecord($rec));
         $this->assertTrue($rec->getMapper()->xDeleteRecordByPk($rec));
@@ -170,8 +239,11 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecord();
+        $rec = new SQLiteBasicTestRecord();
         $this->assertFalse($rec->getMapper()->xDeleteRecord($rec));
+
+        $rec = new SQLiteBasicTestRecordNoPk();
+        $this->assertFalse($rec->getMapper()->xDeleteRecordByPk($rec));
     }
 
     /**
@@ -181,7 +253,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordBadPk();
+        $rec = new SQLiteBasicTestRecordBadPk();
         $rec->id = 75;
         $this->assertFalse($rec->getMapper()->xDeleteRecordByPk($rec));
     }
@@ -193,7 +265,7 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordNoPk();
+        $rec = new SQLiteBasicTestRecordNoPk();
         $rec->id = 85;
         $this->assertFalse($rec->getMapper()->xDeleteRecordByPk($rec));
     }
@@ -205,12 +277,16 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordNoPk();
+        $rec = new SQLiteBasicTestRecordNoPk();
         $rec->id = 95;
         $this->assertEmpty($rec->getMapper()->countRecord($rec));
 
-        $next = new SQLiteNameTestRecordNoPk();
+        $next = new SQLiteBasicTestRecordNoPk();
         $this->assertEmpty($next->getMapper()->countRecord($next));
+
+        $last = new SQLiteBasicTestRecord();
+        $last->name = 'odd';
+        $this->assertEmpty($last->getMapper()->countRecord($last));
     }
 
     /**
@@ -220,12 +296,56 @@ class DatabaseTest extends CommonTestClass
     {
         $this->dataRefill();
 
-        $rec = new SQLiteNameTestRecordNoPk();
+        $store1 = new SQLiteBasicTestRecordNoPk();
+        $store1->id = 22;
+        $store1->name = 'ijn';
+        $this->assertTrue($store1->save(true));
+
+        $store2 = new SQLiteBasicTestRecordNoPk();
+        $store2->id = 16;
+        $store2->name = 'ijn';
+        $this->assertTrue($store2->save(true));
+
+        $rec = new SQLiteBasicTestRecordNoPk();
         $rec->id = 111;
         $this->assertEmpty($rec->getMapper()->loadMultiple($rec));
 
-        $next = new SQLiteNameTestRecordNoPk();
+        $next = new SQLiteBasicTestRecordNoPk();
         $this->assertEmpty($next->getMapper()->loadMultiple($next));
+
+        $next = new SQLiteStoreTestRecord();
+        $next->name = 'wat';
+        $this->assertEmpty($next->getMapper()->xLoadRecordByPk($next));
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testLoad(): void
+    {
+        $this->dataRefill();
+
+        $store1 = new SQLiteStoreTestRecord();
+        $store1->id = 22;
+        $store1->name = 'ijn';
+        $this->assertTrue($store1->save(true));
+
+        $store2 = new SQLiteStoreTestRecord();
+        $store2->id = 16;
+        $store2->name = 'ijn';
+        $this->assertTrue($store2->save(true));
+
+        $rec = new SQLiteBasicTestRecord();
+        $rec->id = 16;
+        $this->assertNotEmpty($rec->getMapper()->load($rec));
+
+        $rec = new SQLiteBasicTestRecordNoPk();
+        $rec->id = 22;
+        $this->assertNotEmpty($rec->getMapper()->load($rec));
+
+        $next = new SQLiteBasicTestRecordNoPk();
+        $next->name = 'ijn';
+        $this->assertNotEmpty($next->getMapper()->loadMultiple($next));
     }
 
     /**
@@ -233,10 +353,10 @@ class DatabaseTest extends CommonTestClass
      */
     protected function dataRefill(): void
     {
-        $this->assertTrue($this->database->exec($this->dropTable(), []));
-        $this->assertTrue($this->database->exec($this->basicTable(), []));
-//        $this->assertTrue($this->database->exec($this->fillTable(), []));
-//        $this->assertEquals(8, $this->database->rowCount());
+        $this->assertTrue($this->readDatabase->exec($this->dropTable(), []));
+        $this->assertTrue($this->readDatabase->exec($this->basicTable(), []));
+        $this->assertTrue($this->writeDatabase->exec($this->dropTable(), []));
+        $this->assertTrue($this->writeDatabase->exec($this->basicTable(), []));
     }
 
     protected function dropTable(): string
@@ -255,28 +375,63 @@ class DatabaseTest extends CommonTestClass
 
 
 /**
- * Class SQLiteNameTestRecord
+ * Class SQLiteBasicTestRecord
  * @property int $id
  * @property string $name
+ * This one read from different storage than write
  */
-class SQLiteNameTestRecord extends ASimpleRecord
+class SQLiteBasicTestRecord extends ASimpleRecord
 {
     protected function addEntries(): void
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('name', IEntryType::TYPE_STRING, 250);
-        $this->setMapper(SQLiteTestMapper::class);
+        $this->setMapper(SQLiteBasicTestMapper::class);
     }
 }
 
 
-class SQLiteTestMapper extends ADatabase
+class SQLiteBasicTestMapper extends AReadWriteDatabase
 {
     use XAccess;
 
     protected function setMap(): void
     {
-        $this->setSource('test_sqlite_local_test');
+        $this->setReadSource('test_sqlite_local_read_test');
+        $this->setWriteSource('test_sqlite_local_write_test');
+        $this->setTable('x_name_test');
+        $this->setRelation('id', 'x_id');
+        $this->setRelation('name', 'x_name');
+        $this->addPrimaryKey('id');
+    }
+}
+
+
+/**
+ * Class SQLiteBasicTestRecord
+ * @property int $id
+ * @property string $name
+ * This one can write to that readable source
+ */
+class SQLiteStoreTestRecord extends ASimpleRecord
+{
+    protected function addEntries(): void
+    {
+        $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
+        $this->addEntry('name', IEntryType::TYPE_STRING, 250);
+        $this->setMapper(SQLiteStoreTestMapper::class);
+    }
+}
+
+
+class SQLiteStoreTestMapper extends AReadWriteDatabase
+{
+    use XAccess;
+
+    protected function setMap(): void
+    {
+        $this->setReadSource('test_sqlite_local_read_test');
+        $this->setWriteSource('test_sqlite_local_read_test'); // intentionally both has the same target
         $this->setTable('x_name_test');
         $this->setRelation('id', 'x_id');
         $this->setRelation('name', 'x_name');
@@ -290,24 +445,25 @@ class SQLiteTestMapper extends ADatabase
  * @property int $id
  * @property string $name
  */
-class SQLiteNameTestRecordBadPk extends ASimpleRecord
+class SQLiteBasicTestRecordBadPk extends ASimpleRecord
 {
     protected function addEntries(): void
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('name', IEntryType::TYPE_STRING, 250);
-        $this->setMapper(SQLiteTestMapperBadPk::class);
+        $this->setMapper(SQLiteBasicTestMapperBadPk::class);
     }
 }
 
 
-class SQLiteTestMapperBadPk extends ADatabase
+class SQLiteBasicTestMapperBadPk extends AReadWriteDatabase
 {
     use XAccess;
 
     protected function setMap(): void
     {
-        $this->setSource('test_sqlite_local_test');
+        $this->setReadSource('test_sqlite_local_read_test');
+        $this->setWriteSource('test_sqlite_local_write_test');
         $this->setTable('x_name_test');
         $this->setRelation('id', 'x_id');
         $this->setRelation('name', 'x_name');
@@ -318,11 +474,11 @@ class SQLiteTestMapperBadPk extends ADatabase
 
 
 /**
- * Class SQLiteNameTestRecordNoPk
+ * Class SQLiteBasicTestRecordNoPk
  * @property int $id
  * @property string $name
  */
-class SQLiteNameTestRecordNoPk extends ASimpleRecord
+class SQLiteBasicTestRecordNoPk extends ASimpleRecord
 {
     protected function addEntries(): void
     {
@@ -333,13 +489,14 @@ class SQLiteNameTestRecordNoPk extends ASimpleRecord
 }
 
 
-class SQLiteTestMapperNoPk extends ADatabase
+class SQLiteTestMapperNoPk extends AReadWriteDatabase
 {
     use XAccess;
 
     protected function setMap(): void
     {
-        $this->setSource('test_sqlite_local_test');
+        $this->setReadSource('test_sqlite_local_read_test');
+        $this->setWriteSource('test_sqlite_local_write_test');
         $this->setTable('x_name_test');
         $this->setRelation('id', 'x_id');
         $this->setRelation('name', 'x_name');

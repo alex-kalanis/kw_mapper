@@ -12,20 +12,32 @@ use kalanis\kw_mapper\Storage;
 
 
 /**
- * Class ADatabase
+ * Class AReadWriteDatabase
  * @package kalanis\kw_mapper\Mappers\Database
+ * Separated Read and write DB entry without need to reload mapper
+ * The most parts are similar to usual read/write one, just with separation of read-write operations
  */
-abstract class ADatabase extends AMapper
+abstract class AReadWriteDatabase extends AMapper
 {
     use TFill;
     use TTable;
 
+    /** @var string */
+    protected $readSource = '';
+    /** @var string */
+    protected $writeSource = '';
     /** @var Storage\Database\ASQL */
-    protected $database = null;
+    protected $readDatabase = null;
+    /** @var Storage\Database\ASQL */
+    protected $writeDatabase = null;
     /** @var Storage\Database\Dialects\ADialect */
-    protected $dialect = null;
+    protected $readDialect = null;
+    /** @var Storage\Database\Dialects\ADialect */
+    protected $writeDialect = null;
     /** @var Storage\Database\QueryBuilder */
-    protected $queryBuilder = null;
+    protected $readQueryBuilder = null;
+    /** @var Storage\Database\QueryBuilder */
+    protected $writeQueryBuilder = null;
 
     /**
      * @throws MapperException
@@ -33,10 +45,38 @@ abstract class ADatabase extends AMapper
     public function __construct()
     {
         parent::__construct();
-        $config = Storage\Database\ConfigStorage::getInstance()->getConfig($this->getSource());
-        $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
-        $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());
-        $this->queryBuilder = new Storage\Database\QueryBuilder($this->dialect);
+
+        // read part
+        $readConfig = Storage\Database\ConfigStorage::getInstance()->getConfig($this->getReadSource());
+        $this->readDatabase = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($readConfig);
+        $this->readDialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->readDatabase->languageDialect());
+        $this->readQueryBuilder = new Storage\Database\QueryBuilder($this->readDialect);
+
+        // write part
+        $writeConfig = Storage\Database\ConfigStorage::getInstance()->getConfig($this->getWriteSource());
+        $this->writeDatabase = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($writeConfig);
+        $this->writeDialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->writeDatabase->languageDialect());
+        $this->writeQueryBuilder = new Storage\Database\QueryBuilder($this->writeDialect);
+    }
+
+    protected function setReadSource(string $readSource): void
+    {
+        $this->readSource = $readSource;
+    }
+
+    protected function getReadSource(): string
+    {
+        return $this->readSource;
+    }
+
+    protected function setWriteSource(string $writeSource): void
+    {
+        $this->writeSource = $writeSource;
+    }
+
+    protected function getWriteSource(): string
+    {
+        return $this->writeSource;
     }
 
     public function getAlias(): string
@@ -46,18 +86,18 @@ abstract class ADatabase extends AMapper
 
     protected function insertRecord(ARecord $record): bool
     {
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
             if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                $this->writeQueryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
             }
         }
-        if (empty($this->queryBuilder->getProperties())) {
+        if (empty($this->writeQueryBuilder->getProperties())) {
             return false;
         }
 
-        return $this->database->exec(strval($this->dialect->insert($this->queryBuilder)), $this->queryBuilder->getParams());
+        return $this->writeDatabase->exec(strval($this->writeDialect->insert($this->writeQueryBuilder)), $this->writeQueryBuilder->getParams());
     }
 
     protected function updateRecord(ARecord $record): bool
@@ -65,25 +105,25 @@ abstract class ADatabase extends AMapper
         if ($this->updateRecordByPk($record)) {
             return true;
         }
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
             if (isset($this->relations[$key]) && (false !== $item)) {
                 if ($record->getEntry($key)->isFromStorage()) {
-                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                 } else {
-                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                    $this->writeQueryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
                 }
             }
         }
-        if (empty($this->queryBuilder->getConditions())) {
+        if (empty($this->writeQueryBuilder->getConditions())) {
             return false;
         }
-        if (empty($this->queryBuilder->getProperties())) {
+        if (empty($this->writeQueryBuilder->getProperties())) {
             return false;
         }
 
-        return $this->database->exec(strval($this->dialect->update($this->queryBuilder)), $this->queryBuilder->getParams());
+        return $this->writeDatabase->exec(strval($this->writeDialect->update($this->writeQueryBuilder)), $this->writeQueryBuilder->getParams());
     }
 
     /**
@@ -97,14 +137,14 @@ abstract class ADatabase extends AMapper
             return false;
         }
 
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($this->getTable());
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
                 if (isset($this->relations[$key])) {
                     $entry = $record->getEntry($key);
                     if ($entry->isFromStorage() && (false !== $entry->getData())) {
-                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $entry->getData());
+                        $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $entry->getData());
                     }
                 }
             } catch (MapperException $ex) {
@@ -112,7 +152,7 @@ abstract class ADatabase extends AMapper
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
+        if (empty($this->writeQueryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
             return false;
         }
 
@@ -120,15 +160,15 @@ abstract class ADatabase extends AMapper
             if (isset($this->relations[$key])) {
                 $entry = $record->getEntry($key);
                 if (!in_array($key, $record->getMapper()->getPrimaryKeys()) && !$entry->isFromStorage() && (false !== $item)) {
-                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                    $this->writeQueryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
                 }
             }
         }
-        if (empty($this->queryBuilder->getProperties())) {
+        if (empty($this->writeQueryBuilder->getProperties())) {
             return false;
         }
 
-        return $this->database->exec(strval($this->dialect->update($this->queryBuilder)), $this->queryBuilder->getParams());
+        return $this->writeDatabase->exec(strval($this->writeDialect->update($this->writeQueryBuilder)), $this->writeQueryBuilder->getParams());
     }
 
     protected function loadRecord(ARecord $record): bool
@@ -137,28 +177,28 @@ abstract class ADatabase extends AMapper
             return true;
         }
 
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->readQueryBuilder->clear();
+        $this->readQueryBuilder->setBaseTable($this->getTable());
 
         // conditions - must be equal
         foreach ($record as $key => $item) {
             if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) {
+        if (empty($this->readQueryBuilder->getConditions())) {
             return false;
         }
 
         // relations - what to get
         foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->queryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+            $this->readQueryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
         }
-        $this->queryBuilder->setLimits(0,1);
+        $this->readQueryBuilder->setLimits(0,1);
 
         // query itself
-        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
+        $lines = $this->readDatabase->query(strval($this->readDialect->select($this->readQueryBuilder)), $this->readQueryBuilder->getParams());
         if (empty($lines)) {
             return false;
         }
@@ -183,8 +223,8 @@ abstract class ADatabase extends AMapper
             return false;
         }
 
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->readQueryBuilder->clear();
+        $this->readQueryBuilder->setBaseTable($this->getTable());
 
         // conditions - everything must be equal
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
@@ -192,7 +232,7 @@ abstract class ADatabase extends AMapper
                 if (isset($this->relations[$key])) {
                     $item = $record->offsetGet($key);
                     if (false !== $item) {
-                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                        $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                     }
                 }
             } catch (MapperException $ex) {
@@ -200,18 +240,18 @@ abstract class ADatabase extends AMapper
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
+        if (empty($this->readQueryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
             return false;
         }
 
         // relations - what to get
         foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->queryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+            $this->readQueryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
         }
 
         // query itself
-        $this->queryBuilder->setLimits(0,1);
-        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
+        $this->readQueryBuilder->setLimits(0,1);
+        $lines = $this->readDatabase->query(strval($this->readDialect->select($this->readQueryBuilder)), $this->readQueryBuilder->getParams());
         if (empty($lines)) {
             return false;
         }
@@ -227,22 +267,22 @@ abstract class ADatabase extends AMapper
 
     public function countRecord(ARecord $record): int
     {
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->readQueryBuilder->clear();
+        $this->readQueryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
             if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) {
+        if (empty($this->readQueryBuilder->getConditions())) {
             return 0;
         }
 
         if (empty($record->getMapper()->getPrimaryKeys())) {
             $relation = reset($this->relations);
             if (false !== $relation) {
-                $this->queryBuilder->addColumn($this->getTable(), $relation, 'count', IQueryBuilder::AGGREGATE_COUNT);
+                $this->readQueryBuilder->addColumn($this->getTable(), $relation, 'count', IQueryBuilder::AGGREGATE_COUNT);
             }
         } else {
 //            foreach ($record->getMapper()->getPrimaryKeys() as $primaryKey) {
@@ -250,10 +290,10 @@ abstract class ADatabase extends AMapper
 //            }
             $pks = $record->getMapper()->getPrimaryKeys();
             $key = reset($pks);
-            $this->queryBuilder->addColumn($this->getTable(), $this->relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $this->readQueryBuilder->addColumn($this->getTable(), $this->relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
-        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
+        $lines = $this->readDatabase->query(strval($this->readDialect->select($this->readQueryBuilder)), $this->readQueryBuilder->getParams());
         if (empty($lines) || !is_iterable($lines)) {
             // @codeCoverageIgnoreStart
             return 0;
@@ -269,19 +309,19 @@ abstract class ADatabase extends AMapper
             return true;
         }
 
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
             if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) {
+        if (empty($this->writeQueryBuilder->getConditions())) {
             return false;
         }
 
-        return $this->database->exec(strval($this->dialect->delete($this->queryBuilder)), $this->queryBuilder->getParams());
+        return $this->writeDatabase->exec(strval($this->writeDialect->delete($this->writeQueryBuilder)), $this->writeQueryBuilder->getParams());
     }
 
     /**
@@ -295,14 +335,14 @@ abstract class ADatabase extends AMapper
             return false;
         }
 
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($this->getTable());
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
                 if (isset($this->relations[$key])) {
                     $item = $record->offsetGet($key);
                     if (false !== $item) {
-                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                        $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                     }
                 }
             } catch (MapperException $ex) {
@@ -310,34 +350,34 @@ abstract class ADatabase extends AMapper
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
+        if (empty($this->writeQueryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
             return false;
         }
 
-        return $this->database->exec(strval($this->dialect->delete($this->queryBuilder)), $this->queryBuilder->getParams());
+        return $this->writeDatabase->exec(strval($this->writeDialect->delete($this->writeQueryBuilder)), $this->writeQueryBuilder->getParams());
     }
 
     public function loadMultiple(ARecord $record): array
     {
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->readQueryBuilder->clear();
+        $this->readQueryBuilder->setBaseTable($this->getTable());
         foreach ($record as $key => $item) {
             if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) {
+        if (empty($this->readQueryBuilder->getConditions())) {
             return [];
         }
 
         // relations - what to get
         foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->queryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+            $this->readQueryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
         }
 
         // query itself
-        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
+        $lines = $this->readDatabase->query(strval($this->readDialect->select($this->readQueryBuilder)), $this->readQueryBuilder->getParams());
         if (empty($lines)) {
             return [];
         }

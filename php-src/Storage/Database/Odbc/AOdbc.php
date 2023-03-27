@@ -50,7 +50,7 @@ abstract class AOdbc extends ADatabase implements IPassConnection
 
         $this->connect();
 
-        list($updQuery, $binds, $types) = $this->bindFromNamedToQuestions($query, $params);
+        list($updQuery, $binds, ) = $this->bindFromNamedToQuestions($query, $params);
         $statement = odbc_prepare($this->connection, $updQuery); // @phpstan-ignore-line
 
         if ((false !== $statement) && odbc_execute($statement, $binds)) { // @phpstan-ignore-line
@@ -64,9 +64,8 @@ abstract class AOdbc extends ADatabase implements IPassConnection
             for ($i=1; $i<=$numFields; $i++) {
                 // odbc starts its indexes at 1 but since I am
                 // trying to emulate the functionality of *_fetch_array
-                // for other dbs (ie mysql)  I'm going to decrement my
-                // my numeric index by 1.  This might not be what
-                // you are after in which case get rid of the -1
+                // for other dbs (ie mysql) I'm going to decrement my
+                // my numeric index by 1.
                 $row[odbc_field_name($statement, $i)] = $row[$i - 1] = odbc_result($statement, $i);
             }
             odbc_free_result($statement);

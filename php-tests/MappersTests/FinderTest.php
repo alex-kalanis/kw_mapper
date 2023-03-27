@@ -108,6 +108,7 @@ class XFinder
      */
     public function find(ARecord $record, bool $usePks = false, bool $wantFromStorage = false): array
     {
+        $this->clearSource();
         return $this->findMatched($record, $usePks, $wantFromStorage);
     }
 
