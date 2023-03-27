@@ -21,7 +21,7 @@
         "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "php": ">=7.2.0"
+        "php": ">=7.2.0 <=9"
     },
     "require-dev": {
         "alex-kalanis/kw_files": ">=1.0",
