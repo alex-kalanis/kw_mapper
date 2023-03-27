@@ -1,6 +1,6 @@
 # kw_mapper
 
-[![Build Status](https://travis-ci.org/alex-kalanis/kw_mapper.svg?branch=master)](https://travis-ci.org/alex-kalanis/kw_mapper)
+[![Build Status](https://app.travis-ci.com/alex-kalanis/kw_mapper.svg?branch=master)](https://app.travis-ci.com/github/alex-kalanis/kw_mapper)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/alex-kalanis/kw_mapper/v/stable.svg?v=1)](https://packagist.org/packages/alex-kalanis/kw_mapper)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
@@ -72,7 +72,7 @@ simple way. In the parent project.
 ```
 {
     "require": {
-        "alex-kalanis/kw_mapper": ">=2.0"
+        "alex-kalanis/kw_mapper": ">=2.1"
     }
 }
 ```
