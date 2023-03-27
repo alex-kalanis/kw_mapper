@@ -239,7 +239,7 @@ class SoloArrayFormat implements IFileFormat
 {
     public function unpack(string $content): array
     {
-        return (array)$content;
+        return (array) $content;
     }
 
     public function pack(array $records): string
