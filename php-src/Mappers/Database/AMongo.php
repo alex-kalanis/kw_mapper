@@ -49,9 +49,13 @@ abstract class AMongo extends AMapper
     protected function insertRecord(ARecord $record): bool
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->queryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
+            }
         }
         // @phpstan-ignore-next-line
         return $this->database->exec($this->queryBuilder, $this->dialect->insert($this->queryBuilder));
@@ -60,13 +64,15 @@ abstract class AMongo extends AMapper
     protected function updateRecord(ARecord $record): bool
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
             if (false !== $item) {
                 if ($record->getEntry($key)->isFromStorage()) {
-                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                 } else {
-                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                    $this->queryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
                 }
             }
         }
@@ -77,10 +83,12 @@ abstract class AMongo extends AMapper
     protected function deleteRecord(ARecord $record): bool
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (false !== $item) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
         // @phpstan-ignore-next-line
@@ -96,7 +104,8 @@ abstract class AMongo extends AMapper
         }
 
         // fill entries in record
-        $relationMap = array_flip($this->relations);
+        $relations = $record->getMapper()->getRelations();
+        $relationMap = array_flip($relations);
         foreach ($lines[0] as $index => $item) {
             $entry = $record->getEntry($relationMap[$index]);
             $entry->setData($this->typedFillSelection($entry, $item), true);
@@ -119,7 +128,8 @@ abstract class AMongo extends AMapper
         }
 
         $result = [];
-        $relationMap = array_flip($this->relations);
+        $relations = $record->getMapper()->getRelations();
+        $relationMap = array_flip($relations);
         foreach ($lines as $key => $line) {
             if (is_numeric($key) && is_iterable($line)) {
                 $rec = clone $record;
@@ -140,10 +150,12 @@ abstract class AMongo extends AMapper
     protected function fillConditions(ARecord $record): void
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
             if ((false !== $item) && !$record->getEntry($key)->isFromStorage()) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], strval($item));
+                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], strval($item));
             }
         }
     }

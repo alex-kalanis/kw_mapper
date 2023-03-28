@@ -55,24 +55,13 @@ trait TMapper
     }
 
     /**
-     * @throws MapperException
-     */
-    private function checkMapper(): void
-    {
-        if (empty($this->mapper)) {
-            throw new MapperException('Unknown entry mapper');
-        }
-    }
-
-    /**
      * @param bool $forceInsert
      * @throws MapperException
      * @return bool
      */
     final public function save(bool $forceInsert = false): bool
     {
-        $this->checkMapper();
-        return $this->mapper->/** @scrutinizer ignore-call */save($this->getSelf(), $forceInsert);
+        return $this->getMapper()->/** @scrutinizer ignore-call */save($this->getSelf(), $forceInsert);
     }
 
     /**
@@ -81,8 +70,7 @@ trait TMapper
      */
     final public function load(): bool
     {
-        $this->checkMapper();
-        return $this->mapper->/** @scrutinizer ignore-call */load($this->getSelf());
+        return $this->getMapper()->/** @scrutinizer ignore-call */load($this->getSelf());
     }
 
     /**
@@ -91,8 +79,7 @@ trait TMapper
      */
     final public function delete(): bool
     {
-        $this->checkMapper();
-        return $this->mapper->/** @scrutinizer ignore-call */delete($this->getSelf());
+        return $this->getMapper()->delete($this->getSelf());
     }
 
     /**
@@ -101,8 +88,7 @@ trait TMapper
      */
     final public function count(): int
     {
-        $this->checkMapper();
-        return $this->mapper->/** @scrutinizer ignore-call */countRecord($this->getSelf());
+        return $this->getMapper()->countRecord($this->getSelf());
     }
 
     /**
@@ -111,8 +97,7 @@ trait TMapper
      */
     final public function loadMultiple(): array
     {
-        $this->checkMapper();
-        return $this->mapper->/** @scrutinizer ignore-call */loadMultiple($this->getSelf());
+        return $this->getMapper()->loadMultiple($this->getSelf());
     }
 
     /**
@@ -121,7 +106,9 @@ trait TMapper
      */
     public function getMapper(): Mappers\AMapper
     {
-        $this->checkMapper();
+        if (empty($this->mapper)) {
+            throw new MapperException('Unknown entry mapper');
+        }
         return $this->mapper;
     }
 

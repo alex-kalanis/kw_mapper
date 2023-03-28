@@ -310,9 +310,6 @@ class ReadWriteDatabaseTest extends CommonTestClass
         $rec->id = 111;
         $this->assertEmpty($rec->getMapper()->loadMultiple($rec));
 
-        $next = new SQLiteBasicTestRecordNoPk();
-        $this->assertEmpty($next->getMapper()->loadMultiple($next));
-
         $next = new SQLiteStoreTestRecord();
         $next->name = 'wat';
         $this->assertEmpty($next->getMapper()->xLoadRecordByPk($next));
@@ -342,6 +339,9 @@ class ReadWriteDatabaseTest extends CommonTestClass
         $rec = new SQLiteBasicTestRecordNoPk();
         $rec->id = 22;
         $this->assertNotEmpty($rec->getMapper()->load($rec));
+
+        $next = new SQLiteBasicTestRecordNoPk();
+        $this->assertNotEmpty($next->getMapper()->loadMultiple($next));
 
         $next = new SQLiteBasicTestRecordNoPk();
         $next->name = 'ijn';

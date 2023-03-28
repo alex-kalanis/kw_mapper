@@ -47,10 +47,12 @@ abstract class ADatabase extends AMapper
     protected function insertRecord(ARecord $record): bool
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->queryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
             }
         }
         if (empty($this->queryBuilder->getProperties())) {
@@ -66,13 +68,15 @@ abstract class ADatabase extends AMapper
             return true;
         }
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
+            if (isset($relations[$key]) && (false !== $item)) {
                 if ($record->getEntry($key)->isFromStorage()) {
-                    $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                 } else {
-                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                    $this->queryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
                 }
             }
         }
@@ -98,13 +102,15 @@ abstract class ADatabase extends AMapper
         }
 
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
-                if (isset($this->relations[$key])) {
+                if (isset($relations[$key])) {
                     $entry = $record->getEntry($key);
                     if ($entry->isFromStorage() && (false !== $entry->getData())) {
-                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $entry->getData());
+                        $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $entry->getData());
                     }
                 }
             } catch (MapperException $ex) {
@@ -117,10 +123,10 @@ abstract class ADatabase extends AMapper
         }
 
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key])) {
+            if (isset($relations[$key])) {
                 $entry = $record->getEntry($key);
                 if (!in_array($key, $record->getMapper()->getPrimaryKeys()) && !$entry->isFromStorage() && (false !== $item)) {
-                    $this->queryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                    $this->queryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
                 }
             }
         }
@@ -138,22 +144,19 @@ abstract class ADatabase extends AMapper
         }
 
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
 
         // conditions - must be equal
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) {
-            return false;
-        }
-
         // relations - what to get
-        foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->queryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+        foreach ($relations as $localAlias => $remoteColumn) {
+            $this->queryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
         }
         $this->queryBuilder->setLimits(0,1);
 
@@ -184,15 +187,16 @@ abstract class ADatabase extends AMapper
         }
 
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
 
         // conditions - everything must be equal
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
-                if (isset($this->relations[$key])) {
+                if (isset($relations[$key])) {
                     $item = $record->offsetGet($key);
                     if (false !== $item) {
-                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                        $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                     }
                 }
             } catch (MapperException $ex) {
@@ -205,8 +209,8 @@ abstract class ADatabase extends AMapper
         }
 
         // relations - what to get
-        foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->queryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+        foreach ($relations as $localAlias => $remoteColumn) {
+            $this->queryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
         }
 
         // query itself
@@ -228,29 +232,27 @@ abstract class ADatabase extends AMapper
     public function countRecord(ARecord $record): int
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
-        foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
-            }
-        }
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
 
-        if (empty($this->queryBuilder->getConditions())) {
-            return 0;
+        foreach ($record as $key => $item) {
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            }
         }
 
         if (empty($record->getMapper()->getPrimaryKeys())) {
-            $relation = reset($this->relations);
+            $relation = reset($relations);
             if (false !== $relation) {
-                $this->queryBuilder->addColumn($this->getTable(), $relation, 'count', IQueryBuilder::AGGREGATE_COUNT);
+                $this->queryBuilder->addColumn($record->getMapper()->getAlias(), $relation, 'count', IQueryBuilder::AGGREGATE_COUNT);
             }
         } else {
 //            foreach ($record->getMapper()->getPrimaryKeys() as $primaryKey) {
-//                $this->queryBuilder->addColumn($this->getTable(), $primaryKey, '', IQueryBuilder::AGGREGATE_COUNT);
+//                $this->queryBuilder->addColumn($record->getMapper()->getAlias(), $primaryKey, '', IQueryBuilder::AGGREGATE_COUNT);
 //            }
             $pks = $record->getMapper()->getPrimaryKeys();
             $key = reset($pks);
-            $this->queryBuilder->addColumn($this->getTable(), $this->relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $this->queryBuilder->addColumn($record->getMapper()->getAlias(), $relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
         $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), $this->queryBuilder->getParams());
@@ -270,10 +272,12 @@ abstract class ADatabase extends AMapper
         }
 
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
@@ -296,13 +300,15 @@ abstract class ADatabase extends AMapper
         }
 
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
-                if (isset($this->relations[$key])) {
+                if (isset($relations[$key])) {
                     $item = $record->offsetGet($key);
                     if (false !== $item) {
-                        $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                        $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                     }
                 }
             } catch (MapperException $ex) {
@@ -320,20 +326,18 @@ abstract class ADatabase extends AMapper
     public function loadMultiple(ARecord $record): array
     {
         $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($this->getTable());
+        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->queryBuilder->getConditions())) {
-            return [];
-        }
-
         // relations - what to get
-        foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->queryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+        foreach ($relations as $localAlias => $remoteColumn) {
+            $this->queryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
         }
 
         // query itself

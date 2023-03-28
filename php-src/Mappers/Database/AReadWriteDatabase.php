@@ -87,10 +87,12 @@ abstract class AReadWriteDatabase extends AMapper
     protected function insertRecord(ARecord $record): bool
     {
         $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->writeQueryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->writeQueryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
             }
         }
         if (empty($this->writeQueryBuilder->getProperties())) {
@@ -106,17 +108,19 @@ abstract class AReadWriteDatabase extends AMapper
             return true;
         }
         $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
+            if (isset($relations[$key]) && (false !== $item)) {
                 if ($record->getEntry($key)->isFromStorage()) {
-                    $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    $this->writeQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                 } else {
-                    $this->writeQueryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                    $this->writeQueryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
                 }
             }
         }
-        if (empty($this->writeQueryBuilder->getConditions())) {
+        if (empty($this->writeQueryBuilder->getConditions())) { /// this one is questionable - I really want to update everything?
             return false;
         }
         if (empty($this->writeQueryBuilder->getProperties())) {
@@ -138,13 +142,15 @@ abstract class AReadWriteDatabase extends AMapper
         }
 
         $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
-                if (isset($this->relations[$key])) {
+                if (isset($relations[$key])) {
                     $entry = $record->getEntry($key);
                     if ($entry->isFromStorage() && (false !== $entry->getData())) {
-                        $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $entry->getData());
+                        $this->writeQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $entry->getData());
                     }
                 }
             } catch (MapperException $ex) {
@@ -157,10 +163,10 @@ abstract class AReadWriteDatabase extends AMapper
         }
 
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key])) {
+            if (isset($relations[$key])) {
                 $entry = $record->getEntry($key);
                 if (!in_array($key, $record->getMapper()->getPrimaryKeys()) && !$entry->isFromStorage() && (false !== $item)) {
-                    $this->writeQueryBuilder->addProperty($this->getTable(), $this->relations[$key], $item);
+                    $this->writeQueryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
                 }
             }
         }
@@ -178,22 +184,19 @@ abstract class AReadWriteDatabase extends AMapper
         }
 
         $this->readQueryBuilder->clear();
-        $this->readQueryBuilder->setBaseTable($this->getTable());
+        $this->readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
 
         // conditions - must be equal
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->readQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->readQueryBuilder->getConditions())) {
-            return false;
-        }
-
         // relations - what to get
-        foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->readQueryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+        foreach ($relations as $localAlias => $remoteColumn) {
+            $this->readQueryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
         }
         $this->readQueryBuilder->setLimits(0,1);
 
@@ -224,15 +227,16 @@ abstract class AReadWriteDatabase extends AMapper
         }
 
         $this->readQueryBuilder->clear();
-        $this->readQueryBuilder->setBaseTable($this->getTable());
+        $this->readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
 
         // conditions - everything must be equal
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
-                if (isset($this->relations[$key])) {
+                if (isset($relations[$key])) {
                     $item = $record->offsetGet($key);
                     if (false !== $item) {
-                        $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                        $this->readQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                     }
                 }
             } catch (MapperException $ex) {
@@ -245,8 +249,8 @@ abstract class AReadWriteDatabase extends AMapper
         }
 
         // relations - what to get
-        foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->readQueryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+        foreach ($relations as $localAlias => $remoteColumn) {
+            $this->readQueryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
         }
 
         // query itself
@@ -268,29 +272,27 @@ abstract class AReadWriteDatabase extends AMapper
     public function countRecord(ARecord $record): int
     {
         $this->readQueryBuilder->clear();
-        $this->readQueryBuilder->setBaseTable($this->getTable());
-        foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
-            }
-        }
+        $this->readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
 
-        if (empty($this->readQueryBuilder->getConditions())) {
-            return 0;
+        foreach ($record as $key => $item) {
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->readQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            }
         }
 
         if (empty($record->getMapper()->getPrimaryKeys())) {
-            $relation = reset($this->relations);
+            $relation = reset($relations);
             if (false !== $relation) {
-                $this->readQueryBuilder->addColumn($this->getTable(), $relation, 'count', IQueryBuilder::AGGREGATE_COUNT);
+                $this->readQueryBuilder->addColumn($record->getMapper()->getAlias(), $relation, 'count', IQueryBuilder::AGGREGATE_COUNT);
             }
         } else {
 //            foreach ($record->getMapper()->getPrimaryKeys() as $primaryKey) {
-//                $this->queryBuilder->addColumn($this->getTable(), $primaryKey, '', IQueryBuilder::AGGREGATE_COUNT);
+//                $this->readQueryBuilder->addColumn($record->getMapper()->getAlias(), $primaryKey, '', IQueryBuilder::AGGREGATE_COUNT);
 //            }
             $pks = $record->getMapper()->getPrimaryKeys();
             $key = reset($pks);
-            $this->readQueryBuilder->addColumn($this->getTable(), $this->relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $this->readQueryBuilder->addColumn($record->getMapper()->getAlias(), $relations[$key], 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
         $lines = $this->readDatabase->query(strval($this->readDialect->select($this->readQueryBuilder)), $this->readQueryBuilder->getParams());
@@ -310,14 +312,16 @@ abstract class AReadWriteDatabase extends AMapper
         }
 
         $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->writeQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->writeQueryBuilder->getConditions())) {
+        if (empty($this->writeQueryBuilder->getConditions())) { /// this one is necessary - delete everything? do it yourself - and manually!
             return false;
         }
 
@@ -336,13 +340,15 @@ abstract class AReadWriteDatabase extends AMapper
         }
 
         $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($this->getTable());
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
-                if (isset($this->relations[$key])) {
+                if (isset($relations[$key])) {
                     $item = $record->offsetGet($key);
                     if (false !== $item) {
-                        $this->writeQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                        $this->writeQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
                     }
                 }
             } catch (MapperException $ex) {
@@ -360,20 +366,18 @@ abstract class AReadWriteDatabase extends AMapper
     public function loadMultiple(ARecord $record): array
     {
         $this->readQueryBuilder->clear();
-        $this->readQueryBuilder->setBaseTable($this->getTable());
+        $this->readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $relations = $record->getMapper()->getRelations();
+
         foreach ($record as $key => $item) {
-            if (isset($this->relations[$key]) && (false !== $item)) {
-                $this->readQueryBuilder->addCondition($this->getTable(), $this->relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && (false !== $item)) {
+                $this->readQueryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
             }
         }
 
-        if (empty($this->readQueryBuilder->getConditions())) {
-            return [];
-        }
-
         // relations - what to get
-        foreach ($this->relations as $localAlias => $remoteColumn) {
-            $this->readQueryBuilder->addColumn($this->getTable(), $remoteColumn, $localAlias);
+        foreach ($relations as $localAlias => $remoteColumn) {
+            $this->readQueryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
         }
 
         // query itself
