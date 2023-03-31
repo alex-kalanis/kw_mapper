@@ -52,14 +52,14 @@ class Dba extends ADatabase implements IPassConnection
         $this->connect();
 
         $results = [];
-        $key = dba_firstkey($this->connection);
+        $key = dba_firstkey($this->getConnection());
 
         while (false !== $key) {
-            $line = dba_fetch($key, $this->connection);
+            $line = dba_fetch($key, $this->getConnection());
             if (false !== $line) {
                 $results[] = $line;
             }
-            $key = dba_nextkey($this->connection);
+            $key = dba_nextkey($this->getConnection());
         }
 
         return $results;
@@ -80,19 +80,19 @@ class Dba extends ADatabase implements IPassConnection
 
         $this->connect();
 
-        if (dba_exists($key, $this->connection)) {
+        if (dba_exists($key, $this->getConnection())) {
             if (IDriverSources::ACTION_UPDATE == $action) {
-                return dba_replace($key, $content, $this->connection);
+                return dba_replace($key, $content, $this->getConnection());
             } elseif (IDriverSources::ACTION_DELETE == $action) {
-                return dba_delete($key, $this->connection);
+                return dba_delete($key, $this->getConnection());
             } else {
                 return false;
             }
         } else {
             if (IDriverSources::ACTION_UPDATE == $action) {
-                return dba_insert($key, $content, $this->connection);
+                return dba_insert($key, $content, $this->getConnection());
             } elseif (IDriverSources::ACTION_INSERT == $action) {
-                return dba_insert($key, $content, $this->connection);
+                return dba_insert($key, $content, $this->getConnection());
             } else {
                 return false;
             }

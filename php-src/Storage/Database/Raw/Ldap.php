@@ -47,19 +47,21 @@ class Ldap extends ADatabase implements IPassConnection
      */
     public function connect(bool $withBind = true): void
     {
-        $this->connection = $this->connectToServer($withBind);
+        if (!$this->isConnected()) {
+            $this->connection = $this->connectToServer();
+            if ($withBind) {
+                $this->bindUser($this->config->getUser(), $this->config->getPassword());
+            }
+        }
     }
 
     /**
-     * @param bool $withBind
      * @throws MapperException
      * @return resource
      */
-    protected function connectToServer(bool $withBind = true)
+    protected function connectToServer()
     {
-        $connection = ldap_connect(
-            $this->config->getLocation()
-        );
+        $connection = ldap_connect($this->config->getLocation());
 
         if (false === $connection) {
             throw new \RuntimeException('Ldap connection error.');
@@ -75,13 +77,71 @@ class Ldap extends ADatabase implements IPassConnection
         // We need this for doing a LDAP search.
         ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
 
-        if ($withBind) {
-            if (!ldap_bind($connection, $this->config->getUser(), $this->config->getPassword())) {
-                throw new \RuntimeException('Ldap bind failed: ' . ldap_error($connection));
-            }
+        return $connection;
+    }
+
+    /**
+     * @param string $domain
+     * @param array<string|int, int|string|float|null> $changed
+     * @throws MapperException
+     * @return bool
+     */
+    public function add(string $domain, array $changed): bool
+    {
+        return ldap_add($this->getConnection(), $domain, $changed);
+    }
+
+    /**
+     * @param string $domain
+     * @param array<string|int, int|string|float|null> $changed
+     * @throws MapperException
+     * @return bool
+     */
+    public function replace(string $domain, array $changed): bool
+    {
+        return ldap_mod_replace($this->getConnection(), $domain, $changed);
+    }
+
+    /**
+     * @param string $domain
+     * @throws MapperException
+     * @return bool
+     */
+    public function delete(string $domain): bool
+    {
+        return ldap_delete($this->getConnection(), $domain);
+    }
+
+    /**
+     * @param string $domain
+     * @param string $filter
+     * @throws MapperException
+     * @return array<string|int, string|int|float|array<string|int|float>>
+     */
+    public function search(string $domain, string $filter): array
+    {
+        $result = ldap_search($this->getConnection(), $domain, $filter);
+        if (false === $result) {
+            return [];
         }
 
-        return $connection;
+        $items = ldap_get_entries($this->getConnection(), $result);
+        if (false === $items) {
+            return [];
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param string $domain
+     * @param string $pass
+     * @throws MapperException
+     * @return bool
+     */
+    public function bindUser(string $domain, string $pass): bool
+    {
+        return ldap_bind($this->getConnection(), $domain, $pass);
     }
 
     /**

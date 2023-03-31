@@ -16,13 +16,22 @@ class DatabasesTest extends CommonTestClass
     public function testConnectionRun(): void
     {
         $lib = new XConnect();
-        $this->assertFalse($lib->isConnected());
-        $this->assertEmpty($lib->getConnection());
         $lib->connect();
         $this->assertTrue($lib->isConnected());
         $this->assertEquals('resource somewhere', $lib->getConnection());
         $lib->reconnect();
         $this->assertTrue($lib->isConnected());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testConnectionDie(): void
+    {
+        $lib = new XConnect();
+        $this->assertFalse($lib->isConnected());
+        $this->expectException(MapperException::class);
+        $lib->getConnection();
     }
 }
 

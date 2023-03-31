@@ -74,8 +74,7 @@ abstract class ALdap extends AMapper
             return false;
         }
 
-        return ldap_add(
-            $connect,
+        return $this->database->add(
             $this->dialect->domainDn($this->database->getDomain()),
             $this->dialect->changed($this->queryBuilder)
         );
@@ -119,8 +118,7 @@ abstract class ALdap extends AMapper
             return false;
         }
 
-        return ldap_mod_replace(
-            $connect,
+        return $this->database->replace(
             $this->dialect->userDn($this->database->getDomain(), $this->getPk($record)),
             $this->dialect->changed($this->queryBuilder)
         );
@@ -134,8 +132,7 @@ abstract class ALdap extends AMapper
             return false;
         }
 
-        return ldap_delete(
-            $connect,
+        return $this->database->delete(
             $this->dialect->userDn($this->database->getDomain(), $this->getPk($record))
         );
     }
@@ -147,7 +144,7 @@ abstract class ALdap extends AMapper
      */
     protected function getPk(ARecord $record)
     {
-        $pks = $this->getPrimaryKeys();
+        $pks = $record->getMapper()->getPrimaryKeys();
         $pk = reset($pks);
         $off = $record->offsetGet($pk);
         return ($off instanceof ICanFill) ? strval($off->dumpData()) : strval($off);
@@ -248,17 +245,10 @@ abstract class ALdap extends AMapper
             return [];
         }
 
-        $result = ldap_search(
-            $connect,
+        return $this->database->search(
             $this->dialect->domainDn($this->database->getDomain()),
             $this->dialect->filter($this->queryBuilder)
         );
-        if (false === $result) {
-            return [];
-        }
-
-        $items = ldap_get_entries($connect, $result);
-        return false !== $items ? $items : [];
     }
 
     /**
@@ -282,8 +272,7 @@ abstract class ALdap extends AMapper
             return false;
         }
 
-        $result = ldap_bind(
-            $connect,
+        $result = $this->database->bindUser(
             $this->dialect->userDn($this->database->getDomain(), $params['user']),
             $params['password']
         );

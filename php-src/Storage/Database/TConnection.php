@@ -52,10 +52,15 @@ trait TConnection
     }
 
     /**
+     * @throws MapperException
      * @return object|resource|null
      */
     public function getConnection()
     {
+        if (!$this->isConnected()) {
+            throw new MapperException('Connection not initialized!');
+        }
+
         return $this->connection;
     }
 }

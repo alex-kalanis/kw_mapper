@@ -324,11 +324,13 @@ abstract class AConnector
         if (empty($parentRecord)) {
             throw new MapperException(sprintf('Unknown record for parent alias *%s*', $parentAlias));
         }
+
         /** @var array<string|int, ForeignKey> $parentKeys */
         $parentKeys = $parentRecord->getMapper()->getForeignKeys();
         if (!isset($parentKeys[$childAlias])) {
             throw new MapperException(sprintf('Unknown alias *%s* in mapper for parent *%s*', $childAlias, $parentAlias));
         }
+
         $parentKey = $parentKeys[$childAlias];
         $parentRelations = $parentRecord->getMapper()->getRelations();
         if (empty($parentRelations[$parentKey->getLocalEntryKey()])) {
@@ -343,11 +345,13 @@ abstract class AConnector
             throw new MapperException(sprintf('Unknown record for child alias *%s*', $childAlias));
         }
         // @codeCoverageIgnoreEnd
+
         $childRecord = $childLookup->getRecord();
         $childRelations = $childRecord->getMapper()->getRelations();
         if (empty($childRelations[$parentKey->getRemoteEntryKey()])) {
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for child *%s*', $parentKey->getRemoteEntryKey(), $childAlias));
         }
+
         if ($parentRecord->getMapper()->getSource() != $childRecord->getMapper()->getSource()) {
             throw new MapperException(sprintf('Parent *%s* and child *%s* must both have the same source', $parentAlias, $childAlias));
         }

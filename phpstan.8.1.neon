@@ -23,11 +23,16 @@ parameters:
 		# explode()
 		- '#of function explode expects non-empty-string, string given.#'
 		# ldap connection problems - php8.0- uses resource, php8.1+ object
-		- '#expects LDAP\\Connection, resource\|null given.#'
 		- '#should return resource but returns LDAP\\Connection.#'
-		- '#expects LDAP\\Connection, object\|resource given.#'
-		- '#ldap_get_entries expects LDAP\\Result, array\|LDAP\\Result given.#'
-		- '#ldap_search expects array\|LDAP\\Connection, object\|resource given.#'
+		- '#of function ldap_[a-z_]+ expects LDAP\\Result, array\|LDAP\\Result given.#'
+		- '#of function ldap_[a-z_]+ expects LDAP\\Connection, object\|resource given.#'
+		- '#of function ldap_[a-z_]+ expects LDAP\\Connection, object\|resource\|null given.#'
+		- '#of function ldap_[a-z_]+ expects LDAP\\Connection, resource\|null given.#'
+		- '#of function ldap_[a-z_]+ expects array\|LDAP\\Connection, object\|resource\|null given.#'
+		- '#of function ldap_[a-z_]+ expects array\|LDAP\\Connection, object\|resource given.#'
+		# odbc and dba are not better
+		- '#of function odbc_[a-z_]+ expects resource, object\|resource\|null given.#'
+		- '#of function dba_[a-z_]+ expects resource, object\|resource\|null given.#'
 		-
 			message: '#Parameter \#1 \$callback of function array_map expects#'
 			path: 'php-src/Storage/Shared/FormatFiles/Csv.php'

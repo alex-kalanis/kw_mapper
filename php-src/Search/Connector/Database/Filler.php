@@ -13,7 +13,7 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder\Join;
 /**
  * Class Filler
  * @package kalanis\kw_mapper\Search\Connector\Database
- * Filling both columns and Records
+ * Filling (Hydrate) both columns and Records
  *
  * Start with getColumns() to decide which columns will be get from DB
  * After the data will be obtained pass them through fillResults() to fill records itself
@@ -90,7 +90,9 @@ class Filler
 
     /**
      * Fill results from db response in lines to record tree with objects
+     * Contains huge caching
      * Really ugly method which will need to stay this way, because it makes a tree from a flat table
+     * What can be stored elsewhere already is
      * @param iterable<string|int, array<string|int, string|int|float>> $dataSourceRows
      * @param mixed $parent
      * @throws MapperException

@@ -51,7 +51,7 @@ abstract class AOdbc extends ADatabase implements IPassConnection
         $this->connect();
 
         list($updQuery, $binds, ) = $this->bindFromNamedToQuestions($query, $params);
-        $statement = odbc_prepare($this->connection, $updQuery); // @phpstan-ignore-line
+        $statement = odbc_prepare($this->getConnection(), $updQuery); // @phpstan-ignore-line
 
         if ((false !== $statement) && odbc_execute($statement, $binds)) { // @phpstan-ignore-line
             $row = [];
@@ -91,7 +91,7 @@ abstract class AOdbc extends ADatabase implements IPassConnection
         $this->connect();
 
         list($updQuery, $binds, ) = $this->bindFromNamedToQuestions($query, $params);
-        $statement = odbc_prepare($this->connection, strval($updQuery));
+        $statement = odbc_prepare($this->getConnection(), strval($updQuery));
         if (false !== $statement) {
             $result = odbc_execute($statement, $binds); // @phpstan-ignore-line
             odbc_free_result($statement);
