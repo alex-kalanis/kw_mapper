@@ -15,6 +15,7 @@ use kalanis\kw_mapper\Records\ARecord;
  */
 abstract class AMapper
 {
+    use Shared\TEntityChanged;
     use Shared\TForeignKey;
     use Shared\TPrimaryKey;
     use Shared\TRelations;
@@ -254,13 +255,9 @@ abstract class AMapper
         $hasNewOne = 0;
         foreach ($record as $key => $value) {
             $fromStorage = $record->getEntry($key)->isFromStorage();
-            $toCompare = $record->getEntry($key)->getData();
-            $stay = (IEntryType::TYPE_BOOLEAN == $record->getEntry($key)->getType())
-                ? is_null($toCompare)
-                : (false === $toCompare)
-            ;
-            $hasPreset += intval($fromStorage && !$stay);
-            $hasNewOne += intval(!$fromStorage && !$stay);
+            $changed = $this->ifEntryChanged($record->getEntry($key));
+            $hasPreset += intval($fromStorage && $changed);
+            $hasNewOne += intval(!$fromStorage && $changed);
         }
 
         $result = (boolval($hasPreset) && boolval($hasNewOne) && !$forceInsert)

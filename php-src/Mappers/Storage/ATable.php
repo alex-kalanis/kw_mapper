@@ -3,7 +3,7 @@
 namespace kalanis\kw_mapper\Mappers\Storage;
 
 
-use kalanis\kw_mapper\Mappers\Shared\TFileTable;
+use kalanis\kw_mapper\Mappers\Shared;
 
 
 /**
@@ -13,5 +13,6 @@ use kalanis\kw_mapper\Mappers\Shared\TFileTable;
  */
 abstract class ATable extends AStorage
 {
-    use TFileTable;
+    use Shared\TReadFileTable;
+    use Shared\TWriteFileTable;
 }

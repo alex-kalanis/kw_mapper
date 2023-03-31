@@ -6,9 +6,11 @@ namespace kalanis\kw_mapper\Mappers\Database;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
+use kalanis\kw_mapper\Mappers\Shared\TEntityChanged;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\TFill;
-use kalanis\kw_mapper\Storage;
+use kalanis\kw_mapper\Storage\Database;
+use kalanis\kw_mapper\Storage\Shared;
 
 
 /**
@@ -19,15 +21,26 @@ use kalanis\kw_mapper\Storage;
  */
 abstract class AMongo extends AMapper
 {
+    use TEntityChanged;
     use TFill;
     use TTable;
 
-    /** @var Storage\Database\Raw\MongoDb */
-    protected $database = null;
-    /** @var Storage\Shared\QueryBuilder */
-    protected $queryBuilder = null;
-    /** @var Storage\Database\Dialects\MongoDb */
-    protected $dialect = null;
+    /** @var string|null */
+    protected $readSource = null;
+    /** @var string|null */
+    protected $writeSource = null;
+    /** @var Database\Raw\MongoDb */
+    protected $readDatabase = null;
+    /** @var Database\Raw\MongoDb */
+    protected $writeDatabase = null;
+    /** @var Database\Dialects\MongoDb */
+    protected $readDialect = null;
+    /** @var Database\Dialects\MongoDb */
+    protected $writeDialect = null;
+    /** @var Shared\QueryBuilder */
+    protected $readQueryBuilder = null;
+    /** @var Shared\QueryBuilder */
+    protected $writeQueryBuilder = null;
 
     /**
      * @throws MapperException
@@ -35,10 +48,101 @@ abstract class AMongo extends AMapper
     public function __construct()
     {
         parent::__construct();
-        $config = Storage\Database\ConfigStorage::getInstance()->getConfig($this->getSource());
-        $this->database = Storage\Database\DatabaseSingleton::getInstance()->getDatabase($config);
-        $this->dialect = Storage\Database\Dialects\Factory::getInstance()->getDialectClass($this->database->languageDialect());
-        $this->queryBuilder = new Storage\Shared\QueryBuilder();
+
+        $this->initReadDatabase();
+        $this->initWriteDatabase();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    protected function initReadDatabase(): void
+    {
+        $this->readDatabase = $this->getReadDatabase();
+        $this->readDialect = $this->getReadDialect($this->readDatabase);
+        $this->readQueryBuilder = $this->getReadQueryBuilder();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function initWriteDatabase(): void
+    {
+        $this->writeDatabase = $this->getWriteDatabase();
+        $this->writeDialect = $this->getWriteDialect($this->writeDatabase);
+        $this->writeQueryBuilder = $this->getWriteQueryBuilder();
+    }
+
+    protected function setReadSource(string $readSource): void
+    {
+        $this->readSource = $readSource;
+    }
+
+    protected function getReadSource(): string
+    {
+        return $this->readSource ?? $this->getSource();
+    }
+
+    protected function setWriteSource(string $writeSource): void
+    {
+        $this->writeSource = $writeSource;
+    }
+
+    protected function getWriteSource(): string
+    {
+        return $this->writeSource ?? $this->getSource();
+    }
+
+    /**
+     * @throws MapperException
+     * @return Database\ADatabase
+     */
+    protected function getReadDatabase(): Database\ADatabase
+    {
+        return Database\DatabaseSingleton::getInstance()->getDatabase(
+            Database\ConfigStorage::getInstance()->getConfig($this->getReadSource())
+        );
+    }
+
+    /**
+     * @param Database\ADatabase $database
+     * @throws MapperException
+     * @return Database\Dialects\ADialect
+     */
+    protected function getReadDialect(Database\ADatabase $database): Database\Dialects\ADialect
+    {
+        return Database\Dialects\Factory::getInstance()->getDialectClass($database->languageDialect());
+    }
+
+    protected function getReadQueryBuilder(): Shared\QueryBuilder
+    {
+        return new Shared\QueryBuilder();
+    }
+
+    /**
+     * @throws MapperException
+     * @return Database\ADatabase
+     */
+    protected function getWriteDatabase(): Database\ADatabase
+    {
+        return Database\DatabaseSingleton::getInstance()->getDatabase(
+            Database\ConfigStorage::getInstance()->getConfig($this->getWriteSource())
+        );
+    }
+
+    /**
+     * @param Database\ADatabase $database
+     * @throws MapperException
+     * @return Database\Dialects\ADialect
+     */
+    protected function getWriteDialect(Database\ADatabase $database): Database\Dialects\ADialect
+    {
+        return Database\Dialects\Factory::getInstance()->getDialectClass($database->languageDialect());
+    }
+
+    protected function getWriteQueryBuilder(): Shared\QueryBuilder
+    {
+        return new Shared\QueryBuilder();
     }
 
     public function getAlias(): string
@@ -48,51 +152,96 @@ abstract class AMongo extends AMapper
 
     protected function insertRecord(ARecord $record): bool
     {
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
-            if (isset($relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
+            if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
+                $this->writeQueryBuilder->addProperty(
+                    $record->getMapper()->getAlias(),
+                    $relations[$key],
+                    $item
+                );
             }
         }
-        // @phpstan-ignore-next-line
-        return $this->database->exec($this->queryBuilder, $this->dialect->insert($this->queryBuilder));
+
+        if (empty($this->writeQueryBuilder->getProperties())) {
+            return false;
+        }
+
+        return $this->writeDatabase->exec(
+            $this->writeQueryBuilder,
+            // @phpstan-ignore-next-line  expects MongoDB\Driver\BulkWrite, object|string given
+            $this->writeDialect->insert($this->writeQueryBuilder)
+        );
     }
 
     protected function updateRecord(ARecord $record): bool
     {
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
-            if (false !== $item) {
+            if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
                 if ($record->getEntry($key)->isFromStorage()) {
-                    $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+                    $this->writeQueryBuilder->addCondition(
+                        $record->getMapper()->getAlias(),
+                        $relations[$key],
+                        IQueryBuilder::OPERATION_EQ,
+                        $item
+                    );
                 } else {
-                    $this->queryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
+                    $this->writeQueryBuilder->addProperty(
+                        $record->getMapper()->getAlias(),
+                        $relations[$key],
+                        $item
+                    );
                 }
             }
         }
-        // @phpstan-ignore-next-line
-        return $this->database->exec($this->queryBuilder, $this->dialect->update($this->queryBuilder));
+
+        if (empty($this->writeQueryBuilder->getConditions())) { /// this one is questionable - I really want to update everything?
+            return false;
+        }
+        if (empty($this->writeQueryBuilder->getProperties())) {
+            return false;
+        }
+
+        return $this->writeDatabase->exec(
+            $this->writeQueryBuilder,
+            // @phpstan-ignore-next-line  expects MongoDB\Driver\BulkWrite, object|string given
+            $this->writeDialect->update($this->writeQueryBuilder)
+        );
     }
 
     protected function deleteRecord(ARecord $record): bool
     {
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $this->writeQueryBuilder->clear();
+        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
-            if (isset($relations[$key]) && (false !== $item)) {
-                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], IQueryBuilder::OPERATION_EQ, $item);
+            if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
+                $this->writeQueryBuilder->addCondition(
+                    $record->getMapper()->getAlias(),
+                    $relations[$key],
+                    IQueryBuilder::OPERATION_EQ,
+                    $item
+                );
             }
         }
-        // @phpstan-ignore-next-line
-        return $this->database->exec($this->queryBuilder, $this->dialect->delete($this->queryBuilder));
+
+        if (empty($this->writeQueryBuilder->getConditions())) { /// this one is necessary - delete everything? do it yourself - and manually!
+            return false;
+        }
+
+        return $this->writeDatabase->exec(
+            $this->writeQueryBuilder,
+            // @phpstan-ignore-next-line  expects MongoDB\Driver\BulkWrite, object|string given
+            $this->writeDialect->delete($this->writeQueryBuilder)
+        );
     }
 
     protected function loadRecord(ARecord $record): bool
@@ -149,13 +298,18 @@ abstract class AMongo extends AMapper
      */
     protected function fillConditions(ARecord $record): void
     {
-        $this->queryBuilder->clear();
-        $this->queryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $this->readQueryBuilder->clear();
+        $this->readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
-            if ((false !== $item) && !$record->getEntry($key)->isFromStorage()) {
-                $this->queryBuilder->addCondition($record->getMapper()->getAlias(), $relations[$key], strval($item));
+            if (!$record->getEntry($key)->isFromStorage() && $this->ifEntryChanged($record->getEntry($key))) {
+                $this->readQueryBuilder->addCondition(
+                    $record->getMapper()->getAlias(),
+                    $relations[$key],
+                    IQueryBuilder::OPERATION_EQ,
+                    strval($item)
+                );
             }
         }
     }
@@ -166,7 +320,10 @@ abstract class AMongo extends AMapper
      */
     protected function multiple(): array
     {
-        // @phpstan-ignore-next-line
-        return $this->database->query($this->queryBuilder, $this->dialect->select($this->queryBuilder))->toArray();
+        return $this->readDatabase->query(
+            $this->readQueryBuilder,
+            // @phpstan-ignore-next-line  expects MongoDB\Driver\Query, object|string given
+            $this->readDialect->select($this->readQueryBuilder)
+        )->toArray();
     }
 }
