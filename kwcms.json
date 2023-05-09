@@ -12,6 +12,9 @@
     "alex-kalanis/kw_storage": "dev-master"
   },
   "require-dev": {
+    "alex-kalanis/kw_paths": "dev-master",
+    "alex-kalanis/kw_files": "dev-master",
+    "alex-kalanis/kw_storage": "dev-master"
   },
   "minimum-stability": "dev",
   "prefer-stable": true

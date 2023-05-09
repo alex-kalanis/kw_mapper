@@ -8,6 +8,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\Shared\TFile;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\PageRecord;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -28,7 +29,7 @@ abstract class AFile extends AFileSource
     {
         try {
             return $this->getFileAccessor()->deleteFile($this->getPath());
-        } catch (FilesException $ex) {
+        } catch (FilesException | PathsException $ex) {
             return false;
         }
     }

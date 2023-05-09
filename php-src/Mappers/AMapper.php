@@ -3,7 +3,6 @@
 namespace kalanis\kw_mapper\Mappers;
 
 
-use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 

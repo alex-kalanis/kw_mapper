@@ -9,6 +9,7 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
 use kalanis\kw_mapper\Storage\File;
 use kalanis\kw_mapper\Storage\Shared;
+use kalanis\kw_paths\PathsException;
 
 
 /**
@@ -62,7 +63,7 @@ abstract class AFileSource extends AMapper
                 // @codeCoverageIgnoreEnd
             }
             return $format->unpack($content);
-        } catch (FilesException $ex) {
+        } catch (FilesException | PathsException $ex) {
             throw new MapperException('Unable to read from source', 0, $ex);
         }
     }
@@ -78,7 +79,7 @@ abstract class AFileSource extends AMapper
         try {
             $format = $format ?: Shared\FormatFiles\Factory::getInstance()->getFormatClass($this->getFormat());
             return $this->getFileAccessor()->saveFile($this->getPath(), $format->pack($content));
-        } catch (FilesException $ex) {
+        } catch (FilesException | PathsException $ex) {
             throw new MapperException('Unable to write into source', 0, $ex);
         }
     }
