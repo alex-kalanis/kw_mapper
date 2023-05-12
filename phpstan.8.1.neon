@@ -45,4 +45,4 @@ parameters:
 			path: 'php-src/Mappers/Shared/TFinder.php'
 			# php7 also returns back false, php8 just arrays
 		# strval function
-		- '#Parameter \#1 \$va[rl]u?e? of function strval expects#'
+		- '#Parameter \#1 \$va[rl]u?e? of function [si][tn][rt]val expects#'
