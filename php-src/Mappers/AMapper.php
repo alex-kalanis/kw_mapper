@@ -45,7 +45,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function beforeSave(ARecord $record): bool
+    protected function beforeSave(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -55,7 +55,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function afterSave(ARecord $record): bool
+    protected function afterSave(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -65,7 +65,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function beforeDelete(ARecord $record): bool
+    protected function beforeDelete(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -75,7 +75,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function afterDelete(ARecord $record): bool
+    protected function afterDelete(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -85,7 +85,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function beforeUpdate(ARecord $record): bool
+    protected function beforeUpdate(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -95,7 +95,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function afterUpdate(ARecord $record): bool
+    protected function afterUpdate(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -105,7 +105,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function beforeInsert(ARecord $record): bool
+    protected function beforeInsert(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -115,7 +115,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function afterInsert(ARecord $record): bool
+    protected function afterInsert(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -125,7 +125,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function beforeLoad(ARecord $record): bool
+    protected function beforeLoad(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -135,7 +135,7 @@ abstract class AMapper
      * @param ARecord $record
      * @return bool
      */
-    protected function afterLoad(ARecord $record): bool
+    protected function afterLoad(/** @scrutinizer ignore-unused */ ARecord $record): bool
     {
         return true;
     }
@@ -165,7 +165,7 @@ abstract class AMapper
      * @throws MapperException
      * @return bool
      */
-    abstract protected function insertRecord(ARecord $record): bool;
+    abstract protected function insertRecord(/** @scrutinizer ignore-unused */ ARecord $record): bool;
 
     /**
      * Update data - by entries in record
@@ -192,7 +192,7 @@ abstract class AMapper
      * @throws MapperException
      * @return bool
      */
-    abstract protected function updateRecord(ARecord $record): bool;
+    abstract protected function updateRecord(/** @scrutinizer ignore-unused */ ARecord $record): bool;
 
     /**
      * Load record from storage
@@ -219,7 +219,7 @@ abstract class AMapper
      * @throws MapperException
      * @return int
      */
-    abstract public function countRecord(ARecord $record): int;
+    abstract public function countRecord(/** @scrutinizer ignore-unused */ ARecord $record): int;
 
     /**
      * Load record from storage
@@ -227,7 +227,7 @@ abstract class AMapper
      * @throws MapperException
      * @return ARecord[]
      */
-    abstract public function loadMultiple(ARecord $record): array;
+    abstract public function loadMultiple(/** @scrutinizer ignore-unused */ ARecord $record): array;
 
     /**
      * Load record from storage - process
@@ -235,7 +235,7 @@ abstract class AMapper
      * @throws MapperException
      * @return boolean
      */
-    abstract protected function loadRecord(ARecord $record): bool;
+    abstract protected function loadRecord(/** @scrutinizer ignore-unused */ ARecord $record): bool;
 
     /**
      * Save record object
@@ -296,5 +296,5 @@ abstract class AMapper
      * @throws MapperException
      * @return bool
      */
-    abstract protected function deleteRecord(ARecord $record): bool;
+    abstract protected function deleteRecord(/** @scrutinizer ignore-unused */ ARecord $record): bool;
 }
