@@ -31,3 +31,5 @@ parameters:
 		-
 			message: '#Parameter \#1 \$callback of function array_map expects#'
 			path: 'php-src/Storage/Shared/FormatFiles/Csv.php'
+		# strval function
+		- '#Parameter \#1 \$va[rl]u?e? of function strval expects#'

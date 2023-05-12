@@ -44,3 +44,5 @@ parameters:
 			message: '#Strict comparison using \=\=\= between false and array\<kalanis\\kw_mapper\\Records\\ARecord\> will always evaluate to false.#'
 			path: 'php-src/Mappers/Shared/TFinder.php'
 			# php7 also returns back false, php8 just arrays
+		# strval function
+		- '#Parameter \#1 \$va[rl]u?e? of function strval expects#'
