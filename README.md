@@ -8,8 +8,8 @@
 [![License](https://poser.pugx.org/alex-kalanis/kw_mapper/license.svg?v=1)](https://packagist.org/packages/alex-kalanis/kw_mapper)
 [![Code Coverage](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/badges/coverage.png?b=master&v=1)](https://scrutinizer-ci.com/g/alex-kalanis/kw_mapper/?branch=master)
 
-Mapping records and their entries onto other object like tables or files. you can choose
-from multiple sources - raw files, SQL and NoSQL databases.
+Mapping records and their entries onto other object like tables or files. You can choose
+from multiple sources - raw files in local or remote storage, SQL and NoSQL databases.
 
 kw_mapper is a ORM with separated layers of mappers, records and entries - that allows
 it to exchange mappers on-the-fly and target it to the different data storages like files
@@ -109,6 +109,6 @@ alias to pass data when it's necessary to join from already used table.
 ### Possible future things
 
 - Accessing the data across the datasources as one big bulk of data. Not like
-  now when the query across the datasources will fail. As expected.
+  now when the query across the datasources will fail. As expected for now.
 - Extending available datasources with its dialects
 - Extending processing and coverage over the platform-specific datasources.

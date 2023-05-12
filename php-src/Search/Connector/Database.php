@@ -5,6 +5,7 @@ namespace kalanis\kw_mapper\Search\Connector;
 
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
+use kalanis\kw_mapper\Mappers\Shared\TFilterNulls;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Storage;
 
@@ -16,6 +17,8 @@ use kalanis\kw_mapper\Storage;
  */
 class Database extends AConnector
 {
+    use TFilterNulls;
+
     /** @var Storage\Database\ASQL */
     protected $database = null;
     /** @var Storage\Database\Dialects\ADialect */
@@ -81,15 +84,5 @@ class Database extends AConnector
 //print_r($rows);
 
         return $this->filler->fillResults($rows, $this);
-    }
-
-    /**
-     * When it contains null value, then it's empty for usage - because Null has direct representation in query builder as operation -> no need to pass data
-     * @param mixed $value
-     * @return bool
-     */
-    public function filterNullValues($value): bool
-    {
-        return !is_null($value);
     }
 }

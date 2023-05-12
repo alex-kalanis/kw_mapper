@@ -31,8 +31,11 @@ class RecordTest extends CommonTestClass
         $data['id'] = '999';
         $data['name'] = 321654897;
         $data['password'] = 'lkjhgfdsa';
+        $data['status'] = 'ok';
         $data['enabled'] = true;
         $data['enabled'] = '1';
+        $data['others'] = [];
+        $data['info'] = null;
         $data['details'] = ['auth' => 'ldap', 'rights' => 'limited'];
 
         $this->assertEquals('999', $data['id']);
@@ -56,7 +59,7 @@ class RecordTest extends CommonTestClass
 
         foreach ($data as $key => $entry) {
             $this->assertNotEmpty($key);
-            $this->assertNotEmpty($entry);
+            $this->assertNotFalse($entry);
             $this->assertInstanceOf(Records\Entry::class, $data->getEntry($key));
         }
 
@@ -289,7 +292,10 @@ class RecordTest extends CommonTestClass
  * @property int $id
  * @property string $name
  * @property string $password
+ * @property string $status
  * @property bool $enabled
+ * @property string[] $others
+ * @property string $info
  * @property Adapters\MappedStdClass $details
  */
 class UserStrictRecord extends Records\AStrictRecord
@@ -302,6 +308,7 @@ class UserStrictRecord extends Records\AStrictRecord
         $this->addEntry('status', Interfaces\IEntryType::TYPE_SET, ['ok', 'fail', 'error']);
         $this->addEntry('enabled', Interfaces\IEntryType::TYPE_BOOLEAN);
         $this->addEntry('others', Interfaces\IEntryType::TYPE_ARRAY);
+        $this->addEntry('info', Interfaces\IEntryType::TYPE_STRING, 25);
         $this->addEntry('details', Interfaces\IEntryType::TYPE_OBJECT, Adapters\MappedStdClass::class);
         $this->setMapper(UserFileMapper::class);
     }
@@ -314,7 +321,10 @@ class UserStrictRecord extends Records\AStrictRecord
  * @property int $id
  * @property string $name
  * @property string $password
+ * @property string $status
  * @property bool $enabled
+ * @property string[] $others
+ * @property string $info
  * @property Adapters\MappedStdClass $details
  */
 class UserSimpleRecord extends Records\ASimpleRecord
@@ -324,7 +334,10 @@ class UserSimpleRecord extends Records\ASimpleRecord
         $this->addEntry('id', Interfaces\IEntryType::TYPE_INTEGER, 8888); // max size of inner number is 8888
         $this->addEntry('name', Interfaces\IEntryType::TYPE_STRING, 128);
         $this->addEntry('password', Interfaces\IEntryType::TYPE_STRING, 16); // max length of string is 16 chars
+        $this->addEntry('status', Interfaces\IEntryType::TYPE_SET, ['ok', 'fail', 'error']);
         $this->addEntry('enabled', Interfaces\IEntryType::TYPE_BOOLEAN);
+        $this->addEntry('others', Interfaces\IEntryType::TYPE_ARRAY);
+        $this->addEntry('info', Interfaces\IEntryType::TYPE_STRING, 25);
         $this->addEntry('details', Interfaces\IEntryType::TYPE_OBJECT, Adapters\MappedStdClass::class);
         $this->setMapper(UserFileMapper::class);
     }
@@ -394,8 +407,11 @@ class UserFileMapper extends Mappers\Storage\ATable
         $this->setRelation('id', 0);
         $this->setRelation('name', 1);
         $this->setRelation('password', 2);
-        $this->setRelation('enabled', 3);
-        $this->setRelation('details', 4);
+        $this->setRelation('status', 3);
+        $this->setRelation('enabled', 4);
+        $this->setRelation('others', 5);
+        $this->setRelation('info', 6);
+        $this->setRelation('details', 7);
         $this->addPrimaryKey('id');
     }
 }

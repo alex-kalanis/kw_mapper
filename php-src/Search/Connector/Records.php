@@ -214,9 +214,21 @@ class Records extends AConnector
             throw new MapperException('You must set conditions first!');
         }
         $columnKey = $this->condition->getColumnKey();
+
         return is_array($columnKey)
-            ? $this->filterFromManyValues($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams(), $columnKey)
-            : $this->checkCondition($this->condition->getOperation(), $result->offsetGet($this->condition->getColumnName()), $this->queryBuilder->getParams()[$columnKey] )
+            ? $this->filterFromManyValues(
+                $this->condition->getOperation(),
+                $result->offsetGet($this->condition->getColumnName()),
+                $this->queryBuilder->getParams(),
+                $columnKey
+            )
+            : $this->checkCondition(
+                $this->condition->getOperation(),
+                $result->offsetGet($this->condition->getColumnName()),
+                isset($this->queryBuilder->getParams()[$columnKey])
+                    ? $this->queryBuilder->getParams()[$columnKey]
+                    : null
+            )
         ;
     }
 

@@ -84,17 +84,18 @@ class SqLiteTest extends CommonTestClass
         $query->setBaseTable('foo');
         $query->addCondition('', 'dbt', IQueryBuilder::OPERATION_EQ, 'ggf');
         $query->addCondition('', 'dfd', IQueryBuilder::OPERATION_NEQ, 'yxn');
+        $query->addCondition('', 'vtd', IQueryBuilder::OPERATION_EQ, null);
         $query->addOrderBy('foo', 'yjd', IQueryBuilder::ORDER_DESC);
         $query->addGroupBy('foo', 'gds');
         $query->setLimits(5,3);
         $sql = new Dialects\SQLite();
-        $this->assertEquals('SELECT * FROM "foo"   WHERE "dbt" = :dbt_0 AND "dfd" != :dfd_1 GROUP BY "gds" ORDER BY "yjd" DESC LIMIT 3 OFFSET 5;', $sql->select($query));
+        $this->assertEquals('SELECT * FROM "foo"   WHERE "dbt" = :dbt_0 AND "dfd" != :dfd_1 AND "vtd" IS NULL  GROUP BY "gds" ORDER BY "yjd" DESC LIMIT 3 OFFSET 5;', $sql->select($query));
         $query->setOffset(null);
-        $this->assertEquals('SELECT * FROM "foo"   WHERE "dbt" = :dbt_0 AND "dfd" != :dfd_1 GROUP BY "gds" ORDER BY "yjd" DESC LIMIT 3;', $sql->select($query));
+        $this->assertEquals('SELECT * FROM "foo"   WHERE "dbt" = :dbt_0 AND "dfd" != :dfd_1 AND "vtd" IS NULL  GROUP BY "gds" ORDER BY "yjd" DESC LIMIT 3;', $sql->select($query));
         $query->setLimit(null);
         $query->addHavingCondition('', 'ksd', IQueryBuilder::OPERATION_GTE, 25);
-        $this->assertEquals('SELECT * FROM "foo"   WHERE "dbt" = :dbt_0 AND "dfd" != :dfd_1 GROUP BY "gds" HAVING "ksd" >= :ksd_2 ORDER BY "yjd" DESC;', $sql->select($query));
-        $this->assertEquals([ ':dbt_0' => 'ggf', ':dfd_1' => 'yxn', ':ksd_2' => 25, ], $query->getParams());
+        $this->assertEquals('SELECT * FROM "foo"   WHERE "dbt" = :dbt_0 AND "dfd" != :dfd_1 AND "vtd" IS NULL  GROUP BY "gds" HAVING "ksd" >= :ksd_3 ORDER BY "yjd" DESC;', $sql->select($query));
+        $this->assertEquals([ ':dbt_0' => 'ggf', ':dfd_1' => 'yxn', ':ksd_3' => 25, ], $query->getParams());
         $query->resetCounter();
     }
 

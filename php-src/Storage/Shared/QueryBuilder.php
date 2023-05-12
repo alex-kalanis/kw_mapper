@@ -104,8 +104,17 @@ class QueryBuilder
             ])) {
             throw new MapperException(sprintf('Unknown operation *%s* !', $operation));
         }
+        if (in_array($operation, [IQueryBuilder::OPERATION_EQ, IQueryBuilder::OPERATION_LIKE, IQueryBuilder::OPERATION_IN]) && is_null($value)) {
+            $operation = IQueryBuilder::OPERATION_NULL;
+        } elseif (in_array($operation, [IQueryBuilder::OPERATION_NEQ, IQueryBuilder::OPERATION_NLIKE, IQueryBuilder::OPERATION_NIN]) && is_null($value)) {
+            $operation = IQueryBuilder::OPERATION_NNULL;
+        }
         $condition = clone $this->condition;
-        $this->conditions[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
+        if (is_null($value)) {
+            $this->conditions[] = $condition->setData($tableName, $columnName, $operation, $this->simpleNoValue($columnName));
+        } else {
+            $this->conditions[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
+        }
     }
 
     /**
@@ -154,13 +163,22 @@ class QueryBuilder
             ])) {
             throw new MapperException(sprintf('Unknown operation *%s* !', $operation));
         }
+        if (in_array($operation, [IQueryBuilder::OPERATION_EQ, IQueryBuilder::OPERATION_LIKE, IQueryBuilder::OPERATION_IN]) && is_null($value)) {
+            $operation = IQueryBuilder::OPERATION_NULL;
+        } elseif (in_array($operation, [IQueryBuilder::OPERATION_NEQ, IQueryBuilder::OPERATION_NLIKE, IQueryBuilder::OPERATION_NIN]) && is_null($value)) {
+            $operation = IQueryBuilder::OPERATION_NNULL;
+        }
         $condition = clone $this->condition;
-        $this->having[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
+        if (is_null($value)) {
+            $this->having[] = $condition->setData($tableName, $columnName, $operation, $this->simpleNoValue($columnName));
+        } else {
+            $this->having[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
+        }
     }
 
     /**
      * @param string|int $columnName
-     * @param string|int|float|array<string|int|float>|null $value
+     * @param string|int|float|array<string|int|float|null>|null $value
      * @return string|string[]
      */
     protected function multipleByValue($columnName, $value)
@@ -183,10 +201,20 @@ class QueryBuilder
      */
     protected function simpleByValue($columnName, $value): string
     {
-        $columnKey = sprintf(':%s_%s', $columnName, static::$uniqId);
-        static::$uniqId++;
+        $columnKey = $this->simpleNoValue($columnName);
         $this->params[$columnKey] = is_null($value) ? null : strval($value);
         return $columnKey;
+    }
+
+    /**
+     * @param string|int $columnName
+     * @return string
+     */
+    protected function simpleNoValue($columnName): string
+    {
+        $value = sprintf(':%s_%s', $columnName, static::$uniqId);
+        static::$uniqId++;
+        return $value;
     }
 
     /**

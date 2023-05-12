@@ -6,6 +6,7 @@ namespace kalanis\kw_mapper\Mappers\Database;
 use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\Shared\TEntityChanged;
+use kalanis\kw_mapper\Mappers\Shared\TFilterNulls;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\TFill;
 use kalanis\kw_mapper\Storage\Database;
@@ -22,6 +23,7 @@ trait TReadDatabase
 {
     use TEntityChanged;
     use TFill;
+    use TFilterNulls;
 
     /** @var string */
     protected $readSource = '';
@@ -114,7 +116,7 @@ trait TReadDatabase
         // query itself
         $lines = $this->readDatabase->query(
             strval($this->readDialect->select($this->readQueryBuilder)),
-            $this->readQueryBuilder->getParams()
+            array_filter($this->readQueryBuilder->getParams(), [$this, 'filterNullValues'])
         );
         if (empty($lines)) {
             return false;
@@ -173,7 +175,7 @@ trait TReadDatabase
         $this->readQueryBuilder->setLimits(0,1);
         $lines = $this->readDatabase->query(
             strval($this->readDialect->select($this->readQueryBuilder)),
-            $this->readQueryBuilder->getParams()
+            array_filter($this->readQueryBuilder->getParams(), [$this, 'filterNullValues'])
         );
         if (empty($lines)) {
             return false;
@@ -241,7 +243,7 @@ trait TReadDatabase
 
         $lines = $this->readDatabase->query(
             strval($this->readDialect->select($this->readQueryBuilder)),
-            $this->readQueryBuilder->getParams()
+            array_filter($this->readQueryBuilder->getParams(), [$this, 'filterNullValues'])
         );
         if (empty($lines) || !is_iterable($lines)) {
             // @codeCoverageIgnoreStart
@@ -282,7 +284,7 @@ trait TReadDatabase
         // query itself
         $lines = $this->readDatabase->query(
             strval($this->readDialect->select($this->readQueryBuilder)),
-            $this->readQueryBuilder->getParams()
+            array_filter($this->readQueryBuilder->getParams(), [$this, 'filterNullValues'])
         );
         if (empty($lines)) {
             return [];

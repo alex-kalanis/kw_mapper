@@ -4,6 +4,7 @@ namespace SearchTests;
 
 
 use CommonTestClass;
+use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Connector\Records;
 use kalanis\kw_mapper\Search\Search;
@@ -303,11 +304,113 @@ class FileTableTest extends CommonTestClass
         $this->expectException(MapperException::class);
         $lib->checkConditionExt('gh....', ':file__', 'something');
     }
+
+    /**
+     * @param string $operation
+     * @param mixed $value
+     * @param mixed $expected
+     * @throws MapperException
+     * @dataProvider conditionProviderPass
+     */
+    public function testConditionDataPass(string $operation, $value, $expected): void
+    {
+        $record = new \XSimpleRecord();
+        $record->useMock();
+        $lib = new XRecords($record);
+        $this->assertTrue($lib->checkConditionExt($operation, $value, $expected));
+    }
+
+    public function conditionProviderPass(): array
+    {
+        return [
+            [IQueryBuilder::OPERATION_NULL, null, 'abc'],
+            [IQueryBuilder::OPERATION_NNULL, 'abc', 'abc'],
+            [IQueryBuilder::OPERATION_EQ, 'abc', 'abc'],
+            [IQueryBuilder::OPERATION_EQ, 456, 456],
+            [IQueryBuilder::OPERATION_NEQ, 'abc', 'def'],
+            [IQueryBuilder::OPERATION_NEQ, 789, 123],
+            [IQueryBuilder::OPERATION_GT, 456, 123],
+            [IQueryBuilder::OPERATION_GTE, 456, 123],
+            [IQueryBuilder::OPERATION_GTE, 456, 456],
+            [IQueryBuilder::OPERATION_LT, 456, 789],
+            [IQueryBuilder::OPERATION_LTE, 456, 789],
+            [IQueryBuilder::OPERATION_LTE, 789, 789],
+            [IQueryBuilder::OPERATION_LIKE, 'abcdefghijkl', 'ghij'],
+            [IQueryBuilder::OPERATION_NLIKE, 'abcdefghijkl', 'ree'],
+            [IQueryBuilder::OPERATION_IN, 'okm', ['ijn', 'uhb', 'zgv', 'okm', 'tfc']],
+            [IQueryBuilder::OPERATION_NIN, 'ujm', ['ijn', 'uhb', 'zgv', 'okm', 'tfc']],
+        ];
+    }
+
+    /**
+     * @param string $operation
+     * @param mixed $data
+     * @throws MapperException
+     * @dataProvider conditionProviderFail
+     */
+    public function testConditionDataFail(string $operation, $value, $expected): void
+    {
+        $record = new \XSimpleRecord();
+        $record->useMock();
+        $lib = new XRecords($record);
+        $this->assertFalse($lib->checkConditionExt($operation, $value, $expected));
+    }
+
+    public function conditionProviderFail(): array
+    {
+        return [
+            [IQueryBuilder::OPERATION_NULL, 'gfbgd', 516],
+            [IQueryBuilder::OPERATION_NNULL, null, 'abc'],
+            [IQueryBuilder::OPERATION_EQ, 'abc', 'def'],
+            [IQueryBuilder::OPERATION_EQ, 456, 951],
+            [IQueryBuilder::OPERATION_NEQ, 'abc', 'abc'],
+            [IQueryBuilder::OPERATION_NEQ, 357, 357],
+            [IQueryBuilder::OPERATION_GT, 456, 789],
+            [IQueryBuilder::OPERATION_GT, 456, 456],
+            [IQueryBuilder::OPERATION_GTE, 456, 789],
+            [IQueryBuilder::OPERATION_LT, 456, 123],
+            [IQueryBuilder::OPERATION_LT, 456, 456],
+            [IQueryBuilder::OPERATION_LTE, 789, 123],
+            [IQueryBuilder::OPERATION_LIKE, 'abcdefghijkl', 'ree'],
+            [IQueryBuilder::OPERATION_NLIKE, 'abcdefghijkl', 'ghij'],
+            [IQueryBuilder::OPERATION_IN, 'ujm', ['ijn', 'uhb', 'zgv', 'okm', 'tfc']],
+            [IQueryBuilder::OPERATION_NIN, 'okm', ['ijn', 'uhb', 'zgv', 'okm', 'tfc']],
+        ];
+    }
+
+    /**
+     * @param string $operation
+     * @throws MapperException
+     * @dataProvider conditionProviderDie
+     */
+    public function testConditionDataDie(string $operation): void
+    {
+        $record = new \XSimpleRecord();
+        $record->useMock();
+        $lib = new XRecords($record);
+        $this->expectException(MapperException::class);
+        $lib->checkConditionExt($operation, ':file__', 'not_something_expected');
+    }
+
+    public function conditionProviderDie(): array
+    {
+        return [
+            ['wat'],
+            ['123456789'],
+        ];
+    }
 }
 
 
 class XRecords extends Records
 {
+    /**
+     * @param string $operation
+     * @param mixed $value
+     * @param mixed $expected
+     * @throws MapperException
+     * @return bool
+     */
     public function checkConditionExt(string $operation, $value, $expected): bool
     {
         return $this->checkCondition($operation, $value, $expected);

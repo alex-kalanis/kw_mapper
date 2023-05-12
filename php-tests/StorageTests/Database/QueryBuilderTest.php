@@ -124,6 +124,38 @@ class QueryBuilderTest extends CommonTestClass
         $builder->resetCounter();
     }
 
+    /**
+     * @throws MapperException
+     */
+    public function testConditionNullPass1(): void
+    {
+        $builder = new Builder();
+        $builder->addCondition('foo', 'bar', IQueryBuilder::OPERATION_EQ, null);
+        $data = $builder->getConditions();
+        $data = reset($data);
+        $this->assertEquals('foo', $data->getTableName());
+        $this->assertEquals('bar', $data->getColumnName());
+        $this->assertEquals(IQueryBuilder::OPERATION_NULL, $data->getOperation());
+        $this->assertFalse(isset($builder->getParams()[$data->getColumnKey()]));
+        $builder->resetCounter();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testConditionNullPass2(): void
+    {
+        $builder = new Builder();
+        $builder->addCondition('foo', 'bar', IQueryBuilder::OPERATION_NEQ, null);
+        $data = $builder->getConditions();
+        $data = reset($data);
+        $this->assertEquals('foo', $data->getTableName());
+        $this->assertEquals('bar', $data->getColumnName());
+        $this->assertEquals(IQueryBuilder::OPERATION_NNULL, $data->getOperation());
+        $this->assertFalse(isset($builder->getParams()[$data->getColumnKey()]));
+        $builder->resetCounter();
+    }
+
     public function testProperty(): void
     {
         $builder = new Builder();
@@ -208,6 +240,38 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('bar', $data->getColumnName());
         $this->assertEquals(IQueryBuilder::OPERATION_EQ, $data->getOperation());
         $this->assertEquals('anf', $builder->getParams()[$data->getColumnKey()]);
+        $builder->resetCounter();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testHavingNullsPass1(): void
+    {
+        $builder = new Builder();
+        $builder->addHavingCondition('foo', 'bar', IQueryBuilder::OPERATION_EQ, null);
+        $data = $builder->getHavingCondition();
+        $data = reset($data);
+        $this->assertEquals('foo', $data->getTableName());
+        $this->assertEquals('bar', $data->getColumnName());
+        $this->assertEquals(IQueryBuilder::OPERATION_NULL, $data->getOperation());
+        $this->assertFalse(isset($builder->getParams()[$data->getColumnKey()]));
+        $builder->resetCounter();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testHavingNullsPass2(): void
+    {
+        $builder = new Builder();
+        $builder->addHavingCondition('foo', 'bar', IQueryBuilder::OPERATION_NEQ, null);
+        $data = $builder->getHavingCondition();
+        $data = reset($data);
+        $this->assertEquals('foo', $data->getTableName());
+        $this->assertEquals('bar', $data->getColumnName());
+        $this->assertEquals(IQueryBuilder::OPERATION_NNULL, $data->getOperation());
+        $this->assertFalse(isset($builder->getParams()[$data->getColumnKey()]));
         $builder->resetCounter();
     }
 

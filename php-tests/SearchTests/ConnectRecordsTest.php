@@ -26,10 +26,12 @@ class ConnectRecordsTest extends CommonTestClass
         $record1 = new \XSimpleRecord();
         $record1->useMock();
         $record1->title = 'abc';
+        $record1->desc = null;
 
         $record2 = new \XSimpleRecord();
         $record2->useMock();
         $record2->title = 'def';
+        $record2->desc = null;
 
         $sort1 = new Order();
         $sort1->setData('none', 'title', IQueryBuilder::ORDER_ASC);
@@ -37,8 +39,8 @@ class ConnectRecordsTest extends CommonTestClass
         $lib = new XSortRecords($record1);
         $records = $lib->xSortResults([$record2, $record1], [$sort1]);
         $result = array_map('iterator_to_array', $records);
-        $this->assertEquals(['id' => false, 'title' => 'abc'], $result[0]);
-        $this->assertEquals(['id' => false, 'title' => 'def'], $result[1]);
+        $this->assertEquals(['id' => false, 'title' => 'abc', 'desc' => null], $result[0]);
+        $this->assertEquals(['id' => false, 'title' => 'def', 'desc' => null], $result[1]);
 
         $sort2 = new Order();
         $sort2->setData('none', 'title', IQueryBuilder::ORDER_DESC);
@@ -46,8 +48,8 @@ class ConnectRecordsTest extends CommonTestClass
         $lib = new XSortRecords($record1);
         $records = $lib->xSortResults([$record2, $record1], [$sort2]);
         $result = array_map('iterator_to_array', $records);
-        $this->assertEquals(['id' => false, 'title' => 'def'], $result[0]);
-        $this->assertEquals(['id' => false, 'title' => 'abc'], $result[1]);
+        $this->assertEquals(['id' => false, 'title' => 'def', 'desc' => null], $result[0]);
+        $this->assertEquals(['id' => false, 'title' => 'abc', 'desc' => null], $result[1]);
     }
 
     /**
@@ -58,10 +60,12 @@ class ConnectRecordsTest extends CommonTestClass
         $record1 = new \XSimpleRecord();
         $record1->useMock();
         $record1->title = 'abc';
+        $record1->desc = null;
 
         $record2 = new \XSimpleRecord();
         $record2->useMock();
         $record2->title = 'def';
+        $record2->desc = null;
 
         $lib = new XSortRecords($record1);
         $this->expectException(MapperException::class);
@@ -77,6 +81,7 @@ class ConnectRecordsTest extends CommonTestClass
         $record1 = new \XSimpleRecord();
         $record1->useMock();
         $record1->title = 'abc';
+        $record1->desc = null;
 
         $lib = new XSortRecords($record1);
         $this->expectException(MapperException::class);

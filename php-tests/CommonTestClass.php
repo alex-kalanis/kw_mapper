@@ -52,11 +52,11 @@ class StrObjMock
 /**
  * Class TableRecord
  * Source file dumped from kw_menu
- * @property string file
- * @property int order
- * @property string title
- * @property string desc
- * @property bool sub
+ * @property string $file
+ * @property int $order
+ * @property string $title
+ * @property string $desc
+ * @property bool $sub
  */
 class TableRecord extends ASimpleRecord
 {
@@ -91,11 +91,11 @@ class TableMapper extends Storage\ATable
 /**
  * Class TableRecord
  * Source file dumped from kw_menu
- * @property int id
- * @property string file
- * @property string title
- * @property string desc
- * @property bool enabled
+ * @property int $id
+ * @property string $file
+ * @property string $title
+ * @property string $desc
+ * @property bool $enabled
  */
 class TableIdRecord extends ASimpleRecord
 {
@@ -108,16 +108,26 @@ class TableIdRecord extends ASimpleRecord
         $this->addEntry('enabled', IEntryType::TYPE_BOOLEAN);
     }
 
+    /**
+     * @throws MapperException
+     */
     public function useIdAsMapper(): void
     {
         $this->setMapper(TableIdMapper::class);
     }
 
+    /**
+     * @throws MapperException
+     */
     public function useNoKeyMapper(): void
     {
         $this->setMapper(TableNoPkMapper::class);
     }
 
+    /**
+     * @param string $name
+     * @throws MapperException
+     */
     public function setAnotherMapper(string $name): void
     {
         $this->setMapper($name);
@@ -153,8 +163,9 @@ class TableIdMapper extends TableNoPkMapper
 /**
  * Class XSimpleRecord
  * Simple record for testing factory
- * @property int id
- * @property string title
+ * @property int $id
+ * @property string $title
+ * @property string|null $desc
  */
 class XSimpleRecord extends ASimpleRecord
 {
@@ -162,23 +173,36 @@ class XSimpleRecord extends ASimpleRecord
     {
         $this->addEntry('id', IEntryType::TYPE_INTEGER, 64);
         $this->addEntry('title', IEntryType::TYPE_STRING, 512);
+        $this->addEntry('desc', IEntryType::TYPE_STRING, 512);
     }
 
+    /**
+     * @throws MapperException
+     */
     public function useDatabase(): void
     {
         $this->setMapper(XDatabaseMapper::class);
     }
 
+    /**
+     * @throws MapperException
+     */
     public function useStorage(): void
     {
         $this->setMapper(XStorageMapper::class);
     }
 
+    /**
+     * @throws MapperException
+     */
     public function useFile(): void
     {
         $this->setMapper(XFileMapper::class);
     }
 
+    /**
+     * @throws MapperException
+     */
     public function useMock(): void
     {
         $this->setMapper(XMockMapper::class);
@@ -193,6 +217,7 @@ class XDatabaseMapper extends ADatabase
         $this->setSource('dummy');
         $this->setRelation('id', 'id');
         $this->setRelation('title', 'title');
+        $this->setRelation('desc', 'desc');
         $this->addPrimaryKey('id');
     }
 }
@@ -206,6 +231,7 @@ class XStorageMapper extends Storage\ATable
         $this->setSource('dummy');
         $this->setRelation('id', 'id');
         $this->setRelation('title', 'title');
+        $this->setRelation('desc', 'desc');
         $this->addPrimaryKey('id');
     }
 }
@@ -220,6 +246,7 @@ class XFileMapper extends File\ATable
         $this->setSource('dummy');
         $this->setRelation('id', 'id');
         $this->setRelation('title', 'title');
+        $this->setRelation('desc', 'desc');
         $this->addPrimaryKey('id');
     }
 }
@@ -232,6 +259,7 @@ class XMockMapper extends AMapper
         $this->setSource('dummy');
         $this->setRelation('id', 'id');
         $this->setRelation('title', 'title');
+        $this->setRelation('desc', 'desc');
     }
 
     public function getAlias(): string

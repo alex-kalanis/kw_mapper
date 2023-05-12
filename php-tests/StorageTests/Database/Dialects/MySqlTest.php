@@ -88,11 +88,12 @@ class MySqlTest extends CommonTestClass
         $query->addJoin('dfg', 'btr', 'gda', 'foo', 'fds', IQueryBuilder::JOIN_LEFT, 'dfg');
         $query->addCondition('foo', 'dbt', IQueryBuilder::OPERATION_EQ, 'ggf');
         $query->addCondition('foo', 'dfd', IQueryBuilder::OPERATION_NEQ, 'yxn');
+        $query->addCondition('dfg', 'bcf', IQueryBuilder::OPERATION_NEQ, null);
         $query->addOrderBy('dfg', 'vrs', IQueryBuilder::ORDER_ASC);
         $query->addGroupBy('foo', 'gds');
         $query->setLimits(5,3);
         $sql = new Dialects\MySQL();
-        $this->assertEquals('SELECT `foo`.`bar` AS `baz`, `foo`.`htf` AS `yjd`, `dfg`.`vrs` AS `abh` FROM `foo`  LEFT JOIN `btr` AS `dfg` ON (`foo`.`fds` = `dfg`.`gda`)  WHERE `foo`.`dbt` <=> :dbt_0 AND `foo`.`dfd` != :dfd_1 GROUP BY `foo`.`gds` ORDER BY `dfg`.`vrs` ASC LIMIT 5,3;', $sql->select($query));
+        $this->assertEquals('SELECT `foo`.`bar` AS `baz`, `foo`.`htf` AS `yjd`, `dfg`.`vrs` AS `abh` FROM `foo`  LEFT JOIN `btr` AS `dfg` ON (`foo`.`fds` = `dfg`.`gda`)  WHERE `foo`.`dbt` <=> :dbt_0 AND `foo`.`dfd` != :dfd_1 AND `dfg`.`bcf` IS NOT NULL  GROUP BY `foo`.`gds` ORDER BY `dfg`.`vrs` ASC LIMIT 5,3;', $sql->select($query));
         $this->assertEquals([ ':dbt_0' => 'ggf', ':dfd_1' => 'yxn', ], $query->getParams());
         $query->resetCounter();
     }
