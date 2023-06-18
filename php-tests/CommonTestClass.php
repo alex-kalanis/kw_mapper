@@ -77,7 +77,7 @@ class TableMapper extends Storage\ATable
     protected function setMap(): void
     {
         $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
-        $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.meta');
+        $this->setSource('target.meta');
         $this->setRelation('file', 0);
         $this->setRelation('order', 1);
         $this->setRelation('title', 2);
@@ -140,7 +140,7 @@ class TableNoPkMapper extends Storage\ATable
     protected function setMap(): void
     {
         $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
-        $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.data');
+        $this->setSource('target.data');
         $this->setRelation('id', 0);
         $this->setRelation('file', 1);
         $this->setRelation('title', 2);

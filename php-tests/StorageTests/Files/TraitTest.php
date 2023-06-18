@@ -11,11 +11,26 @@ use kalanis\kw_mapper\Mappers\Storage\PageContent;
 use kalanis\kw_mapper\Records\PageRecord;
 use kalanis\kw_mapper\Storage;
 use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\Storage\Key\DirKey;
 use kalanis\kw_storage\Storage\Storage as Store;
+use kalanis\kw_storage\StorageException;
 
 
 class TraitTest extends CommonTestClass
 {
+    public function setUp(): void
+    {
+        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target'));
+    }
+
+    public function tearDown(): void
+    {
+        DirKey::setDir('');
+    }
+
+    /**
+     * @throws MapperException
+     */
     public function testStoragePkFail(): void
     {
         $data = new StorageStoragePage();
@@ -24,6 +39,10 @@ class TraitTest extends CommonTestClass
         $data->load(new PageRecord());
     }
 
+    /**
+     * @throws MapperException
+     * @throws StorageException
+     */
     public function testStorageInstances(): void
     {
         // set once, propagate everywhere
@@ -35,7 +54,19 @@ class TraitTest extends CommonTestClass
     }
 
     /**
+     * @throws StorageException
+     */
+    public function testStorageInstanceFail(): void
+    {
+        $data = new CStorage();
+        $this->expectException(StorageException::class);
+        $this->expectExceptionMessage('Storage cannot be empty!');
+        $data->getEmptyStore();
+    }
+
+    /**
      * @throws MapperException
+     * @throws StorageException
      */
     public function testFileInstances(): void
     {
@@ -95,9 +126,24 @@ class CStorage
 {
     use Storage\Storage\TStorage;
 
+    /**
+     * @throws StorageException
+     * @return IStorage
+     */
     public function getStore(): IStorage
     {
+        $this->clearStorage();
         return $this->getStorage();
+    }
+
+    /**
+     * @throws StorageException
+     * @return IStorage
+     */
+    public function getEmptyStore(): IStorage
+    {
+        $this->clearStorage();
+        return $this->getStorage(null);
     }
 }
 
@@ -146,6 +192,10 @@ class XFormat
 
 class StorageStoragePage extends PageContent
 {
+    /**
+     * @throws StorageException
+     * @return IStorage
+     */
     public function getStore()
     {
         return $this->getStorage();

@@ -4,6 +4,7 @@ namespace kalanis\kw_mapper\Mappers\File;
 
 
 use kalanis\kw_files\FilesException;
+use kalanis\kw_files\Traits\TToString;
 use kalanis\kw_mapper\Interfaces\IFileFormat;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers\AMapper;
@@ -23,6 +24,7 @@ abstract class AFileSource extends AMapper
 {
     use File\TFile;
     use Shared\TFormat;
+    use TToString;
 
     /**
      * @param string[] $path
@@ -52,17 +54,7 @@ abstract class AFileSource extends AMapper
     {
         try {
             $format = $format ?: Shared\FormatFiles\Factory::getInstance()->getFormatClass($this->getFormat());
-            $content = $this->getFileAccessor()->readFile($this->getPath());
-            if (is_resource($content)) {
-                rewind($content);
-                $content = stream_get_contents($content, -1, 0);
-                if (false === $content) {
-                    // @codeCoverageIgnoreStart
-                    throw new MapperException('Cannot read stream resource from file storage');
-                }
-                // @codeCoverageIgnoreEnd
-            }
-            return $format->unpack($content);
+            return $format->unpack($this->toString(implode('/', $this->getPath()), $this->getFileAccessor()->readFile($this->getPath())));
         } catch (FilesException | PathsException $ex) {
             throw new MapperException('Unable to read from source', 0, $ex);
         }

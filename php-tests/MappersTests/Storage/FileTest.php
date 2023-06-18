@@ -13,18 +13,26 @@ use kalanis\kw_mapper\Records\PageRecord;
 use kalanis\kw_mapper\Storage\Shared\FormatFiles;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\Storage;
+use kalanis\kw_storage\Storage\Key\DirKey;
 use kalanis\kw_storage\StorageException;
 use Traversable;
 
 
 class FileTest extends CommonTestClass
 {
+    public function setUp(): void
+    {
+        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+    }
+
     public function tearDown(): void
     {
-        $path = $this->getTestFile1();
+        $ld = new DirKey();
+        $path = $ld->fromSharedKey('') . $this->getTestFile1();
         if (is_file($path)) {
             @unlink($path);
         }
+        DirKey::setDir('');
     }
 
     public function testContentOk(): void
@@ -139,24 +147,24 @@ class FileTest extends CommonTestClass
 
     protected function getTestFile1(): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'fileTest.txt';
+        return 'fileTest.txt';
     }
 
     protected function getTestFile2(): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target' . DIRECTORY_SEPARATOR . 'other2.htm';
+        return 'target' . DIRECTORY_SEPARATOR . 'other2.htm';
     }
 
     protected function getTestDir(): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target' . DIRECTORY_SEPARATOR;
+        return 'target' . DIRECTORY_SEPARATOR;
     }
 }
 
 
 class XFailContentStorage extends Mappers\Storage\PageContent
 {
-    public function getStorage(): IStorage
+    public function getStorage($storageParams = null): IStorage
     {
         return new XFailStorage(
             new Storage\Key\DefaultKey(),
@@ -168,7 +176,7 @@ class XFailContentStorage extends Mappers\Storage\PageContent
 
 class XFailStorageKeyValue extends Mappers\Storage\KeyValue
 {
-    public function getStorage(): IStorage
+    public function getStorage($storageParams = null): IStorage
     {
         return new XFailStorage(
             new Storage\Key\DefaultKey(),

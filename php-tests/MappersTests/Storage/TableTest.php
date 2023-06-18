@@ -7,6 +7,7 @@ use CommonTestClass;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Storage;
+use kalanis\kw_storage\Storage\Key\DirKey;
 
 
 /**
@@ -17,12 +18,19 @@ use kalanis\kw_mapper\Storage;
  */
 class TableTest extends CommonTestClass
 {
+    public function setUp(): void
+    {
+        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+    }
+
     public function tearDown(): void
     {
-        $path = $this->getTestFile();
+        $ld = new DirKey();
+        $path = $ld->fromSharedKey($this->getTestFile());
         if (is_file($path)) {
             @unlink($path);
         }
+        DirKey::setDir('');
     }
 
     /**
@@ -289,25 +297,26 @@ class TableTest extends CommonTestClass
 
     protected function initSource(string $source = ''): string
     {
+        $ld = new DirKey();
         $source = empty($source) ? $this->getSourceFileMeta() : $source ;
         $target = $this->getTestFile();
-        copy($source, $target);
+        copy($ld->fromSharedKey($source), $ld->fromSharedKey($target));
         return $target;
     }
 
     protected function getSourceFileMeta(): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.meta';
+        return 'target.meta';
     }
 
     protected function getSourceFileClassic(): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target.data';
+        return 'target.data';
     }
 
     protected function getTestFile(): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'tableTest.txt';
+        return 'tableTest.txt';
     }
 }
 

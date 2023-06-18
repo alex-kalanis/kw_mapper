@@ -103,12 +103,12 @@ class FileTest extends CommonTestClass
 
     protected function getTestFile1(): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'fileTest.txt';
+        return 'fileTest.txt';
     }
 
     protected function getTestFile2(): array
     {
-        return [__DIR__, '..', '..', 'data', 'fileTest.txt'];
+        return ['fileTest.txt'];
     }
 }
 
@@ -120,7 +120,7 @@ class XAccessFilePass implements IProcessFiles
         return '';
     }
 
-    public function saveFile(array $entry, $content): bool
+    public function saveFile(array $entry, $content, ?int $offset = null): bool
     {
         return true;
     }
@@ -157,7 +157,7 @@ class XAccessFileDie implements IProcessFiles
         return '';
     }
 
-    public function saveFile(array $entry, $content): bool
+    public function saveFile(array $entry, $content, ?int $offset = null): bool
     {
         throw new FilesException('Cannot access here');
     }

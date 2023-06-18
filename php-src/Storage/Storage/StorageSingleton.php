@@ -5,6 +5,7 @@ namespace kalanis\kw_mapper\Storage\Storage;
 
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\Storage as Store;
+use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -16,6 +17,8 @@ class StorageSingleton
 {
     /** @var self|null */
     protected static $instance = null;
+    /** @var Store\Factory */
+    private $factory = null;
     /** @var IStorage|null */
     private $storage = null;
 
@@ -29,6 +32,7 @@ class StorageSingleton
 
     protected function __construct()
     {
+        $this->factory = new Store\Factory(new Store\Key\Factory(), new Store\Target\Factory());
     }
 
     /**
@@ -38,14 +42,24 @@ class StorageSingleton
     {
     }
 
-    public function getStorage(): IStorage
+    /**
+     * @param object|array<string, string|object>|string $storageParams
+     * @throws StorageException
+     * @return IStorage
+     */
+    public function getStorage($storageParams): IStorage
     {
         if (empty($this->storage)) {
-            $this->storage = new Store\Storage(
-                new Store\Key\DefaultKey(),
-                new Store\Target\Volume()
-            );
+            if (empty($storageParams)) {
+                throw new StorageException('Storage cannot be empty!');
+            }
+            $this->storage = $this->factory->getStorage($storageParams);
         }
         return $this->storage;
+    }
+
+    public function clearStorage(): void
+    {
+        $this->storage = null;
     }
 }

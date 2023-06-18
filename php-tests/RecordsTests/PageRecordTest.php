@@ -6,15 +6,18 @@ namespace RecordsTests;
 use CommonTestClass;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\PageRecord;
+use kalanis\kw_storage\Storage\Key\DirKey;
 
 
 class PageRecordTest extends CommonTestClass
 {
     public function setUp(): void
     {
-        if (is_file($this->mockFile())) {
-            chmod($this->mockFile(), 0555);
-            unlink($this->mockFile());
+        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
         }
 
         parent::setUp();
@@ -22,11 +25,13 @@ class PageRecordTest extends CommonTestClass
 
     public function tearDown(): void
     {
-        if (is_file($this->mockFile())) {
-            chmod($this->mockFile(), 0555);
-            unlink($this->mockFile());
+        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
         }
         parent::tearDown();
+        DirKey::setDir('');
     }
 
     /**
@@ -47,14 +52,15 @@ class PageRecordTest extends CommonTestClass
         $this->assertTrue($data->load());
         $this->assertEquals(1, $data->count());
         $this->assertEquals(1, count($data->loadMultiple()));
-        $this->assertTrue(file_exists($this->mockFile()));
-        $this->assertTrue($data->delete());
 
+        $ld = new DirKey();
+        $this->assertTrue(file_exists($ld->fromSharedKey($this->mockFile())));
+        $this->assertTrue($data->delete());
     }
 
     protected function mockFile(): string
     {
-        return implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'data', 'record_test.txt']);
+        return 'record_test.txt';
     }
 }
 

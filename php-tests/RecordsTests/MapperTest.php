@@ -9,15 +9,18 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\ASimpleRecord;
+use kalanis\kw_storage\Storage\Key\DirKey;
 
 
 class MapperTest extends CommonTestClass
 {
     public function setUp(): void
     {
-        if (is_file($this->mockFile())) {
-            chmod($this->mockFile(), 0555);
-            unlink($this->mockFile());
+        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
         }
 
         parent::setUp();
@@ -25,11 +28,13 @@ class MapperTest extends CommonTestClass
 
     public function tearDown(): void
     {
-        if (is_file($this->mockFile())) {
-            chmod($this->mockFile(), 0555);
-            unlink($this->mockFile());
+        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
         }
         parent::tearDown();
+        DirKey::setDir('');
     }
 
     /**
@@ -71,8 +76,8 @@ class MapperTest extends CommonTestClass
         $data->setExternalEntries();
         $data->path = $this->mockFile();
         $data->content = 'yxcvbnmasdfghjklqwertzuiop';
-        $this->assertTrue($data->save());
-        $this->assertTrue($data->load());
+        $this->assertTrue($data->save(), 'cannot save page record');
+        $this->assertTrue($data->load(), 'cannot open page record');
         $this->assertTrue($data->getEntry('content')->isFromStorage());
         $multi = $data->loadMultiple();
         $this->assertEquals(1, count($multi));
@@ -90,7 +95,7 @@ class MapperTest extends CommonTestClass
 
     protected function mockFile(): string
     {
-        return implode(DIRECTORY_SEPARATOR, [__DIR__, '..', 'data', 'testing_one.txt']);
+        return 'testing_one.txt';
     }
 
     /**
@@ -182,6 +187,11 @@ class NoBeforeMapper extends Mappers\AMapper
         return 'dummy';
     }
 
+    /**
+     * @param ARecord $record
+     * @throws MapperException
+     * @return bool
+     */
     public function updateSome(ARecord $record): bool
     {
         return $this->update($record);
@@ -257,6 +267,11 @@ class NoDuringMapper extends Mappers\AMapper
         return 'dummy';
     }
 
+    /**
+     * @param ARecord $record
+     * @throws MapperException
+     * @return bool
+     */
     public function updateSome(ARecord $record): bool
     {
         return $this->update($record);
@@ -307,6 +322,11 @@ class NoAfterMapper extends Mappers\AMapper
         return 'dummy';
     }
 
+    /**
+     * @param ARecord $record
+     * @throws MapperException
+     * @return bool
+     */
     public function updateSome(ARecord $record): bool
     {
         return $this->update($record);

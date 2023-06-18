@@ -4,6 +4,7 @@ namespace kalanis\kw_mapper\Storage\Storage;
 
 
 use kalanis\kw_storage\Interfaces\IStorage;
+use kalanis\kw_storage\StorageException;
 
 
 /**
@@ -12,8 +13,18 @@ use kalanis\kw_storage\Interfaces\IStorage;
  */
 trait TStorage
 {
-    protected function getStorage(): IStorage
+    /**
+     * @param object|array<string, string|object>|string $storageParams
+     * @throws StorageException
+     * @return IStorage
+     */
+    protected function getStorage($storageParams = 'volume'): IStorage
     {
-        return StorageSingleton::getInstance()->getStorage();
+        return StorageSingleton::getInstance()->getStorage($storageParams);
+    }
+
+    protected function clearStorage(): void
+    {
+        StorageSingleton::getInstance()->clearStorage();
     }
 }
