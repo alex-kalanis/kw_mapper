@@ -9,15 +9,15 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Records\ASimpleRecord;
-use kalanis\kw_storage\Storage\Key\DirKey;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 
 
 class MapperTest extends CommonTestClass
 {
     public function setUp(): void
     {
-        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
-        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        StaticPrefixKey::setPrefix(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
         if (is_file($pt)) {
             chmod($pt, 0555);
             unlink($pt);
@@ -28,13 +28,13 @@ class MapperTest extends CommonTestClass
 
     public function tearDown(): void
     {
-        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
         if (is_file($pt)) {
             chmod($pt, 0555);
             unlink($pt);
         }
         parent::tearDown();
-        DirKey::setDir('');
+        StaticPrefixKey::setPrefix('');
     }
 
     /**

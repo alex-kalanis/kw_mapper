@@ -7,7 +7,7 @@ use CommonTestClass;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
 use kalanis\kw_mapper\Storage;
-use kalanis\kw_storage\Storage\Key\DirKey;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 
 
 /**
@@ -20,17 +20,17 @@ class TableTest extends CommonTestClass
 {
     public function setUp(): void
     {
-        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+        StaticPrefixKey::setPrefix(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
     }
 
     public function tearDown(): void
     {
-        $ld = new DirKey();
+        $ld = new StaticPrefixKey();
         $path = $ld->fromSharedKey($this->getTestFile());
         if (is_file($path)) {
             @unlink($path);
         }
-        DirKey::setDir('');
+        StaticPrefixKey::setPrefix('');
     }
 
     /**
@@ -297,7 +297,7 @@ class TableTest extends CommonTestClass
 
     protected function initSource(string $source = ''): string
     {
-        $ld = new DirKey();
+        $ld = new StaticPrefixKey();
         $source = empty($source) ? $this->getSourceFileMeta() : $source ;
         $target = $this->getTestFile();
         copy($ld->fromSharedKey($source), $ld->fromSharedKey($target));

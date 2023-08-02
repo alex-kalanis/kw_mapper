@@ -13,7 +13,7 @@ use kalanis\kw_mapper\Records\PageRecord;
 use kalanis\kw_mapper\Storage\Shared\FormatFiles;
 use kalanis\kw_storage\Interfaces\IStorage;
 use kalanis\kw_storage\Storage;
-use kalanis\kw_storage\Storage\Key\DirKey;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 use kalanis\kw_storage\StorageException;
 use Traversable;
 
@@ -22,17 +22,17 @@ class FileTest extends CommonTestClass
 {
     public function setUp(): void
     {
-        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+        StaticPrefixKey::setPrefix(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
     }
 
     public function tearDown(): void
     {
-        $ld = new DirKey();
+        $ld = new StaticPrefixKey();
         $path = $ld->fromSharedKey('') . $this->getTestFile1();
         if (is_file($path)) {
             @unlink($path);
         }
-        DirKey::setDir('');
+        StaticPrefixKey::setPrefix('');
     }
 
     public function testContentOk(): void

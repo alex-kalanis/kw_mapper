@@ -24,9 +24,9 @@
         "php": ">=7.2.0"
     },
     "require-dev": {
-        "alex-kalanis/kw_paths": ">=3.0",
-        "alex-kalanis/kw_files": ">=3.3",
-        "alex-kalanis/kw_storage": ">=3.3",
+        "alex-kalanis/kw_paths": ">=3.0 <4",
+        "alex-kalanis/kw_files": ">=3.3 <4",
+        "alex-kalanis/kw_storage": ">=4.0 <5",
         "ext-pdo": "*",
         "friendsofphp/php-cs-fixer": "^3.0",
         "phpstan/phpstan": "^1.0",

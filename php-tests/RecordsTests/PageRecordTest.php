@@ -6,15 +6,15 @@ namespace RecordsTests;
 use CommonTestClass;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\PageRecord;
-use kalanis\kw_storage\Storage\Key\DirKey;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 
 
 class PageRecordTest extends CommonTestClass
 {
     public function setUp(): void
     {
-        DirKey::setDir(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
-        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        StaticPrefixKey::setPrefix(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data') . DIRECTORY_SEPARATOR);
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
         if (is_file($pt)) {
             chmod($pt, 0555);
             unlink($pt);
@@ -25,13 +25,13 @@ class PageRecordTest extends CommonTestClass
 
     public function tearDown(): void
     {
-        $pt = (new DirKey())->fromSharedKey($this->mockFile());
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
         if (is_file($pt)) {
             chmod($pt, 0555);
             unlink($pt);
         }
         parent::tearDown();
-        DirKey::setDir('');
+        StaticPrefixKey::setPrefix('');
     }
 
     /**
@@ -53,7 +53,7 @@ class PageRecordTest extends CommonTestClass
         $this->assertEquals(1, $data->count());
         $this->assertEquals(1, count($data->loadMultiple()));
 
-        $ld = new DirKey();
+        $ld = new StaticPrefixKey();
         $this->assertTrue(file_exists($ld->fromSharedKey($this->mockFile())));
         $this->assertTrue($data->delete());
     }
