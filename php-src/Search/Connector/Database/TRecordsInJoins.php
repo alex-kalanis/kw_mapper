@@ -5,6 +5,8 @@ namespace kalanis\kw_mapper\Search\Connector\Database;
 
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Records\ARecord;
+use ReflectionClass;
+use ReflectionException;
 
 
 /**
@@ -49,8 +51,14 @@ trait TRecordsInJoins
             $fk = empty($knownAs) ? $storeKey : $knownAs ;
             if (isset($foreignKeys[$fk])) {
                 $recordClassName = $foreignKeys[$fk]->getRemoteRecord();
+                try {
+                    /** @var class-string $recordClassName */
+                    $reflect = new ReflectionClass($recordClassName);
+                    $thatRecord = $reflect->newInstance();
+                } catch (ReflectionException $ex) {
+                    throw new MapperException($ex->getMessage(), $ex->getCode(), $ex);
+                }
                 /** @var ARecord $thatRecord */
-                $thatRecord = new $recordClassName();
                 $rec = new RecordsInJoin();
                 $rec->setData(
                     $thatRecord,

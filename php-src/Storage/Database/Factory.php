@@ -5,6 +5,8 @@ namespace kalanis\kw_mapper\Storage\Database;
 
 use kalanis\kw_mapper\Interfaces\IDriverSources;
 use kalanis\kw_mapper\MapperException;
+use ReflectionClass;
+use ReflectionException;
 
 
 /**
@@ -48,7 +50,13 @@ class Factory
                 throw new MapperException(sprintf('Wanted source *%s* not exists!', $config->getDriver()));
             }
             $path = static::$map[$config->getDriver()];
-            $instance = new $path($config);
+            try {
+                /** @var class-string $path */
+                $reflect = new ReflectionClass($path);
+                $instance = $reflect->newInstance($config);
+            } catch (ReflectionException $ex) {
+                throw new MapperException($ex->getMessage(), $ex->getCode(), $ex);
+            }
             if (!$instance instanceof ADatabase) {
                 throw new MapperException(sprintf('Defined class *%s* is not instance of Storage\ADatabase!', $path));
             }

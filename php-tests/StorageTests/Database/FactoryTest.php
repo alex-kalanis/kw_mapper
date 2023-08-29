@@ -54,6 +54,26 @@ class FactoryTest extends CommonTestClass
     /**
      * @throws MapperException
      */
+    public function testFactoryNonExistentClass(): void
+    {
+        $conf = Database\Config::init()->setTarget(
+            'nonexist_one',
+            'test_conf',
+            ':--memory--:',
+            987654,
+            'foo',
+            'bar',
+            'baz'
+        );
+        $factory = new SpecFactory();
+        $this->expectException(MapperException::class);
+        $this->expectExceptionMessage('Class this_one_is_not_a_class does not exist');
+        $factory->getDatabase($conf);
+    }
+
+    /**
+     * @throws MapperException
+     */
     public function testFactoryRun(): void
     {
         $conf = Database\Config::init()->setTarget(
@@ -108,6 +128,7 @@ class SpecFactory extends Database\Factory
         IDriverSources::TYPE_PDO_POSTGRES => Database\PDO\PostgreSQL::class,
         IDriverSources::TYPE_PDO_SQLITE => Database\PDO\SQLite::class,
         'failed_one' => FailedDatabaseClass::class,
+        'nonexist_one' => 'this_one_is_not_a_class',
     ];
 }
 

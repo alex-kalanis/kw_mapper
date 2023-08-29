@@ -8,6 +8,8 @@ use Iterator;
 use kalanis\kw_mapper\Interfaces\ICanFill;
 use kalanis\kw_mapper\Interfaces\IEntryType;
 use kalanis\kw_mapper\MapperException;
+use ReflectionClass;
+use ReflectionException;
 
 
 /**
@@ -203,12 +205,22 @@ abstract class ARecord implements ArrayAccess, Iterator
         }
     }
 
+    /**
+     * @param Entry $data
+     * @throws MapperException
+     */
     final protected function reloadClass(Entry $data): void
     {
         if (empty($data->getData())) {
             $dataClass = $data->getParams();
+            try {
+                /** @var class-string $dataClass */
+                $reflect = new ReflectionClass($dataClass);
+                $classInstance = $reflect->newInstance();
+            } catch (ReflectionException $ex) {
+                throw new MapperException($ex->getMessage(), $ex->getCode(), $ex);
+            }
             /** @var ICanFill $classInstance */
-            $classInstance = new $dataClass;
             $data->setData($classInstance);
         }
     }
@@ -270,7 +282,13 @@ abstract class ARecord implements ArrayAccess, Iterator
      */
     private function checkObjectInstance($value, int $type): void
     {
-        $classForTest = new $value();
+        try {
+            /** @var class-string $value */
+            $reflect = new ReflectionClass($value);
+            $classForTest = $reflect->newInstance();
+        } catch (ReflectionException $ex) {
+            throw new MapperException($ex->getMessage(), $ex->getCode(), $ex);
+        }
         if (!$classForTest instanceof ICanFill) {
             throw new MapperException(sprintf('When you set string representing object for type *%d*, it must be stdClass or have ICanFill interface', $type));
         }

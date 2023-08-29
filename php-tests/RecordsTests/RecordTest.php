@@ -263,6 +263,26 @@ class RecordTest extends CommonTestClass
     /**
      * @throws MapperException
      */
+    public function testInvalidClassDef(): void
+    {
+        $this->expectException(MapperException::class);
+        new FailedUserRecord7();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testInvalidClassDefForEntry(): void
+    {
+        $rec = new UserSimpleRecord();
+        $rec->getEntry('details')->setParams('this_class_does_not_exists'); // UGLY hack, necessary for this test
+        $this->expectException(MapperException::class);
+        $rec->details = 'something'; // and store value
+    }
+
+    /**
+     * @throws MapperException
+     */
     public function testDataExchange(): void
     {
         $data = new UserSimpleRecord();
@@ -394,6 +414,15 @@ class FailedUserRecord6 extends Records\AStrictRecord
     protected function addEntries(): void
     {
         $this->addEntry('others', Interfaces\IEntryType::TYPE_ARRAY);
+    }
+}
+
+
+class FailedUserRecord7 extends Records\ASimpleRecord
+{
+    protected function addEntries(): void
+    {
+        $this->addEntry('details', Interfaces\IEntryType::TYPE_OBJECT, 'this_class_is_not_exists');
     }
 }
 
