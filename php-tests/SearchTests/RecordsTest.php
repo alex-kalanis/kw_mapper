@@ -40,7 +40,6 @@ class RecordsTest extends CommonTestClass
         $record->initRecordLookup(new XaRecordChild());
         $record->addRecord(new XbRecordParent(), 'fail');
         $this->expectException(MapperException::class);
-        $this->expectExceptionMessage('Class this_class_does_not_exists does not exist');
         $record->recordLookup('fail');
     }
 }

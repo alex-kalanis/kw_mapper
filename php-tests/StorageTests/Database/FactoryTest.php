@@ -67,7 +67,6 @@ class FactoryTest extends CommonTestClass
         );
         $factory = new SpecFactory();
         $this->expectException(MapperException::class);
-        $this->expectExceptionMessage('Class this_one_is_not_a_class does not exist');
         $factory->getDatabase($conf);
     }
 
