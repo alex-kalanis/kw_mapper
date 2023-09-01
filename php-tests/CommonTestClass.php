@@ -76,6 +76,7 @@ class TableMapper extends Storage\ATable
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
         $this->setSource('target.meta');
         $this->setRelation('file', 0);
@@ -139,6 +140,7 @@ class TableNoPkMapper extends Storage\ATable
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
         $this->setSource('target.data');
         $this->setRelation('id', 0);
@@ -227,8 +229,9 @@ class XStorageMapper extends Storage\ATable
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setFormat(Shared\FormatFiles\SeparatedElements::class);
-        $this->setSource('dummy');
+        $this->setSource('testing_one.txt');
         $this->setRelation('id', 'id');
         $this->setRelation('title', 'title');
         $this->setRelation('desc', 'desc');

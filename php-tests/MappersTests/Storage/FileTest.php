@@ -236,6 +236,7 @@ class KeyValueMapper extends Mappers\Storage\PageContent
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setPathKey('key');
         $this->setContentKey('content');
         $this->setFormat(FormatFiles\SinglePage::class);

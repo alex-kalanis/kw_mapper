@@ -54,12 +54,12 @@ class TraitTest extends CommonTestClass
     }
 
     /**
-     * @throws StorageException
+     * @throws MapperException
      */
     public function testStorageInstanceFail(): void
     {
         $data = new CStorage();
-        $this->expectException(StorageException::class);
+        $this->expectException(MapperException::class);
         $this->expectExceptionMessage('Storage cannot be empty!');
         $data->getEmptyStore();
     }
@@ -127,7 +127,7 @@ class CStorage
     use Storage\Storage\TStorage;
 
     /**
-     * @throws StorageException
+     * @throws MapperException
      * @return IStorage
      */
     public function getStore(): IStorage
@@ -137,13 +137,13 @@ class CStorage
     }
 
     /**
-     * @throws StorageException
+     * @throws MapperException
      * @return IStorage
      */
     public function getEmptyStore(): IStorage
     {
-        $this->clearStorage();
-        return $this->getStorage(null);
+        $this->setStorage(null);
+        return $this->getStorage();
     }
 }
 

@@ -9,10 +9,39 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Connector\Records;
 use kalanis\kw_mapper\Search\Search;
 use kalanis\kw_mapper\Storage;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 
 
 class FileTableTest extends CommonTestClass
 {
+    protected function setUp(): void
+    {
+        StaticPrefixKey::setPrefix(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target') . DIRECTORY_SEPARATOR);
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
+        }
+
+        parent::setUp();
+    }
+
+    public function tearDown(): void
+    {
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
+        }
+        parent::tearDown();
+        StaticPrefixKey::setPrefix('');
+    }
+
+    protected function mockFile(): string
+    {
+        return 'testing_one.txt';
+    }
+
     /**
      * @throws MapperException
      */

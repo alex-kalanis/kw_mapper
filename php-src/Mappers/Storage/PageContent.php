@@ -16,6 +16,7 @@ class PageContent extends AFile
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setPathKey('path');
         $this->setContentKey('content');
         $this->setFormat(SinglePage::class);

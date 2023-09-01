@@ -9,12 +9,14 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Connector;
 use kalanis\kw_mapper\Storage\Database\Config;
 use kalanis\kw_mapper\Storage\Database\ConfigStorage;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 
 
 class FactoryTest extends CommonTestClass
 {
     protected function setUp(): void
     {
+        // DB
         $conf = new Config();
         $conf->setTarget(
             IDriverSources::TYPE_PDO_MYSQL,
@@ -27,6 +29,32 @@ class FactoryTest extends CommonTestClass
         );
         $storage = ConfigStorage::getInstance();
         $storage->addConfig($conf);
+
+        // file
+        StaticPrefixKey::setPrefix(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target') . DIRECTORY_SEPARATOR);
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
+        }
+
+        parent::setUp();
+    }
+
+    public function tearDown(): void
+    {
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
+        }
+        parent::tearDown();
+        StaticPrefixKey::setPrefix('');
+    }
+
+    protected function mockFile(): string
+    {
+        return 'testing_one.txt';
     }
 
     /**

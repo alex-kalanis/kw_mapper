@@ -18,6 +18,7 @@ class KeyValue extends AFile
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setPathKey('key');
         $this->setContentKey('content');
         $this->setFormat(SinglePage::class);

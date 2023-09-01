@@ -59,6 +59,7 @@ class ShortMessageMapper extends Mappers\Storage\ATable
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' .  DIRECTORY_SEPARATOR . 'index.short');
         $this->setFormat(Storage\Shared\FormatFiles\SeparatedElements::class);
         $this->orderFromFirst(false);

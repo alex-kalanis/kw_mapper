@@ -90,6 +90,7 @@ class UserFileMapper extends Mappers\Storage\ATable
 {
     protected function setMap(): void
     {
+        $this->setStorage();
         $this->setSource('users.txt');
         $this->setFormat(Storage\Shared\FormatFiles\SeparatedElements::class);
         $this->setRelation('id', 0);

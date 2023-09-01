@@ -10,10 +10,39 @@ use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Mappers;
 use kalanis\kw_mapper\Records;
 use kalanis\kw_mapper\Storage\Shared\FormatFiles;
+use kalanis\kw_storage\Storage\Key\StaticPrefixKey;
 
 
 class RecordTest extends CommonTestClass
 {
+    public function setUp(): void
+    {
+        StaticPrefixKey::setPrefix(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'target') . DIRECTORY_SEPARATOR);
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
+        }
+
+        parent::setUp();
+    }
+
+    public function tearDown(): void
+    {
+        $pt = (new StaticPrefixKey())->fromSharedKey($this->mockFile());
+        if (is_file($pt)) {
+            chmod($pt, 0555);
+            unlink($pt);
+        }
+        parent::tearDown();
+        StaticPrefixKey::setPrefix('');
+    }
+
+    protected function mockFile(): string
+    {
+        return 'testing_one.txt';
+    }
+
     /**
      * @throws MapperException
      */
@@ -431,7 +460,8 @@ class UserFileMapper extends Mappers\Storage\ATable
 {
     protected function setMap(): void
     {
-        $this->setSource(__DIR__ . DIRECTORY_SEPARATOR . 'users.txt');
+        $this->setStorage();
+        $this->setSource('testing_one.txt');
         $this->setFormat(FormatFiles\SeparatedElements::class);
         $this->setRelation('id', 0);
         $this->setRelation('name', 1);
