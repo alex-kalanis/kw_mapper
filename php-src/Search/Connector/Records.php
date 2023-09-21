@@ -276,9 +276,9 @@ class Records extends AConnector
             case IQueryBuilder::OPERATION_LTE:
                 return $expected >= $value;
             case IQueryBuilder::OPERATION_LIKE:
-                return false !== strpos($value, $expected);
+                return false !== mb_strpos($value, $expected);
             case IQueryBuilder::OPERATION_NLIKE:
-                return false === strpos($value, $expected);
+                return false === mb_strpos($value, $expected);
             case IQueryBuilder::OPERATION_REXP:
                 return 1 === preg_match($expected, $value);
             case IQueryBuilder::OPERATION_IN:

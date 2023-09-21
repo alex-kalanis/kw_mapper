@@ -97,6 +97,7 @@ class TableMapper extends Storage\ATable
  * @property string $title
  * @property string $desc
  * @property bool $enabled
+ * @property string $param
  */
 class TableIdRecord extends ASimpleRecord
 {
@@ -107,6 +108,7 @@ class TableIdRecord extends ASimpleRecord
         $this->addEntry('title', IEntryType::TYPE_STRING, 512);
         $this->addEntry('desc', IEntryType::TYPE_STRING, 512);
         $this->addEntry('enabled', IEntryType::TYPE_BOOLEAN);
+        $this->addEntry('param', IEntryType::TYPE_STRING, 512);
     }
 
     /**
@@ -148,6 +150,7 @@ class TableNoPkMapper extends Storage\ATable
         $this->setRelation('title', 2);
         $this->setRelation('desc', 3);
         $this->setRelation('enabled', 4);
+        $this->setRelation('param', 5);
     }
 }
 

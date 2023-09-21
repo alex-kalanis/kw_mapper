@@ -94,6 +94,20 @@ class FileTableTest extends CommonTestClass
     /**
      * @throws MapperException
      */
+    public function testSearchLikeMB(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useIdAsMapper();
+
+        $lib = new Search($record);
+        $lib->like('param', 'ě');
+        $this->assertEquals(2, $lib->getCount());
+        $this->assertNotEmpty($lib->getResults());
+    }
+
+    /**
+     * @throws MapperException
+     */
     public function testSearchNotLike(): void
     {
         $record = new \TableIdRecord();
@@ -102,6 +116,19 @@ class FileTableTest extends CommonTestClass
         $lib = new Search($record);
         $lib->notLike('file.file', 'now');
         $this->assertEquals(4, $lib->getCount());
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testSearchNotLikeMB(): void
+    {
+        $record = new \TableIdRecord();
+        $record->useIdAsMapper();
+
+        $lib = new Search($record);
+        $lib->notLike('param', 'í');
+        $this->assertEquals(3, $lib->getCount());
     }
 
     /**
