@@ -46,6 +46,22 @@ abstract class AFileSource extends AMapper
     }
 
     /**
+     * @return string[]
+     */
+    protected function getReadPath(): array
+    {
+        return $this->getPath();
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getWritePath(): array
+    {
+        return $this->getPath();
+    }
+
+    /**
      * @param IFileFormat|null $format
      * @throws MapperException
      * @return array<string|int, array<string|int, string|int|float|bool|array<string|int, string|int|float|bool>>>
@@ -54,7 +70,7 @@ abstract class AFileSource extends AMapper
     {
         try {
             $format = $format ?: Shared\FormatFiles\Factory::getInstance()->getFormatClass($this->getFormat());
-            return $format->unpack($this->toString(implode('/', $this->getPath()), $this->getFileAccessor()->readFile($this->getPath())));
+            return $format->unpack($this->toString(implode('/', $this->getReadPath()), $this->getFileAccessor()->readFile($this->getReadPath())));
         } catch (FilesException | PathsException $ex) {
             throw new MapperException('Unable to read from source', 0, $ex);
         }
@@ -70,7 +86,7 @@ abstract class AFileSource extends AMapper
     {
         try {
             $format = $format ?: Shared\FormatFiles\Factory::getInstance()->getFormatClass($this->getFormat());
-            return $this->getFileAccessor()->saveFile($this->getPath(), $format->pack($content));
+            return $this->getFileAccessor()->saveFile($this->getWritePath(), $format->pack($content));
         } catch (FilesException | PathsException $ex) {
             throw new MapperException('Unable to write into source', 0, $ex);
         }

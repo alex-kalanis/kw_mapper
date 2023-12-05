@@ -28,6 +28,16 @@ abstract class AStorage extends AMapper
         return $this->getSource();
     }
 
+    protected function getReadSource(): string
+    {
+        return $this->getSource();
+    }
+
+    protected function getWriteSource(): string
+    {
+        return $this->getSource();
+    }
+
     /**
      * @param IFileFormat|null $format
      * @throws MapperException
@@ -37,7 +47,7 @@ abstract class AStorage extends AMapper
     {
         try {
             $format = $format ?: Shared\FormatFiles\Factory::getInstance()->getFormatClass($this->getFormat());
-            return $format->unpack($this->getStorage()->read($this->getSource()));
+            return $format->unpack($this->getStorage()->read($this->getReadSource()));
         } catch (StorageException $ex) {
             throw new MapperException('Unable to read from source', 0, $ex);
         }
@@ -53,7 +63,7 @@ abstract class AStorage extends AMapper
     {
         try {
             $format = $format ?: Shared\FormatFiles\Factory::getInstance()->getFormatClass($this->getFormat());
-            return $this->getStorage()->write($this->getSource(), $format->pack($content));
+            return $this->getStorage()->write($this->getWriteSource(), $format->pack($content));
         } catch (StorageException $ex) {
             throw new MapperException('Unable to write into source', 0, $ex);
         }
