@@ -9,15 +9,33 @@ on:
       - master
 
 jobs:
+  services:
+    mysql:
+      image: mariadb:11.1
+      env:
+        MYSQL_ROOT_PASSWORD: 'dev_root'
+        MYSQL_DATABASE: 'dev_testing'
+      ports:
+        - "3306:3306"
+      options: >-
+        --health-cmd "mysqladmin ping -pdev_root"
+        --health-interval 10s
+        --health-start-period 10s
+        --health-timeout 5s
+        --health-retries 10
   tests:
     runs-on: ubuntu-latest
     env:
-      MYSKIP: 1
-      MSSKIP: 1
-      PGSKIP: 1
+#      SKIP_MYSQL_DB_TESTS: 1
+      SKIP_TSQL_DB_TESTS: 1
+      SKIP_POSTGRES_DB_TESTS: 1
+      KW_MAPPER_MYSQL_DB_HOST: '127.0.0.1'
+      KW_MAPPER_MYSQL_DB_USER: 'root'
+      KW_MAPPER_MYSQL_DB_PASS: 'dev_root'
+      KW_MAPPER_MYSQL_DB_NAME: 'dev_testing'
     strategy:
       matrix:
-        php: [ '7.3', '7.4', '8.0', '8.1' ]
+        php: [ '7.4', '8.0', '8.1' ]
     name: PHP ${{ matrix.php }} tests
     steps:
       - uses: actions/checkout@v2

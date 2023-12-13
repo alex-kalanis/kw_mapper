@@ -39,22 +39,22 @@ class MsSqlTest extends CommonTestClass
      */
     protected function setUp(): void
     {
-        $skipIt = getenv('MSSKIP');
+        $skipIt = getenv('SKIP_TSQL_DB_TESTS');
         $this->skipIt = false !== $skipIt && boolval(intval(strval($skipIt)));
 
-        $location = getenv('MSSERVER');
+        $location = getenv('KW_MAPPER_TSQL_DB_HOST');
         $location = false !== $location ? strval($location) : '127.0.0.1' ;
 
-        $port = getenv('MSPORT');
+        $port = getenv('KW_MAPPER_TSQL_DB_PORT');
         $port = false !== $port ? intval($port) : 3306 ;
 
-        $user = getenv('MSUSER');
+        $user = getenv('KW_MAPPER_TSQL_DB_USER');
         $user = false !== $user ? strval($user) : 'testing' ;
 
-        $pass = getenv('MSPASS');
+        $pass = getenv('KW_MAPPER_TSQL_DB_PASS');
         $pass = false !== $pass ? strval($pass) : 'testing' ;
 
-        $db = getenv('MSDB');
+        $db = getenv('KW_MAPPER_TSQL_DB_NAME');
         $db = false !== $db ? strval($db) : 'testing' ;
 
         $conf = Config::init()->setTarget(

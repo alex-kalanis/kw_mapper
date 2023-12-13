@@ -38,22 +38,22 @@ class MySqlTest extends CommonTestClass
      */
     protected function setUp(): void
     {
-        $skipIt = getenv('MYSKIP');
+        $skipIt = getenv('SKIP_MYSQL_DB_TESTS');
         $this->skipIt = false !== $skipIt && boolval(intval(strval($skipIt)));
 
-        $location = getenv('MYSERVER');
+        $location = getenv('KW_MAPPER_MYSQL_DB_HOST');
         $location = false !== $location ? strval($location) : '127.0.0.1' ;
 
-        $port = getenv('MYPORT');
+        $port = getenv('KW_MAPPER_MYSQL_DB_PORT');
         $port = false !== $port ? intval($port) : 3306 ;
 
-        $user = getenv('MYUSER');
+        $user = getenv('KW_MAPPER_MYSQL_DB_USER');
         $user = false !== $user ? strval($user) : 'testing' ;
 
-        $pass = getenv('MYPASS');
+        $pass = getenv('KW_MAPPER_MYSQL_DB_PASS');
         $pass = false !== $pass ? strval($pass) : 'testing' ;
 
-        $db = getenv('MYDB');
+        $db = getenv('KW_MAPPER_MYSQL_DB_NAME');
         $db = false !== $db ? strval($db) : 'testing' ;
 
         $conf = Config::init()->setTarget(

@@ -39,22 +39,22 @@ class PostgresTest extends CommonTestClass
      */
     protected function setUp(): void
     {
-        $skipIt = getenv('PGSKIP');
+        $skipIt = getenv('SKIP_POSTGRES_DB_TESTS');
         $this->skipIt = false !== $skipIt && boolval(intval(strval($skipIt)));
 
-        $location = getenv('PGSERVER');
+        $location = getenv('KW_MAPPER_POSTGRES_DB_HOST');
         $location = false !== $location ? strval($location) : '127.0.0.1' ;
 
-        $port = getenv('PGPORT');
+        $port = getenv('KW_MAPPER_POSTGRES_DB_PORT');
         $port = false !== $port ? intval($port) : 5432 ;
 
-        $user = getenv('PGUSER');
+        $user = getenv('KW_MAPPER_POSTGRES_DB_USER');
         $user = false !== $user ? strval($user) : 'postgres' ;
 
-        $pass = getenv('PGPASS');
+        $pass = getenv('KW_MAPPER_POSTGRES_DB_PASS');
         $pass = false !== $pass ? strval($pass) : 'postgres' ;
 
-        $db = getenv('PGDB');
+        $db = getenv('KW_MAPPER_POSTGRES_DB_NAME');
         $db = false !== $db ? strval($db) : 'testing' ;
 
         $conf = Config::init()->setTarget(

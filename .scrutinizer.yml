@@ -12,13 +12,16 @@ build:
     php:
       version: '7.4'
     variables:
-      MYSKIP: 1
-      MYUSER: 'root'
-      MYPASS: ''
-      MYDB: 'scrutinizer'
-      PGUSER: 'scrutinizer'
-      PGPASS: 'scrutinizer'
-      PGDB: 'scrutinizer'
+#      SKIP_MYSQL_DB_TESTS: 1
+#      SKIP_POSTGRES_DB_TESTS: 1
+#      SKIP_SQLITE_DB_TESTS: 1
+      SKIP_TSQL_DB_TESTS: 1
+      KW_MAPPER_MYSQL_DB_USER: 'root'
+      KW_MAPPER_MYSQL_DB_PASS: ''
+      KW_MAPPER_MYSQL_DB_NAME: 'scrutinizer_run'
+      KW_MAPPER_POSTGRES_DB_USER: 'scrutinizer'
+      KW_MAPPER_POSTGRES_DB_PASS: 'scrutinizer'
+      KW_MAPPER_POSTGRES_DB_NAME: 'scrutinizer_run'
   dependencies:
     before:
       - wget -O composer.phar https://getcomposer.org/composer.phar
@@ -26,22 +29,34 @@ build:
       - ./composer.phar install
   nodes:
     analysis:
+      services:
+        mariadb: 11.1
+        postgres: 15-alpine
+      project_setup:
+        before:
+          - sudo service start mysql || true
+          - mysql -e "CREATE DATABASE scrutinizer_run"
+          - sudo service start postgresql || true
+          - sudo psql -c 'create database scrutinizer_run;' -U scrutinizer
       tests:
         override:
           - php-scrutinizer-run
-      services:
-        mariadb: 10
-        postgres: 10
     coverage:
+      services:
+        mariadb: 11.1
+        postgres: 15-alpine
+      project_setup:
+        before:
+          - sudo service start mysql || true
+          - mysql -e "CREATE DATABASE scrutinizer_run"
+          - sudo service start postgresql || true
+          - sudo psql -c 'create database scrutinizer_run;' -U scrutinizer
       tests:
         override:
           - command: XDEBUG_MODE=coverage ./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover php-tests/data/clover.xml
             coverage:
               file:  php-tests/data/clover.xml
               format: php-clover
-      services:
-        mariadb: 10
-        postgres: 10
 
 coding_style:
   php:

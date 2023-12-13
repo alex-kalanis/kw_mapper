@@ -38,7 +38,7 @@ class SqLiteTest extends CommonTestClass
      */
     protected function setUp(): void
     {
-        $skipIt = getenv('SQSKIP');
+        $skipIt = getenv('SKIP_SQLITE_DB_TESTS');
         $this->skipIt = false !== $skipIt && boolval(intval(strval($skipIt)));
 
         $conf = Config::init()->setTarget(

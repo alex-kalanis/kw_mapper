@@ -25,13 +25,14 @@ script:
 
 env:
   global:
-    - PGPORT=5432
-    - PGUSER=postgres
-    - PGPASS=
-    - PGDB=travis_ci_test
-    - MYUSER=root
-    - MYPASS=
-    - MYDB=travis_ci_test
+    - SKIP_TSQL_DB_TESTS=1
+    - KW_MAPPER_POSTGRES_DB_PORT=5432
+    - KW_MAPPER_POSTGRES_DB_USER=postgres
+    - KW_MAPPER_POSTGRES_DB_PASS=
+    - KW_MAPPER_POSTGRES_DB_NAME=travis_ci_test
+    - KW_MAPPER_MYSQL_DB_USER=root
+    - KW_MAPPER_MYSQL_DB_PASS=
+    - KW_MAPPER_MYSQL_DB_NAME=travis_ci_test
 
 notifications:
   email: "me@kalanys.com"
