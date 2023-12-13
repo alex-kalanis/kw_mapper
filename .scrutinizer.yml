@@ -21,7 +21,7 @@ build:
       KW_MAPPER_MYSQL_DB_NAME: 'scrutinizer_run'
       KW_MAPPER_POSTGRES_DB_USER: 'scrutinizer'
       KW_MAPPER_POSTGRES_DB_PASS: 'scrutinizer'
-      KW_MAPPER_POSTGRES_DB_NAME: 'scrutinizer_run'
+      KW_MAPPER_POSTGRES_DB_NAME: 'scrutinizer'
   dependencies:
     before:
       - wget -O composer.phar https://getcomposer.org/composer.phar
@@ -37,7 +37,7 @@ build:
           - sudo service start mysql || true
           - mysql -e "CREATE DATABASE scrutinizer_run"
           - sudo service start postgresql || true
-          - sudo psql -c 'create database scrutinizer_run;' -U scrutinizer
+#          - sudo psql -c 'create database scrutinizer_run;' -U scrutinizer
       tests:
         override:
           - php-scrutinizer-run
@@ -50,7 +50,7 @@ build:
           - sudo service start mysql || true
           - mysql -e "CREATE DATABASE scrutinizer_run"
           - sudo service start postgresql || true
-          - sudo psql -c 'create database scrutinizer_run;' -U scrutinizer
+#          - sudo psql -c 'create database scrutinizer_run;' -U scrutinizer
       tests:
         override:
           - command: XDEBUG_MODE=coverage ./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover php-tests/data/clover.xml

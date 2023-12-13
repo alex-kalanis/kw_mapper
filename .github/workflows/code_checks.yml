@@ -9,21 +9,21 @@ on:
       - master
 
 jobs:
-  services:
-    mysql:
-      image: mariadb:11.1
-      env:
-        MYSQL_ROOT_PASSWORD: 'dev_root'
-        MYSQL_DATABASE: 'dev_testing'
-      ports:
-        - "3306:3306"
-      options: >-
-        --health-cmd "mysqladmin ping -pdev_root"
-        --health-interval 10s
-        --health-start-period 10s
-        --health-timeout 5s
-        --health-retries 10
   tests:
+    services:
+      mysql:
+        image: mariadb:11.1
+        env:
+          MYSQL_ROOT_PASSWORD: 'dev_root'
+          MYSQL_DATABASE: 'dev_testing'
+        ports:
+          - "3306:3306"
+        options: >-
+          --health-cmd "mysqladmin ping -pdev_root"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
     runs-on: ubuntu-latest
     env:
 #      SKIP_MYSQL_DB_TESTS: 1
