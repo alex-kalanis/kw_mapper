@@ -15,8 +15,7 @@ class Csv implements IFileFormat
 {
     use TNl;
 
-    /** @var string */
-    protected $delimitLines = PHP_EOL;
+    protected string $delimitLines = PHP_EOL;
 
     public function setDelimiters(string $lines = PHP_EOL): self
     {

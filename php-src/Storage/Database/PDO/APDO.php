@@ -19,8 +19,7 @@ abstract class APDO extends ASQL
 {
     /** @var PDO|null */
     protected $connection = null;
-    /** @var PDOStatement|null */
-    protected $lastStatement;
+    protected ?PDOStatement $lastStatement;
 
     /**
      * @param string $query

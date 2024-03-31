@@ -25,14 +25,10 @@ trait TReadDatabase
     use TFill;
     use TFilterNulls;
 
-    /** @var string */
-    protected $readSource = '';
-    /** @var Database\ASQL */
-    protected $readDatabase = null;
-    /** @var Database\Dialects\ADialect */
-    protected $readDialect = null;
-    /** @var Database\QueryBuilder */
-    protected $readQueryBuilder = null;
+    protected string $readSource = '';
+    protected Database\ASQL $readDatabase;
+    protected Database\Dialects\ADialect $readDialect;
+    protected Database\QueryBuilder $readQueryBuilder;
 
     /**
      * @throws MapperException

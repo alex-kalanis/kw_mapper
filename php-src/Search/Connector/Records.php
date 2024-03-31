@@ -18,11 +18,9 @@ use kalanis\kw_mapper\Storage;
 class Records extends AConnector
 {
     /** @var ARecord[] */
-    protected $initialRecords = [];
-    /** @var null|Storage\Shared\QueryBuilder\Condition */
-    protected $condition = null;
-    /** @var null|Storage\Shared\QueryBuilder\Order */
-    protected $sortingOrder = null;
+    protected array $initialRecords = [];
+    protected ?Storage\Shared\QueryBuilder\Condition $condition = null;
+    protected ?Storage\Shared\QueryBuilder\Order $sortingOrder = null;
 
     /**
      * @param ARecord $record
@@ -140,6 +138,7 @@ class Records extends AConnector
      * @param ARecord[] $records
      * @param Storage\Shared\QueryBuilder\Condition[] $conditions
      * @return ARecord[]
+     * @todo: add compare option for OR (at least one condition OK)
      */
     protected function filterResults(array $records, array $conditions): array
     {

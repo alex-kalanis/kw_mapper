@@ -15,7 +15,7 @@ use kalanis\kw_mapper\Records;
 trait TFinder
 {
     /** @var Records\ARecord[] */
-    protected $records = [];
+    protected array $records = [];
 
     /**
      * @param Records\ARecord $record

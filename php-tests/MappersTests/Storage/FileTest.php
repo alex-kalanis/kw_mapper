@@ -188,7 +188,7 @@ class XFailStorageKeyValue extends Mappers\Storage\KeyValue
 
 class XFailStorage extends Storage\Storage
 {
-    public function read(string $sharedKey)
+    public function read(string $sharedKey): string
     {
         throw new StorageException('XFail mock fail read');
     }

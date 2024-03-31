@@ -12,8 +12,7 @@ use kalanis\kw_mapper\MapperException;
  */
 trait TContent
 {
-    /** @var string */
-    protected $contentKey = '';
+    protected string $contentKey = '';
 
     public function setContentKey(string $contentKey): self
     {

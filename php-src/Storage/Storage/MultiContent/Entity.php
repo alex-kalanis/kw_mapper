@@ -12,10 +12,9 @@ use kalanis\kw_mapper\Interfaces\IFileFormat;
  */
 class Entity
 {
-    /** @var IFileFormat|null */
-    protected $formatClass = null;
+    protected ?IFileFormat $formatClass = null;
     /** @var string[] */
-    protected $storage = [];
+    protected array $storage = [];
 
     public function __construct(IFileFormat $formatClass)
     {

@@ -15,8 +15,7 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder as QB;
  */
 class QueryBuilder extends QB
 {
-    /** @var ADialect */
-    protected $dialect = null;
+    protected ADialect $dialect;
 
     public function __construct(ADialect $dialect)
     {

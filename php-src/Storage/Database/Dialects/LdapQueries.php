@@ -23,7 +23,7 @@ class LdapQueries
     use TFill;
 
     /** @var array<string, string> */
-    protected $sanitizer = [
+    protected array $sanitizer = [
         ' ' => '\20',
         '#' => '\23',
         '"' => '\22',

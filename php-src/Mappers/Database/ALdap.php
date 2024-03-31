@@ -25,11 +25,9 @@ abstract class ALdap extends AMapper
     use TTable;
 
     /** @var Storage\Database\Raw\Ldap */
-    protected $database = null;
-    /** @var Storage\Shared\QueryBuilder */
-    protected $queryBuilder = null;
-    /** @var Storage\Database\Dialects\LdapQueries */
-    protected $dialect = null;
+    protected Storage\Database\Raw\Ldap $database;
+    protected Storage\Shared\QueryBuilder $queryBuilder;
+    protected Storage\Database\Dialects\LdapQueries $dialect;
 
     /**
      * @throws MapperException

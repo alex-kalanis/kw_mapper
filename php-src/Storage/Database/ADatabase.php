@@ -16,12 +16,10 @@ abstract class ADatabase
 {
     use TCheckExt;
 
-    /** @var Config */
-    protected $config = null;
+    protected Config $config;
     /** @var string[]|int[] */
-    protected $attributes = [];
-    /** @var string */
-    protected $extension = 'none';
+    protected array $attributes = [];
+    protected string $extension = 'none';
 
     /**
      * @param Config $config

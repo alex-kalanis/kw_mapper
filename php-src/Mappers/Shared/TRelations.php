@@ -11,7 +11,7 @@ namespace kalanis\kw_mapper\Mappers\Shared;
 trait TRelations
 {
     /** @var array<string|int, string|int> */
-    protected $relations = [];
+    protected array $relations = [];
 
     /**
      * @param string $localAlias

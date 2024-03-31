@@ -17,11 +17,11 @@ class Search extends ASearch
     /**
      * Property is not exact to the value
      * @param string $property
-     * @param string $value
+     * @param string|float|int $value
      * @throws MapperException
      * @return $this
      */
-    public function notExact(string $property, $value)
+    public function notExact(string $property, $value): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->notExact($table, $column, $value);
@@ -31,11 +31,11 @@ class Search extends ASearch
     /**
      * Property is exact to the value
      * @param string $property
-     * @param string $value
+     * @param string|float|int $value
      * @throws MapperException
      * @return $this
      */
-    public function exact(string $property, $value)
+    public function exact(string $property, $value): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->exact($table, $column, $value);
@@ -44,12 +44,12 @@ class Search extends ASearch
 
     /**
      * @param string $property
-     * @param string $value
+     * @param string|float|int $value
      * @param bool $equals
      * @throws MapperException
      * @return $this
      */
-    public function from(string $property, $value, bool $equals = true)
+    public function from(string $property, $value, bool $equals = true): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->from($table, $column, $value, $equals);
@@ -58,12 +58,12 @@ class Search extends ASearch
 
     /**
      * @param string $property
-     * @param string $value
+     * @param string|float|int $value
      * @param bool $equals
      * @throws MapperException
      * @return $this
      */
-    public function to(string $property, $value, bool $equals = true)
+    public function to(string $property, $value, bool $equals = true): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->to($table, $column, $value, $equals);
@@ -77,7 +77,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function like(string $property, $value)
+    public function like(string $property, string $value): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->like($table, $column, $value);
@@ -91,7 +91,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function notLike(string $property, $value)
+    public function notLike(string $property, string $value): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->notLike($table, $column, $value);
@@ -105,7 +105,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function regexp(string $property, string $pattern)
+    public function regexp(string $property, string $pattern): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->regexp($table, $column, $pattern);
@@ -120,7 +120,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function between(string $property, $min, $max)
+    public function between(string $property, $min, $max): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->between($table, $column, $min, $max);
@@ -133,7 +133,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function null(string $property)
+    public function null(string $property): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->null($table, $column);
@@ -146,7 +146,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function notNull(string $property)
+    public function notNull(string $property): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->notNull($table, $column);
@@ -160,7 +160,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function in(string $property, array $values)
+    public function in(string $property, array $values): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->in($table, $column, $values);
@@ -174,7 +174,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function notIn(string $property, array $values)
+    public function notIn(string $property, array $values): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->notIn($table, $column, $values);
@@ -185,7 +185,7 @@ class Search extends ASearch
      * Need fulfill all conditions
      * @return $this
      */
-    public function useAnd()
+    public function useAnd(): self
     {
         $this->connector->useAnd();
         return $this;
@@ -195,7 +195,7 @@ class Search extends ASearch
      * Need fulfill only one condition
      * @return $this
      */
-    public function useOr()
+    public function useOr(): self
     {
         $this->connector->useOr();
         return $this;
@@ -206,7 +206,7 @@ class Search extends ASearch
      * @param int|null $limit
      * @return $this
      */
-    public function limit(?int $limit)
+    public function limit(?int $limit): self
     {
         $this->connector->limit($limit);
         return $this;
@@ -217,7 +217,7 @@ class Search extends ASearch
      * @param int|null $offset
      * @return $this
      */
-    public function offset(?int $offset)
+    public function offset(?int $offset): self
     {
         $this->connector->offset($offset);
         return $this;
@@ -230,7 +230,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function orderBy(string $property, string $direction = IQueryBuilder::ORDER_ASC)
+    public function orderBy(string $property, string $direction = IQueryBuilder::ORDER_ASC): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->orderBy($table, $column, $direction);
@@ -243,7 +243,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function groupBy(string $property)
+    public function groupBy(string $property): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->groupBy($table, $column);
@@ -259,7 +259,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function child(string $childAlias, string $joinType = IQueryBuilder::JOIN_LEFT, string $parentAlias = '', string $customAlias = '')
+    public function child(string $childAlias, string $joinType = IQueryBuilder::JOIN_LEFT, string $parentAlias = '', string $customAlias = ''): self
     {
         $this->connector->child($childAlias, $joinType, $parentAlias, $customAlias);
         return $this;
@@ -272,7 +272,7 @@ class Search extends ASearch
      * @throws MapperException
      * @return $this
      */
-    public function childNotExist(string $childAlias, string $property)
+    public function childNotExist(string $childAlias, string $property): self
     {
         list($table, $column) = $this->parseProperty($property);
         $this->connector->childNotExist($childAlias, $table, $column);

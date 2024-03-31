@@ -24,7 +24,7 @@ class Ldap extends ADatabase implements IPassConnection
 {
     use TConnection;
 
-    protected $extension = 'ldap';
+    protected string $extension = 'ldap';
     /** @var resource|null */
     protected $connection = null;
 

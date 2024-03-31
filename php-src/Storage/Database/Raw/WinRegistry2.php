@@ -31,7 +31,7 @@ class WinRegistry2 extends ADatabase implements IPassConnection
 {
     use TConnection;
 
-    protected $extension = 'com_dotnet';
+    protected string $extension = 'com_dotnet';
     /** @var ComRegistry|null */
     protected $connection = null;
 

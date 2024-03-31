@@ -25,7 +25,7 @@ use kalanis\kw_mapper\Storage\Database\Config;
  */
 class WinRegistry extends ADatabase
 {
-    protected $extension = 'win32std';
+    protected string $extension = 'win32std';
 
     /** @var int[] */
     protected static $allowedParts = [

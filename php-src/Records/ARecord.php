@@ -27,10 +27,10 @@ abstract class ARecord implements ArrayAccess, Iterator
     /** @var string|int|null */
     private $key = null;
     /** @var Entry[] */
-    protected $entries = [];
+    protected array $entries = [];
 
     /** @var int[] */
-    protected static $types = [IEntryType::TYPE_BOOLEAN,
+    protected static array $types = [IEntryType::TYPE_BOOLEAN,
                                IEntryType::TYPE_INTEGER, IEntryType::TYPE_FLOAT,
                                IEntryType::TYPE_STRING,
                                IEntryType::TYPE_SET, IEntryType::TYPE_ARRAY, IEntryType::TYPE_OBJECT];

@@ -10,20 +10,20 @@ namespace kalanis\kw_mapper\Interfaces;
  */
 interface IDriverSources
 {
-    const TYPE_PDO_MYSQL = 'mysql';
-    const TYPE_PDO_MSSQL = 'mssql';
-    const TYPE_PDO_ORACLE = 'oracle';
-    const TYPE_PDO_POSTGRES = 'postgres';
-    const TYPE_PDO_SQLITE = 'sqlite';
-    const TYPE_RAW_MYSQLI = 'mysqlnd';
-    const TYPE_RAW_MONGO = 'mongodb';
-    const TYPE_RAW_LDAP = 'ldap';
-    const TYPE_RAW_WINREG = 'win-registry';
-    const TYPE_RAW_WINREG2 = 'win-registry-net';
-    const TYPE_RAW_DBA = 'dba';
-    const TYPE_ODBC = 'odbc';
+    public const TYPE_PDO_MYSQL = 'mysql';
+    public const TYPE_PDO_MSSQL = 'mssql';
+    public const TYPE_PDO_ORACLE = 'oracle';
+    public const TYPE_PDO_POSTGRES = 'postgres';
+    public const TYPE_PDO_SQLITE = 'sqlite';
+    public const TYPE_RAW_MYSQLI = 'mysqlnd';
+    public const TYPE_RAW_MONGO = 'mongodb';
+    public const TYPE_RAW_LDAP = 'ldap';
+    public const TYPE_RAW_WINREG = 'win-registry';
+    public const TYPE_RAW_WINREG2 = 'win-registry-net';
+    public const TYPE_RAW_DBA = 'dba';
+    public const TYPE_ODBC = 'odbc';
 
-    const ACTION_INSERT = 'add';
-    const ACTION_UPDATE = 'upd';
-    const ACTION_DELETE = 'del';
+    public const ACTION_INSERT = 'add';
+    public const ACTION_UPDATE = 'upd';
+    public const ACTION_DELETE = 'del';
 }

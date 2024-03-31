@@ -9,14 +9,10 @@ namespace kalanis\kw_mapper\Mappers\Shared;
  */
 class ForeignKey
 {
-    /** @var string */
-    protected $localAlias = '';
-    /** @var string */
-    protected $remoteRecord = '';
-    /** @var string */
-    protected $localEntryKey = '';
-    /** @var string */
-    protected $remoteEntryKey = '';
+    protected string $localAlias = '';
+    protected string $remoteRecord = '';
+    protected string $localEntryKey = '';
+    protected string $remoteEntryKey = '';
 
     public function setData(string $localAlias, string $remoteRecord, string $localEntryKey, string $remoteEntryKey): self
     {

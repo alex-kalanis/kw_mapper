@@ -120,17 +120,14 @@ class XAccessFilePass implements IProcessFiles
         return '';
     }
 
-    public function saveFile(array $entry, $content, ?int $offset = null): bool
+    public function saveFile(array $entry, string $content, ?int $offset = null, int $mode = 0): bool
     {
         return true;
     }
 
-    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null): string
     {
-        $stream = fopen('php://memory', 'r+');
-        fputs($stream, 'testing string 1234567890abcdefghijklmnopqrstuvwxyz');
-        rewind($stream);
-        return $stream;
+        return 'testing string 1234567890abcdefghijklmnopqrstuvwxyz';
     }
 
     public function copyFile(array $source, array $dest): bool
@@ -157,12 +154,12 @@ class XAccessFileDie implements IProcessFiles
         return '';
     }
 
-    public function saveFile(array $entry, $content, ?int $offset = null): bool
+    public function saveFile(array $entry, string $content, ?int $offset = null, int $mode = 0): bool
     {
         throw new FilesException('Cannot access here');
     }
 
-    public function readFile(array $entry, ?int $offset = null, ?int $length = null)
+    public function readFile(array $entry, ?int $offset = null, ?int $length = null): string
     {
         throw new FilesException('Cannot access here');
     }

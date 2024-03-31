@@ -73,7 +73,7 @@ class UserDBMapper extends Mappers\Database\ADatabase
     {
         $query = 'SELECT `u_id` AS `id`, `u_pass` AS `password` FROM ' . $this->getTable() . '  WHERE `u_id` = :id AND `u_pass` = :pass';
         $params = [':id' => $id, ':pass' => $pass];
-        $result = $this->database->query($query, $params);
+        $result = $this->readDatabase->query($query, $params);
 
         $items = [];
         foreach ($result as $line) {

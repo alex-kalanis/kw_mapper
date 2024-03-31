@@ -11,24 +11,15 @@ namespace kalanis\kw_mapper\Storage\Database;
  */
 class Config
 {
-    /** @var string */
-    protected $driver = ''; // determine which driver for database will be used; they are defined in IDriverSources
-    /** @var string */
-    protected $sourceName = ''; // determine source identifier, must be unique in whole connection system
-    /** @var string */
-    protected $location = ''; // location, host
-    /** @var int */
-    protected $port = 0; // port number, usually something you have preset
-    /** @var string */
-    protected $user = ''; // which user will access data
-    /** @var string */
-    protected $password = ''; // his password
-    /** @var string */
-    protected $database = ''; // which database will be processed
-    /** @var int */
-    protected $timeout = 8600; // how long it will be connected
-    /** @var bool */
-    protected $persistent = false; // it will try to live longer
+    protected string $driver = ''; // determine which driver for database will be used; they are defined in IDriverSources
+    protected string $sourceName = ''; // determine source identifier, must be unique in whole connection system
+    protected string $location = ''; // location, host
+    protected int $port = 0; // port number, usually something you have preset
+    protected ?string $user = null; // which user will access data
+    protected ?string $password = null; // his password
+    protected string $database = ''; // which database will be processed
+    protected int $timeout = 8600; // how long it will be connected
+    protected bool $persistent = false; // it will try to live longer
     /** @var mixed|null */
     protected $type = null; // special - type for connection
 

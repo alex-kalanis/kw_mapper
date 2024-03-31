@@ -16,7 +16,7 @@ use ReflectionException;
 class Factory
 {
     /** @var array<string, AMapper> */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     /**
      * Which instances of mappers are available

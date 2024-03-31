@@ -13,7 +13,7 @@ use PDO;
  */
 class SQLite extends APDO
 {
-    protected $extension = 'pdo_sqlite';
+    protected string $extension = 'pdo_sqlite';
 
     public function languageDialect(): string
     {

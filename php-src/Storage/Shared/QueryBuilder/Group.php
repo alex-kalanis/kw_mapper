@@ -5,8 +5,7 @@ namespace kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 class Group
 {
-    /** @var string */
-    protected $tableName = '';
+    protected string $tableName = '';
     /** @var string|int */
     protected $columnName = '';
 

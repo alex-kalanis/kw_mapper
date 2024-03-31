@@ -22,7 +22,7 @@ use kalanis\kw_paths\PathsException;
  */
 abstract class AFileSource extends AMapper
 {
-    use File\TFile;
+    use File\TFileAccessors;
     use Shared\TFormat;
     use TToString;
 

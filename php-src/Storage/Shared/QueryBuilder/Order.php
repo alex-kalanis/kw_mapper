@@ -5,12 +5,10 @@ namespace kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 class Order
 {
-    /** @var string */
-    protected $tableName = '';
+    protected string $tableName = '';
     /** @var string|int */
     protected $columnName = '';
-    /** @var string */
-    protected $direction = '';
+    protected string $direction = '';
 
     /**
      * @param string $tableName

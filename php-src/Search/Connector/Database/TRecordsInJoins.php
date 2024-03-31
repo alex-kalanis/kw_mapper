@@ -17,7 +17,7 @@ use ReflectionException;
 trait TRecordsInJoins
 {
     /** @var RecordsInJoin[] */
-    protected $recordsInJoin = [];
+    protected array $recordsInJoin = [];
 
     /**
      * @param ARecord $record

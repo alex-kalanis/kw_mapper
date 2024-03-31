@@ -16,7 +16,7 @@ use ReflectionException;
 class Factory
 {
     /** @var array<string, string> */
-    protected static $map = [
+    protected static array $map = [
         IDriverSources::TYPE_PDO_MYSQL => PDO\MySQL::class,
         IDriverSources::TYPE_PDO_MSSQL => PDO\MSSQL::class,
         IDriverSources::TYPE_PDO_ORACLE => PDO\Oracle::class,
@@ -31,7 +31,7 @@ class Factory
     ];
 
     /** @var array<string, ADatabase> */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     public static function getInstance(): self
     {

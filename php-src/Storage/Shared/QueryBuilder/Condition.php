@@ -5,12 +5,10 @@ namespace kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 class Condition
 {
-    /** @var string */
-    protected $tableName = '';
+    protected string $tableName = '';
     /** @var string|int */
     protected $columnName = '';
-    /** @var string */
-    protected $operation = '';
+    protected string $operation = '';
     /** @var string|string[] */
     protected $columnKey = '';
 

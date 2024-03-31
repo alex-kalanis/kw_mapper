@@ -14,7 +14,7 @@ use PDO;
  */
 class Oracle extends APDO
 {
-    protected $extension = 'pdo_oracle';
+    protected string $extension = 'pdo_oracle';
 
     public function languageDialect(): string
     {

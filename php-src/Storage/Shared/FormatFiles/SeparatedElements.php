@@ -15,10 +15,8 @@ class SeparatedElements implements IFileFormat
 {
     use TNl;
 
-    /** @var string */
-    protected $delimitElements = '|';
-    /** @var string */
-    protected $delimitLines = PHP_EOL;
+    protected string $delimitElements = '|';
+    protected string $delimitLines = PHP_EOL;
 
     public function setDelimiters(string $elements = '|', string $lines = PHP_EOL): self
     {

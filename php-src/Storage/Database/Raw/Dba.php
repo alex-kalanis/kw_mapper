@@ -21,7 +21,7 @@ class Dba extends ADatabase implements IPassConnection
 {
     use TConnection;
 
-    protected $extension = 'dba';
+    protected string $extension = 'dba';
     /** @var resource|null */
     protected $connection = null;
 

@@ -13,10 +13,9 @@ use kalanis\kw_mapper\MapperException;
  */
 class ConfigStorage
 {
-    /** @var self|null */
-    protected static $instance = null;
+    protected static ?ConfigStorage $instance = null;
     /** @var Config[] */
-    private $configs = [];
+    private array $configs = [];
 
     public static function getInstance(): self
     {

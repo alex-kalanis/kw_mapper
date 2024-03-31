@@ -25,22 +25,14 @@ abstract class AMongo extends AMapper
     use TFill;
     use TTable;
 
-    /** @var string|null */
-    protected $readSource = null;
-    /** @var string|null */
-    protected $writeSource = null;
-    /** @var Database\Raw\MongoDb */
-    protected $readDatabase = null;
-    /** @var Database\Raw\MongoDb */
-    protected $writeDatabase = null;
-    /** @var Database\Dialects\MongoDb */
-    protected $readDialect = null;
-    /** @var Database\Dialects\MongoDb */
-    protected $writeDialect = null;
-    /** @var Shared\QueryBuilder */
-    protected $readQueryBuilder = null;
-    /** @var Shared\QueryBuilder */
-    protected $writeQueryBuilder = null;
+    protected ?string $readSource = null;
+    protected ?string $writeSource = null;
+    protected Database\Raw\MongoDb $readDatabase;
+    protected Database\Raw\MongoDb $writeDatabase;
+    protected Database\Dialects\MongoDb $readDialect;
+    protected Database\Dialects\MongoDb $writeDialect;
+    protected Shared\QueryBuilder $readQueryBuilder;
+    protected Shared\QueryBuilder $writeQueryBuilder;
 
     /**
      * @throws MapperException

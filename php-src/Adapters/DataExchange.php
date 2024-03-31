@@ -14,10 +14,9 @@ use kalanis\kw_mapper\Records\ARecord;
  */
 class DataExchange
 {
-    /** @var ARecord **/
-    protected $record;
+    protected ARecord $record;
     /** @var array<string|int, bool> */
-    protected $excluded = [];
+    protected array $excluded = [];
 
     public function __construct(ARecord $record)
     {

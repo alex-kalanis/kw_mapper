@@ -15,10 +15,8 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 abstract class ASearch
 {
-    /** @var Connector\AConnector */
-    protected $connector = null;
-    /** @var string */
-    protected static $propertySeparator = '.';
+    protected Connector\AConnector $connector;
+    protected static string $propertySeparator = '.';
 
     /**
      * @param ARecord $record

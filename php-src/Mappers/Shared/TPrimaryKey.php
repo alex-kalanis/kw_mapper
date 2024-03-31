@@ -12,7 +12,7 @@ namespace kalanis\kw_mapper\Mappers\Shared;
 trait TPrimaryKey
 {
     /** @var string[] */
-    protected $primaryKeys = [];
+    protected array $primaryKeys = [];
 
     public function addPrimaryKey(string $localAlias): void
     {

@@ -15,12 +15,9 @@ use kalanis\kw_storage\StorageException;
  */
 class StorageSingleton
 {
-    /** @var self|null */
-    protected static $instance = null;
-    /** @var Store\Factory */
-    private $factory = null;
-    /** @var IStorage|null */
-    private $storage = null;
+    protected static ?StorageSingleton $instance = null;
+    private Store\Factory $factory;
+    private ?IStorage $storage = null;
 
     public static function getInstance(): self
     {

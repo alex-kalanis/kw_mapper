@@ -21,17 +21,18 @@
         "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "php": ">=7.2.0"
+        "php": ">=7.4.0"
     },
     "require-dev": {
-        "alex-kalanis/kw_paths": ">=3.0 <4",
-        "alex-kalanis/kw_files": ">=3.3 <4",
-        "alex-kalanis/kw_storage": ">=4.0 <5",
+        "alex-kalanis/kw_paths": ">=4.0 <5",
+        "alex-kalanis/kw_files": ">=4.0 <5",
+        "alex-kalanis/kw_storage": ">=5.0 <6",
         "ext-pdo": "*",
+        "shipmonk/composer-dependency-analyser": "^1.4",
         "friendsofphp/php-cs-fixer": "^3.0",
         "phpstan/phpstan": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": ">=7.2 <=9"
+        "phpunit/phpunit": ">=8.0 <=9"
     },
     "suggest": {
         "ext-pdo": "Content stored in database",

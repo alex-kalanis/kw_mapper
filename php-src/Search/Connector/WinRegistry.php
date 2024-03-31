@@ -23,8 +23,7 @@ class WinRegistry extends AConnector
 {
     use TFill;
 
-    /** @var Storage\Database\Raw\WinRegistry */
-    protected $database = null;
+    protected Storage\Database\Raw\WinRegistry $database;
 
     /**
      * @param ARecord $record

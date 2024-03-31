@@ -5,14 +5,12 @@ namespace kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 class Column
 {
-    /** @var string */
-    protected $tableName = '';
+    protected string $tableName = '';
     /** @var string|int */
     protected $columnName = '';
     /** @var string|int */
     protected $columnAlias = '';
-    /** @var string */
-    protected $aggregate = '';
+    protected string $aggregate = '';
 
     /**
      * @param string $tableName

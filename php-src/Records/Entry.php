@@ -13,14 +13,12 @@ use kalanis\kw_mapper\Interfaces\ICanFill;
  */
 class Entry
 {
-    /** @var int */
-    protected $type = 0;
+    protected int $type = 0;
     /** @var null|int|string|float|bool|array<int|string, int|string|float|bool|ARecord|array<int|string, int|string>>|ICanFill|false */
     protected $data = false;
     /** @var string|int|array<string|int, string|int>|null */
     protected $params = null;
-    /** @var bool */
-    protected $isFromStorage = false;
+    protected bool $isFromStorage = false;
 
     public static function getInstance(): self
     {

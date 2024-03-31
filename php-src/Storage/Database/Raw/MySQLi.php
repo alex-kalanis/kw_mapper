@@ -19,11 +19,10 @@ class MySQLi extends ASQL
 {
     use TBindNames;
 
-    protected $extension = 'mysqli';
+    protected string $extension = 'mysqli';
     /** @var \mysqli|null */
     protected $connection = null;
-    /** @var \mysqli_stmt|null */
-    protected $lastStatement;
+    protected ?\mysqli_stmt $lastStatement;
 
     public function disconnect(): void
     {

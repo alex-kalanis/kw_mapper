@@ -14,10 +14,8 @@ use kalanis\kw_mapper\MapperException;
  */
 class FilesSingleton
 {
-    /** @var self|null */
-    protected static $instance = null;
-    /** @var IProcessFiles|null */
-    private $filesAccessor = null;
+    protected static ?FilesSingleton $instance = null;
+    private ?IProcessFiles $filesAccessor = null;
 
     public static function getInstance(): self
     {

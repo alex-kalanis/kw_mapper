@@ -19,22 +19,20 @@ abstract class AConnector
 {
     use Database\TRecordsInJoins;
 
-    /** @var ARecord */
-    protected $basicRecord = null;
-    /** @var Storage\Shared\QueryBuilder */
-    protected $queryBuilder = null;
+    protected ARecord $basicRecord;
+    protected Storage\Shared\QueryBuilder $queryBuilder;
 
     /**
      * @param string $table
      * @param string $column
-     * @param string $value
+     * @param string|float|int $value
      * @throws MapperException
      * @return $this
      */
     public function notExact(string $table, string $column, $value): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_NEQ,
@@ -46,14 +44,14 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @param string $value
+     * @param string|float|int $value
      * @throws MapperException
      * @return $this
      */
     public function exact(string $table, string $column, $value): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_EQ,
@@ -65,7 +63,7 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @param string $value
+     * @param string|float|int $value
      * @param bool $equals
      * @throws MapperException
      * @return $this
@@ -73,7 +71,7 @@ abstract class AConnector
     public function from(string $table, string $column, $value, bool $equals = true): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             $equals ? IQueryBuilder::OPERATION_GTE : IQueryBuilder::OPERATION_GT,
@@ -85,7 +83,7 @@ abstract class AConnector
     /**
      * @param string $table
      * @param string $column
-     * @param string $value
+     * @param string|float|int $value
      * @param bool $equals
      * @throws MapperException
      * @return $this
@@ -93,7 +91,7 @@ abstract class AConnector
     public function to(string $table, string $column, $value, bool $equals = true): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             $equals ? IQueryBuilder::OPERATION_LTE : IQueryBuilder::OPERATION_LT,
@@ -112,7 +110,7 @@ abstract class AConnector
     public function like(string $table, string $column, $value): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_LIKE,
@@ -131,7 +129,7 @@ abstract class AConnector
     public function notLike(string $table, string $column, $value): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_NLIKE,
@@ -150,7 +148,7 @@ abstract class AConnector
     public function regexp(string $table, string $column, string $pattern): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_REXP,
@@ -170,8 +168,8 @@ abstract class AConnector
     public function between(string $table, string $column, $min, $max): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition($aTable, $this->correctColumn($aTable, $column), IQueryBuilder::OPERATION_GTE, $min);
-        $this->queryBuilder->addCondition($aTable, $this->correctColumn($aTable, $column), IQueryBuilder::OPERATION_LTE, $max);
+        $this->getQueryBuilder()->addCondition($aTable, $this->correctColumn($aTable, $column), IQueryBuilder::OPERATION_GTE, $min);
+        $this->getQueryBuilder()->addCondition($aTable, $this->correctColumn($aTable, $column), IQueryBuilder::OPERATION_LTE, $max);
         return $this;
     }
 
@@ -184,7 +182,7 @@ abstract class AConnector
     public function null(string $table, string $column): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_NULL
@@ -201,7 +199,7 @@ abstract class AConnector
     public function notNull(string $table, string $column): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_NNULL
@@ -219,7 +217,7 @@ abstract class AConnector
     public function in(string $table, string $column, array $values): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_IN,
@@ -238,7 +236,7 @@ abstract class AConnector
     public function notIn(string $table, string $column, array $values): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_NIN,
@@ -249,25 +247,25 @@ abstract class AConnector
 
     public function useAnd(): self
     {
-        $this->queryBuilder->setRelations(IQueryBuilder::RELATION_AND);
+        $this->getQueryBuilder()->setRelations(IQueryBuilder::RELATION_AND);
         return $this;
     }
 
     public function useOr(): self
     {
-        $this->queryBuilder->setRelations(IQueryBuilder::RELATION_OR);
+        $this->getQueryBuilder()->setRelations(IQueryBuilder::RELATION_OR);
         return $this;
     }
 
     public function limit(?int $limit): self
     {
-        $this->queryBuilder->setLimit($limit);
+        $this->getQueryBuilder()->setLimit($limit);
         return $this;
     }
 
     public function offset(?int $offset): self
     {
-        $this->queryBuilder->setOffset($offset);
+        $this->getQueryBuilder()->setOffset($offset);
         return $this;
     }
 
@@ -282,7 +280,7 @@ abstract class AConnector
     public function orderBy(string $table, string $column, string $direction = IQueryBuilder::ORDER_ASC): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addOrderBy($aTable, $this->correctColumn($aTable, $column), $direction);
+        $this->getQueryBuilder()->addOrderBy($aTable, $this->correctColumn($aTable, $column), $direction);
         return $this;
     }
 
@@ -296,7 +294,7 @@ abstract class AConnector
     public function groupBy(string $table, string $column): self
     {
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addGroupBy($aTable, $this->correctColumn($aTable, $column));
+        $this->getQueryBuilder()->addGroupBy($aTable, $this->correctColumn($aTable, $column));
         return $this;
     }
 
@@ -318,7 +316,7 @@ abstract class AConnector
                 $parentRecord = $parentLookup->getRecord();
             }
         } else {
-            $parentRecord = $this->basicRecord;
+            $parentRecord = $this->getBasicRecord();
             $parentAlias = $parentRecord->getMapper()->getAlias();
         }
         if (empty($parentRecord)) {
@@ -356,7 +354,7 @@ abstract class AConnector
             throw new MapperException(sprintf('Parent *%s* and child *%s* must both have the same source', $parentAlias, $childAlias));
         }
 
-        $this->queryBuilder->addJoin(
+        $this->getQueryBuilder()->addJoin(
             $childAlias,
             $childRecord->getMapper()->getAlias(),
             $childRelations[$parentKey->getRemoteEntryKey()],
@@ -382,7 +380,7 @@ abstract class AConnector
     {
         $this->child($childAlias, IQueryBuilder::JOIN_LEFT_OUTER, $parentAlias);
         $aTable = $this->correctTable($table);
-        $this->queryBuilder->addCondition(
+        $this->getQueryBuilder()->addCondition(
             $aTable,
             $this->correctColumn($aTable, $column),
             IQueryBuilder::OPERATION_NULL
@@ -411,7 +409,7 @@ abstract class AConnector
      */
     protected function correctTable(string $table): string
     {
-        return empty($table) ? $this->basicRecord->getMapper()->getAlias() : $table ;
+        return empty($table) ? $this->getBasicRecord()->getMapper()->getAlias() : $table ;
     }
 
     /**
@@ -422,7 +420,7 @@ abstract class AConnector
      */
     protected function correctColumn(string $table, string $column)
     {
-        $record = !empty($table) ? $this->recordLookup($table)->getRecord() : $this->basicRecord ;
+        $record = !empty($table) ? $this->recordLookup($table)->getRecord() : $this->getBasicRecord() ;
         if (empty($record)) {
             // @codeCoverageIgnoreStart
             throw new MapperException(sprintf('Unknown relation table *%s*', $table));
@@ -433,5 +431,15 @@ abstract class AConnector
             throw new MapperException(sprintf('Unknown relation key *%s* in mapper for table *%s*', $column, $table));
         }
         return $relations[$column];
+    }
+
+    private function getQueryBuilder(): Storage\Shared\QueryBuilder
+    {
+        return $this->queryBuilder;
+    }
+
+    private function getBasicRecord(): ARecord
+    {
+        return $this->basicRecord;
     }
 }

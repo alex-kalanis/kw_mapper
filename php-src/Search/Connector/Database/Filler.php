@@ -22,16 +22,12 @@ class Filler
 {
     use TFill;
 
-    /** @var string */
-    protected $hashDelimiter = "--::\e::--";
-    /** @var string */
-    protected $columnDelimiter = '____';
-    /** @var ARecord */
-    protected $basicRecord = null;
+    protected string $hashDelimiter = "--::\e::--";
+    protected string $columnDelimiter = '____';
+    protected ARecord $basicRecord;
     /** @var RecordsInJoin[] */
-    protected $recordsInJoin = [];
-    /** @var bool */
-    private $fromDatabase = false;
+    protected array $recordsInJoin = [];
+    private bool $fromDatabase = false;
 
     public function __construct(ARecord $basicRecord)
     {

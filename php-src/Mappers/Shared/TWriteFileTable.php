@@ -19,8 +19,7 @@ trait TWriteFileTable
     use TFinder;
     use TStore;
 
-    /** @var bool */
-    protected $orderFromFirst = true;
+    protected bool $orderFromFirst = true;
 
     public function orderFromFirst(bool $orderFromFirst = true): self
     {

@@ -15,7 +15,7 @@ use PDO;
  */
 class MSSQL extends APDO
 {
-    protected $extension = 'pdo_mssql';
+    protected string $extension = 'pdo_mssql';
 
     public function languageDialect(): string
     {

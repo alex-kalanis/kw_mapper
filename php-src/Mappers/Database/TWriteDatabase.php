@@ -23,14 +23,10 @@ trait TWriteDatabase
     use TEntityChanged;
     use TFill;
 
-    /** @var string */
-    protected $writeSource = '';
-    /** @var Database\ASQL */
-    protected $writeDatabase = null;
-    /** @var Database\Dialects\ADialect */
-    protected $writeDialect = null;
-    /** @var Database\QueryBuilder */
-    protected $writeQueryBuilder = null;
+    protected string $writeSource = '';
+    protected Database\ASQL $writeDatabase;
+    protected Database\Dialects\ADialect $writeDialect;
+    protected Database\QueryBuilder $writeQueryBuilder;
 
     /**
      * @throws MapperException

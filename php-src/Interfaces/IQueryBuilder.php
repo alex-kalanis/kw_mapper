@@ -11,38 +11,38 @@ namespace kalanis\kw_mapper\Interfaces;
  */
 interface IQueryBuilder
 {
-    const RELATION_AND = 'AND';
-    const RELATION_OR = 'OR';
+    public const RELATION_AND = 'AND';
+    public const RELATION_OR = 'OR';
 
-    const ORDER_ASC = 'ASC';
-    const ORDER_DESC = 'DESC';
+    public const ORDER_ASC = 'ASC';
+    public const ORDER_DESC = 'DESC';
 
-    const OPERATION_NULL = 'nul';    // is null
-    const OPERATION_NNULL = 'nnul';  // is not null
-    const OPERATION_EQ = 'eq';       // =
-    const OPERATION_NEQ = 'neq';     // !=
-    const OPERATION_GT = 'gt';       // >
-    const OPERATION_GTE = 'gte';     // >=
-    const OPERATION_LT = 'lt';       // <
-    const OPERATION_LTE = 'lte';     // <=
-    const OPERATION_LIKE = 'like';   // like...
-    const OPERATION_NLIKE = 'nlike'; // not like
-    const OPERATION_REXP = 'rexp';   // regex
-    const OPERATION_IN = 'in';       // in ()
-    const OPERATION_NIN = 'nin';     // not in ()
+    public const OPERATION_NULL = 'nul';    // is null
+    public const OPERATION_NNULL = 'nnul';  // is not null
+    public const OPERATION_EQ = 'eq';       // =
+    public const OPERATION_NEQ = 'neq';     // !=
+    public const OPERATION_GT = 'gt';       // >
+    public const OPERATION_GTE = 'gte';     // >=
+    public const OPERATION_LT = 'lt';       // <
+    public const OPERATION_LTE = 'lte';     // <=
+    public const OPERATION_LIKE = 'like';   // like...
+    public const OPERATION_NLIKE = 'nlike'; // not like
+    public const OPERATION_REXP = 'rexp';   // regex
+    public const OPERATION_IN = 'in';       // in ()
+    public const OPERATION_NIN = 'nin';     // not in ()
 
-    const AGGREGATE_AVG = 'AVG';
-    const AGGREGATE_COUNT = 'COUNT';
-    const AGGREGATE_MIN = 'MIN';
-    const AGGREGATE_MAX = 'MAX';
-    const AGGREGATE_SUM = 'SUM';
+    public const AGGREGATE_AVG = 'AVG';
+    public const AGGREGATE_COUNT = 'COUNT';
+    public const AGGREGATE_MIN = 'MIN';
+    public const AGGREGATE_MAX = 'MAX';
+    public const AGGREGATE_SUM = 'SUM';
 
-    const JOIN_BASIC = '';
-    const JOIN_LEFT = 'LEFT';
-    const JOIN_LEFT_OUTER = 'LEFT OUTER';
-    const JOIN_RIGHT = 'RIGHT';
-    const JOIN_INNER = 'INNER';
-    const JOIN_OUTER = 'OUTER';
-    const JOIN_CROSS = 'CROSS';
-    const JOIN_FULL = 'FULL';
+    public const JOIN_BASIC = '';
+    public const JOIN_LEFT = 'LEFT';
+    public const JOIN_LEFT_OUTER = 'LEFT OUTER';
+    public const JOIN_RIGHT = 'RIGHT';
+    public const JOIN_INNER = 'INNER';
+    public const JOIN_OUTER = 'OUTER';
+    public const JOIN_CROSS = 'CROSS';
+    public const JOIN_FULL = 'FULL';
 }

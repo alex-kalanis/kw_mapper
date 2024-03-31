@@ -21,10 +21,8 @@ class Ldap extends AConnector
 {
     use TFill;
 
-    /** @var Storage\Database\Raw\Ldap */
-    protected $database = null;
-    /** @var Storage\Database\Dialects\LdapQueries */
-    protected $dialect = null;
+    protected Storage\Database\Raw\Ldap $database;
+    protected Storage\Database\Dialects\LdapQueries $dialect;
 
     /**
      * @param ARecord $record

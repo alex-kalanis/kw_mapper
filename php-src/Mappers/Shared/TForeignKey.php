@@ -14,9 +14,8 @@ namespace kalanis\kw_mapper\Mappers\Shared;
 trait TForeignKey
 {
     /** @var array<string, ForeignKey> */
-    protected $foreignKeys = [];
-    /** @var ForeignKey|null */
-    private $foreignKeyClass = null;
+    protected array $foreignKeys = [];
+    private ?ForeignKey $foreignKeyClass = null;
 
     public function addForeignKey(string $localAlias, string $remoteRecord, string $localEntryKey, string $remoteEntryKey): void
     {

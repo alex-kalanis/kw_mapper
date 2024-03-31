@@ -15,7 +15,7 @@ use ReflectionException;
 class Factory
 {
     /** @var array<string, ADialect> */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     public static function getInstance(): self
     {

@@ -12,11 +12,10 @@ use kalanis\kw_mapper\Interfaces\INl;
  */
 trait TNl
 {
-    /** @var string */
-    protected $delimitElements = '|';
+    protected string $delimitElements = '|';
 
     /** @var array<string, string> */
-    protected static $escapeNlTr = [
+    protected static array $escapeNlTr = [
         "\r\n" => INl::CRLF_REPLACEMENT,
         "\r" => INl::CR_REPLACEMENT,
         "\n" => INl::LF_REPLACEMENT,

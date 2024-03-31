@@ -17,10 +17,8 @@ use kalanis\kw_mapper\Mappers;
  */
 trait TMapper
 {
-    /** @var Mappers\AMapper|null */
-    protected $mapper = null;
-    /** @var Mappers\Factory|null */
-    private $mapperFactory = null;
+    protected ?Mappers\AMapper $mapper = null;
+    private ?Mappers\Factory $mapperFactory = null;
 
     /**
      * @param string $name

@@ -32,10 +32,8 @@ class WinRegistry extends AMapper
     use TContent;
     use TFill;
 
-    /** @var string */
-    protected $typeKey = '';
-    /** @var Storage\Database\Raw\WinRegistry */
-    protected $database = null;
+    protected string $typeKey = '';
+    protected Storage\Database\Raw\WinRegistry $database;
 
     /**
      * @throws MapperException

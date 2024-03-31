@@ -14,45 +14,34 @@ use kalanis\kw_mapper\MapperException;
  */
 class QueryBuilder
 {
-    /** @var int */
-    protected static $uniqId = 0;
-    /** @var QueryBuilder\Column */
-    protected $column = null;
-    /** @var QueryBuilder\Condition */
-    protected $condition = null;
-    /** @var QueryBuilder\Property */
-    protected $property = null;
-    /** @var QueryBuilder\Join */
-    protected $join = null;
-    /** @var QueryBuilder\Order */
-    protected $order = null;
-    /** @var QueryBuilder\Group */
-    protected $group = null;
+    protected static int $uniqId = 0;
+    protected QueryBuilder\Column $column;
+    protected QueryBuilder\Condition $condition;
+    protected QueryBuilder\Property $property;
+    protected QueryBuilder\Join $join;
+    protected QueryBuilder\Order $order;
+    protected QueryBuilder\Group $group;
 
-    /** @var string */
-    protected $relation = IQueryBuilder::RELATION_AND;
-    /** @var string */
-    protected $baseTable = '';
+    protected string $relation = IQueryBuilder::RELATION_AND;
+    protected string $baseTable = '';
     /** @var array<string, int|string|float|null> */
-    protected $params = [];
+    protected array $params = [];
     /** @var QueryBuilder\Column[] */
-    protected $columns = [];
+    protected array $columns = [];
     /** @var QueryBuilder\Join[] */
-    protected $joins = [];
+    protected array $joins = [];
     /** @var QueryBuilder\Condition[] */
-    protected $conditions = [];
+    protected array $conditions = [];
     /** @var QueryBuilder\Property[] */
-    protected $properties = [];
+    protected array $properties = [];
     /** @var QueryBuilder\Order[] */
-    protected $ordering = [];
+    protected array $ordering = [];
     /** @var QueryBuilder\Group[] */
-    protected $grouping = [];
+    protected array $grouping = [];
     /** @var QueryBuilder\Condition[] */
-    protected $having = [];
-    /** @var int|null */
-    protected $offset = null;
-    /** @var int|null */
-    protected $limit = null;
+    protected array $having = [];
+    protected ?int $offset = null;
+    protected ?int $limit = null;
 
     public function __construct()
     {

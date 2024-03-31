@@ -150,7 +150,7 @@ class CStorage
 
 class CFile
 {
-    use Storage\File\TFile;
+    use Storage\File\TFileAccessors;
 
     public function setAccessor(?IProcessFiles $file): void
     {

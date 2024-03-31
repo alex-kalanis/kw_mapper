@@ -15,10 +15,9 @@ use kalanis\kw_mapper\MapperException;
  */
 class Multiton
 {
-    /** @var self|null */
-    protected static $instance = null;
+    protected static ?Multiton $instance = null;
     /** @var Entity[] */
-    private $storage = [];
+    private array $storage = [];
 
     public static function getInstance(): self
     {

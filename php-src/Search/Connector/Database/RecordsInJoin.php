@@ -13,14 +13,10 @@ use kalanis\kw_mapper\Records\ARecord;
  */
 class RecordsInJoin
 {
-    /** @var ARecord|null */
-    protected $record = null;
-    /** @var string|null */
-    protected $parentAlias = null;
-    /** @var string */
-    protected $storeKey = '';
-    /** @var string */
-    protected $knownAs = '';
+    protected ?ARecord $record = null;
+    protected ?string $parentAlias = null;
+    protected string $storeKey = '';
+    protected string $knownAs = '';
 
     public function setData(ARecord $record, string $storeKey, ?string $parentAlias, string $knownAs = ''): self
     {

@@ -19,12 +19,9 @@ class Database extends AConnector
 {
     use TFilterNulls;
 
-    /** @var Storage\Database\ASQL */
-    protected $database = null;
-    /** @var Storage\Database\Dialects\ADialect */
-    protected $dialect = null;
-    /** @var Database\Filler */
-    protected $filler = null;
+    protected Storage\Database\ASQL $database;
+    protected Storage\Database\Dialects\ADialect $dialect;
+    protected Database\Filler $filler;
 
     /**
      * @param ARecord $record

@@ -25,7 +25,7 @@ class MongoDb extends ADatabase implements IPassConnection
 {
     use TConnection;
 
-    protected $extension = 'mongodb';
+    protected string $extension = 'mongodb';
     /** @var Driver\Manager|null */
     protected $connection = null;
 

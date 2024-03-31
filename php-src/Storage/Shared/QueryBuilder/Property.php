@@ -5,12 +5,10 @@ namespace kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 class Property
 {
-    /** @var string */
-    protected $tableName = '';
+    protected string $tableName = '';
     /** @var string|int */
     protected $columnName = '';
-    /** @var string */
-    protected $columnKey = '';
+    protected string $columnKey = '';
 
     /**
      * @param string $tableName

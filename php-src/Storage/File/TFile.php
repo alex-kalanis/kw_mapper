@@ -3,10 +3,6 @@
 namespace kalanis\kw_mapper\Storage\File;
 
 
-use kalanis\kw_files\Interfaces\IProcessFiles;
-use kalanis\kw_mapper\MapperException;
-
-
 /**
  * Trait TFile
  * @package kalanis\kw_mapper\Storage\File
@@ -14,21 +10,7 @@ use kalanis\kw_mapper\MapperException;
 trait TFile
 {
     /** @var string[] */
-    protected $presetPath = [];
-
-    protected function setFileAccessor(?IProcessFiles $file): void
-    {
-        FilesSingleton::getInstance()->setFileAccessor($file);
-    }
-
-    /**
-     * @throws MapperException
-     * @return IProcessFiles
-     */
-    protected function getFileAccessor(): IProcessFiles
-    {
-        return FilesSingleton::getInstance()->getFilesAccessor();
-    }
+    protected array $presetPath = [];
 
     /**
      * @param string[] $path

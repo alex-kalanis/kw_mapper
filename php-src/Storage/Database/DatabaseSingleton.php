@@ -13,10 +13,9 @@ use kalanis\kw_mapper\MapperException;
  */
 class DatabaseSingleton
 {
-    /** @var self|null */
-    protected static $instance = null;
+    protected static ?DatabaseSingleton $instance = null;
     /** @var ADatabase[] */
-    private $database = [];
+    private array $database = [];
 
     public static function getInstance(): self
     {

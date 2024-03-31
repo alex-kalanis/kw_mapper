@@ -5,20 +5,15 @@ namespace kalanis\kw_mapper\Storage\Shared\QueryBuilder;
 
 class Join
 {
-    /** @var string */
-    protected $newTableName = '';
-    /** @var string */
-    protected $knownTableName = '';
+    protected string $newTableName = '';
+    protected string $knownTableName = '';
     /** @var string|int */
     protected $newColumnName = '';
     /** @var string|int */
     protected $knownColumnName = '';
-    /** @var string */
-    protected $joinUnderAlias = '';
-    /** @var string */
-    protected $side = '';
-    /** @var string */
-    protected $tableAlias = '';
+    protected string $joinUnderAlias = '';
+    protected string $side = '';
+    protected string $tableAlias = '';
 
     /**
      * @param string $joinUnderAlias

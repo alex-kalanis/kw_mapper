@@ -123,7 +123,7 @@ class FailedDatabaseClass
 
 class SpecFactory extends Database\Factory
 {
-    protected static $map = [
+    protected static array $map = [
         IDriverSources::TYPE_PDO_POSTGRES => Database\PDO\PostgreSQL::class,
         IDriverSources::TYPE_PDO_SQLITE => Database\PDO\SQLite::class,
         'failed_one' => FailedDatabaseClass::class,
