@@ -23,5 +23,5 @@ return $config
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_storage', __DIR__ . '/php-src/Mappers/Storage/KeyValue.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_storage', __DIR__ . '/php-src/Storage/Storage/StorageSingleton.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_storage', __DIR__ . '/php-src/Storage/Storage/TStorage.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
-    ->ignoreErrorsOnPackageAndPath('COM', __DIR__ . '/php-src/Storage/Shared/DotNet/ComRegistry.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
+    ->ignoreUnknownClasses(['COM'])
 ;
