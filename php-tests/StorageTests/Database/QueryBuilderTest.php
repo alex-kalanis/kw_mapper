@@ -33,6 +33,20 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('bar', $data->getColumnName());
         $this->assertEquals('baz', $data->getOperation());
         $this->assertEquals('anf', $data->getColumnKey());
+        $this->assertFalse($data->isRaw());
+        $this->assertEquals('', $data->getRaw());
+    }
+
+    public function testBuilderRaw(): void
+    {
+        $data = new QueryBuilder\Condition();
+        $data->setRaw('foo bar baz anf', 'uhbgzv');
+        $this->assertEquals('', $data->getTableName());
+        $this->assertEquals('', $data->getColumnName());
+        $this->assertEquals('', $data->getOperation());
+        $this->assertEquals('uhbgzv', $data->getColumnKey());
+        $this->assertTrue($data->isRaw());
+        $this->assertEquals('foo bar baz anf', $data->getRaw());
     }
 
     public function testBuilderGroup(): void
@@ -121,6 +135,43 @@ class QueryBuilderTest extends CommonTestClass
         $this->assertEquals('bar', $data->getColumnName());
         $this->assertEquals(IQueryBuilder::OPERATION_EQ, $data->getOperation());
         $this->assertEquals('anf', $builder->getParams()[$data->getColumnKey()]);
+        $this->assertEquals('', $data->getRaw());
+        $builder->resetCounter();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testRawConditionPass1(): void
+    {
+        $builder = new Builder();
+        $builder->addRawCondition('bar baz');
+        $data = $builder->getConditions();
+        $data = reset($data);
+        $this->assertEquals('', $data->getTableName());
+        $this->assertEquals('', $data->getColumnName());
+        $this->assertEquals('', $data->getOperation());
+        $this->assertEquals('', $data->getColumnKey());
+        $this->assertFalse(isset($builder->getParams()[$data->getColumnKey()]));
+        $this->assertEquals('bar baz', $data->getRaw());
+        $builder->resetCounter();
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testRawConditionPass2(): void
+    {
+        $builder = new Builder();
+        $builder->addRawCondition('bar baz', 'foo', 'hsf');
+        $data = $builder->getConditions();
+        $data = reset($data);
+        $this->assertEquals('', $data->getTableName());
+        $this->assertEquals('', $data->getColumnName());
+        $this->assertEquals(':foo_0', $data->getColumnKey());
+        $this->assertEquals('', $data->getOperation());
+        $this->assertEquals('hsf', $builder->getParams()[$data->getColumnKey()]);
+        $this->assertEquals('bar baz', $data->getRaw());
         $builder->resetCounter();
     }
 

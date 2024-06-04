@@ -36,7 +36,7 @@ class WinRegistry2 extends ADatabase implements IPassConnection
     protected $connection = null;
 
     /** @var array<int, string> */
-    protected static $allowedParts = [
+    protected static array $allowedParts = [
         IRegistry::HKEY_CLASSES_ROOT => 'HKCR',
         IRegistry::HKEY_CURRENT_CONFIG => 'HKEY_CURRENT_CONFIG',
         IRegistry::HKEY_CURRENT_USER => 'HKCU',
@@ -45,7 +45,7 @@ class WinRegistry2 extends ADatabase implements IPassConnection
     ];
 
     /** @var array<string, string> */
-    protected static $allowedTypes = [
+    protected static array $allowedTypes = [
         IRegistry::REG_DWORD => 'REG_DWORD',
         IRegistry::REG_SZ => 'REG_SZ',
         IRegistry::REG_EXPAND_SZ => 'REG_EXPAND_SZ',

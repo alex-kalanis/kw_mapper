@@ -7,6 +7,7 @@ use kalanis\kw_mapper\Interfaces\IQueryBuilder;
 use kalanis\kw_mapper\MapperException;
 use kalanis\kw_mapper\Search\Connector\Records;
 use CommonTestClass;
+use kalanis\kw_mapper\Storage\Shared\QueryBuilder\Condition;
 use kalanis\kw_mapper\Storage\Shared\QueryBuilder\Order;
 
 
@@ -55,6 +56,35 @@ class ConnectRecordsTest extends CommonTestClass
     /**
      * @throws MapperException
      */
+    public function testSort2(): void
+    {
+        $record1 = new \XSimpleRecord();
+        $record1->useMock();
+        $record1->title = 'abc';
+        $record1->desc = null;
+
+        $record2 = new \XSimpleRecord();
+        $record2->useMock();
+        $record2->title = 'def';
+        $record2->desc = null;
+
+        $condition1 = new Condition();
+        $condition1->setRaw([$this, 'checkRecordsByCallback']);
+
+        $lib = new XSortRecords($record1);
+        $lib->xSetCondition($condition1);
+        $this->assertTrue($lib->filterCondition($record1));
+        $this->assertFalse($lib->filterCondition($record2));
+    }
+
+    public function checkRecordsByCallback(\XSimpleRecord $record): bool
+    {
+        return 'abc' == $record->title;
+    }
+
+    /**
+     * @throws MapperException
+     */
     public function testSortFail(): void
     {
         $record1 = new \XSimpleRecord();
@@ -96,5 +126,10 @@ class XSortRecords extends Records
     public function xSortResults(array $records, array $ordering): array
     {
         return $this->sortResults($records, $ordering);
+    }
+
+    public function xSetCondition(?Condition $condition): void
+    {
+        $this->condition = $condition;
     }
 }

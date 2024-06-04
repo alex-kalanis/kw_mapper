@@ -93,16 +93,33 @@ class QueryBuilder
             ])) {
             throw new MapperException(sprintf('Unknown operation *%s* !', $operation));
         }
+
         if (in_array($operation, [IQueryBuilder::OPERATION_EQ, IQueryBuilder::OPERATION_LIKE, IQueryBuilder::OPERATION_IN]) && is_null($value)) {
             $operation = IQueryBuilder::OPERATION_NULL;
         } elseif (in_array($operation, [IQueryBuilder::OPERATION_NEQ, IQueryBuilder::OPERATION_NLIKE, IQueryBuilder::OPERATION_NIN]) && is_null($value)) {
             $operation = IQueryBuilder::OPERATION_NNULL;
         }
+
         $condition = clone $this->condition;
         if (is_null($value)) {
             $this->conditions[] = $condition->setData($tableName, $columnName, $operation, $this->simpleNoValue($columnName));
         } else {
             $this->conditions[] = $condition->setData($tableName, $columnName, $operation, $this->multipleByValue($columnName, $value));
+        }
+    }
+
+    /**
+     * @param string|string[]|callable $operation
+     * @param string $prefix
+     * @param mixed $value
+     */
+    public function addRawCondition($operation, string $prefix = '', $value = null): void
+    {
+        $condition = clone $this->condition;
+        if (is_null($value)) {
+            $this->conditions[] = $condition->setRaw($operation);
+        } else {
+            $this->conditions[] = $condition->setRaw($operation, $this->multipleByValue($prefix, $value));
         }
     }
 
@@ -152,11 +169,13 @@ class QueryBuilder
             ])) {
             throw new MapperException(sprintf('Unknown operation *%s* !', $operation));
         }
+
         if (in_array($operation, [IQueryBuilder::OPERATION_EQ, IQueryBuilder::OPERATION_LIKE, IQueryBuilder::OPERATION_IN]) && is_null($value)) {
             $operation = IQueryBuilder::OPERATION_NULL;
         } elseif (in_array($operation, [IQueryBuilder::OPERATION_NEQ, IQueryBuilder::OPERATION_NLIKE, IQueryBuilder::OPERATION_NIN]) && is_null($value)) {
             $operation = IQueryBuilder::OPERATION_NNULL;
         }
+
         $condition = clone $this->condition;
         if (is_null($value)) {
             $this->having[] = $condition->setData($tableName, $columnName, $operation, $this->simpleNoValue($columnName));

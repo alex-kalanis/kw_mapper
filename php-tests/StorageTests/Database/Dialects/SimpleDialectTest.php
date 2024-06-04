@@ -124,13 +124,17 @@ class SimpleDialectTest extends CommonTestClass
         $condition2 = new QueryBuilder\Condition();
         $condition2->setData('', 'mno', IQueryBuilder::OPERATION_NEQ, 'pqr');
 
+        $condition4 = new QueryBuilder\Condition();
+        $condition4->setRaw('pqr??sdh');
+
         $conditions = [];
         $conditions[] = $condition1;
         $conditions[] = $condition2;
+        $conditions[] = $condition4;
 
         $lib = new XSimpleDialect();
-        $this->assertEquals(' WHERE def = ghi UNIONED BY mno != pqr', $lib->makeSimpleConditions($conditions, 'UNIONED BY'));
-        $this->assertEquals(' WHERE abc.def = ghi UNIONED BY mno != pqr', $lib->makeFullConditions($conditions, 'UNIONED BY'));
+        $this->assertEquals(' WHERE def = ghi UNIONED BY mno != pqr UNIONED BY pqr??sdh', $lib->makeSimpleConditions($conditions, 'UNIONED BY'));
+        $this->assertEquals(' WHERE abc.def = ghi UNIONED BY mno != pqr UNIONED BY pqr??sdh', $lib->makeFullConditions($conditions, 'UNIONED BY'));
     }
 
     public function testAllOrdering(): void

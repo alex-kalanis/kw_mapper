@@ -67,26 +67,31 @@ trait TSimpleDialect
 
     public function singleSimpleCondition(QueryBuilder\Condition $condition): string
     {
-        return sprintf('%s %s %s',
-            $condition->getColumnName(),
-            $this->translateOperation($condition->getOperation()),
-            $this->translateKey($condition->getOperation(), $condition->getColumnKey())
-        );
+        return $condition->isRaw()
+            ? strval($condition->getRaw())
+            : sprintf('%s %s %s',
+                $condition->getColumnName(),
+                $this->translateOperation($condition->getOperation()),
+                $this->translateKey($condition->getOperation(), $condition->getColumnKey())
+            );
     }
 
     public function singleFullCondition(QueryBuilder\Condition $condition): string
     {
-        return empty($condition->getTableName())
-            ? sprintf('%s %s %s',
-                $condition->getColumnName(),
-                $this->translateOperation($condition->getOperation()),
-                $this->translateKey($condition->getOperation(), $condition->getColumnKey())
-            )
-            : sprintf('%s.%s %s %s',
-                $condition->getTableName(),
-                $condition->getColumnName(),
-                $this->translateOperation($condition->getOperation()),
-                $this->translateKey($condition->getOperation(), $condition->getColumnKey())
+        return $condition->isRaw()
+            ? strval($condition->getRaw())
+            : (empty($condition->getTableName())
+                ? sprintf('%s %s %s',
+                    $condition->getColumnName(),
+                    $this->translateOperation($condition->getOperation()),
+                    $this->translateKey($condition->getOperation(), $condition->getColumnKey())
+                )
+                : sprintf('%s.%s %s %s',
+                    $condition->getTableName(),
+                    $condition->getColumnName(),
+                    $this->translateOperation($condition->getOperation()),
+                    $this->translateKey($condition->getOperation(), $condition->getColumnKey())
+                )
             )
         ;
     }

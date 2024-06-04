@@ -41,7 +41,7 @@ class DataExchange
      * Import data into record
      * @param iterable<string|int, mixed> $data
      * @throws MapperException
-     * @return int how much nas been imported
+     * @return int how many entries has been imported
      */
     public function import(iterable $data): int
     {

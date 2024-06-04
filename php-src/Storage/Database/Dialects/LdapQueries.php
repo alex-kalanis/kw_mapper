@@ -147,6 +147,9 @@ class LdapQueries
      */
     protected function addCompare(QueryBuilder\Condition $condition, array $params): string
     {
+        if ($condition->isRaw()) {
+            return strval($condition->getRaw());
+        }
         $columnName = strval($condition->getColumnName());
         switch ($condition->getOperation()) {
             case IQueryBuilder::OPERATION_NULL:

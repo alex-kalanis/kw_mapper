@@ -212,21 +212,25 @@ class Records extends AConnector
         if (empty($this->condition)) {
             throw new MapperException('You must set conditions first!');
         }
-        $columnKey = $this->condition->getColumnKey();
 
-        return is_array($columnKey)
-            ? $this->filterFromManyValues(
-                $this->condition->getOperation(),
-                $result->offsetGet($this->condition->getColumnName()),
-                $this->queryBuilder->getParams(),
-                $columnKey
+        $columnKey = $this->condition->getColumnKey();
+        return $this->condition->isRaw()
+            ? (is_callable($this->condition->getRaw())
+                ? $this->condition->getRaw()($result)
+                : false
             )
-            : $this->checkCondition(
-                $this->condition->getOperation(),
-                $result->offsetGet($this->condition->getColumnName()),
-                isset($this->queryBuilder->getParams()[$columnKey])
-                    ? $this->queryBuilder->getParams()[$columnKey]
-                    : null
+            : (is_array($columnKey)
+                ? $this->filterFromManyValues(
+                    $this->condition->getOperation(),
+                    $result->offsetGet($this->condition->getColumnName()),
+                    $this->queryBuilder->getParams(),
+                    $columnKey
+                )
+                : $this->checkCondition(
+                    $this->condition->getOperation(),
+                    $result->offsetGet($this->condition->getColumnName()),
+                    $this->queryBuilder->getParams()[$columnKey] ?? null
+                )
             )
         ;
     }

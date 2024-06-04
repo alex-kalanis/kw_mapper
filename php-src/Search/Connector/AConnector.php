@@ -245,6 +245,22 @@ abstract class AConnector
         return $this;
     }
 
+    /**
+     * @param string|string[]|callable $operation
+     * @param string $prefix
+     * @param mixed $value
+     * @return $this
+     */
+    public function raw($operation, string $prefix = '', $value = null): self
+    {
+        $this->getQueryBuilder()->addRawCondition(
+            $operation,
+            $prefix,
+            $value
+        );
+        return $this;
+    }
+
     public function useAnd(): self
     {
         $this->getQueryBuilder()->setRelations(IQueryBuilder::RELATION_AND);
@@ -433,12 +449,12 @@ abstract class AConnector
         return $relations[$column];
     }
 
-    private function getQueryBuilder(): Storage\Shared\QueryBuilder
+    protected function getQueryBuilder(): Storage\Shared\QueryBuilder
     {
         return $this->queryBuilder;
     }
 
-    private function getBasicRecord(): ARecord
+    protected function getBasicRecord(): ARecord
     {
         return $this->basicRecord;
     }

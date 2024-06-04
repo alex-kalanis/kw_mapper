@@ -182,6 +182,21 @@ class Search extends ASearch
     }
 
     /**
+     * Raw query
+     * Can pass some values as PDO params
+     * Beware of used storage in Record - the query format depends on it!
+     * @param string|string[]|callable $operation
+     * @param string $prefix
+     * @param mixed $values
+     * @return $this
+     */
+    public function raw($operation, string $prefix = '', $values = null): self
+    {
+        $this->connector->raw($operation, $prefix, $values);
+        return $this;
+    }
+
+    /**
      * Need fulfill all conditions
      * @return $this
      */

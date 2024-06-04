@@ -336,6 +336,7 @@ if (!function_exists('reg_close_key')) {
         throw new MapperException('No win32std library!');
     }
 }
+
 if (!function_exists('reg_create_key')) {
     /**
      * @param int $part
@@ -349,6 +350,7 @@ if (!function_exists('reg_create_key')) {
         throw new MapperException('No win32std library!');
     }
 }
+
 if (!function_exists('reg_enum_key')) {
     /**
      * @param int $part
@@ -360,6 +362,7 @@ if (!function_exists('reg_enum_key')) {
         throw new MapperException('No win32std library!');
     }
 }
+
 if (!function_exists('reg_enum_value')) {
     /**
      * @param resource $resource
@@ -371,6 +374,7 @@ if (!function_exists('reg_enum_value')) {
         throw new MapperException('No win32std library!');
     }
 }
+
 if (!function_exists('reg_open_key')) {
     /**
      * @param int $part
@@ -383,6 +387,7 @@ if (!function_exists('reg_open_key')) {
         throw new MapperException('No win32std library!');
     }
 }
+
 if (!function_exists('reg_set_value')) {
     /**
      * @param int $part
@@ -396,6 +401,7 @@ if (!function_exists('reg_set_value')) {
         throw new MapperException('No win32std library!');
     }
 }
+
 if (!function_exists('reg_get_value')) {
     /**
      * @param int $part
@@ -407,6 +413,7 @@ if (!function_exists('reg_get_value')) {
         throw new MapperException('No win32std library!');
     }
 }
+
 if (!class_exists('COM')) {
     /**
      * Class COM
@@ -429,7 +436,7 @@ if (!class_exists('COM')) {
          * @return mixed
          */
         public function __get ($name) {
-            throw new MapperException('No win32std library!');
+            throw new MapperException('No win32.net library!');
         }
 
         /**
@@ -438,7 +445,7 @@ if (!class_exists('COM')) {
          * @throws MapperException
          */
         public function __set ($name, $value) {
-            throw new MapperException('No win32std library!');
+            throw new MapperException('No win32.net library!');
         }
 
         /**
@@ -447,7 +454,7 @@ if (!class_exists('COM')) {
          * @throws MapperException
          */
         public function __call ($name, $args) {
-            throw new MapperException('No win32std library!');
+            throw new MapperException('No win32.net library!');
         }
     }
 }

@@ -84,7 +84,11 @@ class MongoDb extends ADialect
         $result = [];
         $values = $builder->getParams();
         foreach ($builder->getConditions() as $condition) {
-            $result[$condition->getColumnName()] = $this->operation($condition, $values);
+            if ($condition->isRaw()) {
+                $result = array_merge($result, (array) $condition->getRaw());
+            } else {
+                $result[$condition->getColumnName()] = $this->operation($condition, $values);
+            }
         }
         $relation = (IQueryBuilder::RELATION_AND == $builder->getRelation()) ? '$and' : '$or';
         return [$relation => $result];
@@ -114,7 +118,7 @@ class MongoDb extends ADialect
      * @throws MapperException
      * @return array<string, int|string|float|array<int, array<int|string|float>>>
      */
-    protected function operation(QueryBuilder\Condition $condition, array &$values)
+    protected function operation(QueryBuilder\Condition $condition, array &$values): array
     {
         $columnKey = strval($condition->getColumnKey());
         switch ($condition->getOperation()) {

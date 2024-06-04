@@ -28,7 +28,7 @@ class WinRegistry extends ADatabase
     protected string $extension = 'win32std';
 
     /** @var int[] */
-    protected static $allowedParts = [
+    protected static array $allowedParts = [
         IRegistry::HKEY_CLASSES_ROOT,
         IRegistry::HKEY_CURRENT_CONFIG,
         IRegistry::HKEY_CURRENT_USER,
@@ -37,7 +37,7 @@ class WinRegistry extends ADatabase
     ];
 
     /** @var array<string, int> */
-    protected static $allowedTypes = [
+    protected static array $allowedTypes = [
         IRegistry::REG_DWORD => REG_DWORD,
         IRegistry::REG_SZ => REG_SZ,
         IRegistry::REG_EXPAND_SZ => REG_EXPAND_SZ,

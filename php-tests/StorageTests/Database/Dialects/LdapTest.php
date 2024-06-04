@@ -48,7 +48,7 @@ class LdapTest extends CommonTestClass
     /**
      * @throws MapperException
      */
-    public function testFilter(): void
+    public function testFilter1(): void
     {
         $query = new Builder();
         $query->setBaseTable('foo');
@@ -70,6 +70,21 @@ class LdapTest extends CommonTestClass
 
         $this->expectException(MapperException::class);
         $query->addCondition('foo', 'dfd', IQueryBuilder::OPERATION_REXP, 'yxn');
+        $query->resetCounter();
+        $sql->filter($query);
+    }
+
+    /**
+     * @throws MapperException
+     */
+    public function testFilter2(): void
+    {
+        $query = new Builder();
+        $query->setBaseTable('foo');
+        $query->addCondition('foo', 'hdz', IQueryBuilder::OPERATION_GT, 'bfd');
+        $query->addRawCondition('(|(dbt=ggf)(!(dfd=yxn)))');
+        $sql = new LdapQueries();
+        $this->assertEquals('(&(hdz>bfd)(|(dbt=ggf)(!(dfd=yxn))))', $sql->filter($query));
         $query->resetCounter();
         $sql->filter($query);
     }

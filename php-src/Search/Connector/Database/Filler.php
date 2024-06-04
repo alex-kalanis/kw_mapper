@@ -87,8 +87,8 @@ class Filler
     /**
      * Fill results from db response in lines to record tree with objects
      * Contains huge caching
-     * Really ugly method which will need to stay this way, because it makes a tree from a flat table
-     * What can be stored elsewhere already is
+     * Really hideous method which will need to stay this way, because it makes a tree from a flat table
+     * What can be stored elsewhere is already there
      * @param iterable<string|int, array<string|int, string|int|float>> $dataSourceRows
      * @param mixed $parent
      * @throws MapperException
@@ -97,9 +97,9 @@ class Filler
     public function fillResults(iterable $dataSourceRows, $parent = null): array
     {
         $this->setAsFromDatabase($parent);
-        /** @var array<string, array<string, ARecord>> */
+        /** @var array<string, array<string, ARecord>> $aliasedRecords */
         $aliasedRecords = [];
-        /** @var array<string|int, array<string, string>> */
+        /** @var array<string|int, array<string, string>> $hashedRows */
         $hashedRows = [];
         // parse input data into something processable
         // got records with elementary data and hashes of them

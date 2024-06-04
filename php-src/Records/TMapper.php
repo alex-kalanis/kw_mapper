@@ -59,7 +59,7 @@ trait TMapper
      */
     final public function save(bool $forceInsert = false): bool
     {
-        return $this->getMapper()->/** @scrutinizer ignore-call */save($this->getSelf(), $forceInsert);
+        return $this->getMapper()->save($this->getSelf(), $forceInsert);
     }
 
     /**
@@ -68,7 +68,7 @@ trait TMapper
      */
     final public function load(): bool
     {
-        return $this->getMapper()->/** @scrutinizer ignore-call */load($this->getSelf());
+        return $this->getMapper()->load($this->getSelf());
     }
 
     /**
