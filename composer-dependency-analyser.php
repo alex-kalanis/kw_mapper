@@ -28,11 +28,11 @@ return $config
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_storage', $sourcePath . 'Mappers' . DIRECTORY_SEPARATOR . 'Storage' . DIRECTORY_SEPARATOR . 'KeyValue.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_storage', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Storage' . DIRECTORY_SEPARATOR . 'StorageSingleton.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_storage', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Storage' . DIRECTORY_SEPARATOR . 'TStorage.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
-    ->ignoreErrorsOnPackageAndPath('ext-pdo', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::DEV_DEPENDENCY_IN_PROD])
-    ->ignoreErrorsOnPackageAndPath('ext-dba', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
-    ->ignoreErrorsOnPackageAndPath('ext-ldap', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
-    ->ignoreErrorsOnPackageAndPath('ext-mongodb', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
-    ->ignoreErrorsOnPackageAndPath('ext-mysqli', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
-    ->ignoreErrorsOnPackageAndPath('ext-odbc', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
-    ->ignoreErrorsOnPackageAndPath('ext-yaml', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
+    ->ignoreErrorsOnExtensionAndPath('ext-pdo', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::DEV_DEPENDENCY_IN_PROD]) // this is because this package is also for non-standard-db systems with storages like files
+    ->ignoreErrorsOnExtensionAndPath('ext-dba', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
+    ->ignoreErrorsOnExtensionAndPath('ext-ldap', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
+    ->ignoreErrorsOnExtensionAndPath('ext-mongodb', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
+    ->ignoreErrorsOnExtensionAndPath('ext-mysqli', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
+    ->ignoreErrorsOnExtensionAndPath('ext-odbc', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
+    ->ignoreErrorsOnExtensionAndPath('ext-yaml', $sourcePath . 'Storage' . DIRECTORY_SEPARATOR . 'Database', [ErrorType::SHADOW_DEPENDENCY])
 ;
