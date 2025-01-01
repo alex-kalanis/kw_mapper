@@ -70,7 +70,7 @@ abstract class AFileSource extends AMapper
     {
         try {
             $format = $format ?: Shared\FormatFiles\Factory::getInstance()->getFormatClass($this->getFormat());
-            return $format->unpack($this->toString(implode('/', $this->getReadPath()), $this->getFileAccessor()->readFile($this->getReadPath())));
+            return $format->unpack($this->toString(implode(DIRECTORY_SEPARATOR, $this->getReadPath()), $this->getFileAccessor()->readFile($this->getReadPath())));
         } catch (FilesException | PathsException $ex) {
             throw new MapperException('Unable to read from source', 0, $ex);
         }
