@@ -14,7 +14,7 @@ use kalanis\kw_mapper\MapperException;
  */
 class QueryBuilder
 {
-    protected static int $uniqId = 0;
+    protected QueryBuilder\UniqueId $uniqueId;
     protected QueryBuilder\Column $column;
     protected QueryBuilder\Condition $condition;
     protected QueryBuilder\Property $property;
@@ -51,6 +51,7 @@ class QueryBuilder
         $this->join = new QueryBuilder\Join();
         $this->order = new QueryBuilder\Order();
         $this->group = new QueryBuilder\Group();
+        $this->uniqueId = QueryBuilder\UniqueIdFactory::getFactoryInstance()->getClass();
     }
 
     /**
@@ -220,9 +221,7 @@ class QueryBuilder
      */
     protected function simpleNoValue($columnName): string
     {
-        $value = sprintf(':%s_%s', $columnName, static::$uniqId);
-        static::$uniqId++;
-        return $value;
+        return sprintf(':%s_%s', $columnName, $this->uniqueId->get());
     }
 
     /**

@@ -26,7 +26,7 @@ class Builder extends Shared\QueryBuilder
 {
     public function resetCounter(): void
     {
-        static::$uniqId = 0;
+        $this->uniqueId->clear();
     }
 }
 
@@ -35,7 +35,7 @@ class Builder2 extends Database\QueryBuilder
 {
     public function resetCounter(): void
     {
-        static::$uniqId = 0;
+        $this->uniqueId->clear();
     }
 }
 

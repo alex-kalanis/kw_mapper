@@ -51,6 +51,11 @@
             "kalanis\\kw_mapper\\": "php-src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "\\": "php-tests/"
+        }
+    },
     "scripts": {
     },
     "minimum-stability": "dev",
