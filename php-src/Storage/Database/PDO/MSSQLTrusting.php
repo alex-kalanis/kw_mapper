@@ -3,36 +3,24 @@
 namespace kalanis\kw_mapper\Storage\Database\PDO;
 
 
-use kalanis\kw_mapper\Storage\Database\Dialects;
 use PDO;
 
 
 /**
- * Class MSSQL
+ * Class MSSQLTrusting
  * @package kalanis\kw_mapper\Storage\Database\PDO
  * Connection to Microsoft SQL, they based it on TransactSQL
  * Can be also used for Sybase DB, because they have similar base
  *
- * To make driver on Linux use following pages:
- * @link https://www.php.net/manual/en/ref.pdo-sqlsrv.php
- * @link https://github.com/microsoft/msphpsql
- * @link https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-ver16&tabs=cli&pivots=cs1-bash
- *
- * Also beware that MS needs explicitly state name of column for "ORDER BY" when you use "OFFSET"-"LIMIT"
+ * This extension is just to trust automatically to server certificates
+ * @link https://stackoverflow.com/questions/71688125/odbc-driver-18-for-sql-serverssl-provider-error1416f086#72348333
  */
-class MSSQL extends APDO
+class MSSQLTrusting extends MSSQL
 {
-    protected string $extension = 'pdo_sqlsrv';
-
-    public function languageDialect(): string
-    {
-        return Dialects\TransactSQL::class;
-    }
-
     protected function connectToServer(): PDO
     {
         $connection = new PDO(
-            sprintf('sqlsrv:server=%s;Database=%s;',
+            sprintf('sqlsrv:server=%s;Database=%s;TrustServerCertificate=yes;',
                 $this->config->getLocation(),
                 $this->config->getDatabase()
             ),

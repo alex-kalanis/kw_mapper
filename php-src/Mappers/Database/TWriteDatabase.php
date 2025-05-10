@@ -81,13 +81,14 @@ trait TWriteDatabase
      */
     protected function insertRecord(ARecord $record): bool
     {
-        $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $writeQueryBuilder = clone $this->writeQueryBuilder;
+        $writeQueryBuilder->clear();
+        $writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
             if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
-                $this->writeQueryBuilder->addProperty(
+                $writeQueryBuilder->addProperty(
                     $record->getMapper()->getAlias(),
                     $relations[$key],
                     $item
@@ -95,13 +96,13 @@ trait TWriteDatabase
             }
         }
 
-        if (empty($this->writeQueryBuilder->getProperties())) {
+        if (empty($writeQueryBuilder->getProperties())) {
             return false;
         }
 
         return $this->writeDatabase->exec(
-            strval($this->writeDialect->insert($this->writeQueryBuilder)),
-            $this->writeQueryBuilder->getParams()
+            strval($this->writeDialect->insert($writeQueryBuilder)),
+            $writeQueryBuilder->getParams()
         );
     }
 
@@ -115,21 +116,22 @@ trait TWriteDatabase
         if ($this->updateRecordByPk($record)) {
             return true;
         }
-        $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $writeQueryBuilder = clone $this->writeQueryBuilder;
+        $writeQueryBuilder->clear();
+        $writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
             if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
                 if ($record->getEntry($key)->isFromStorage()) {
-                    $this->writeQueryBuilder->addCondition(
+                    $writeQueryBuilder->addCondition(
                         $record->getMapper()->getAlias(),
                         $relations[$key],
                         IQueryBuilder::OPERATION_EQ,
                         $item
                     );
                 } else {
-                    $this->writeQueryBuilder->addProperty(
+                    $writeQueryBuilder->addProperty(
                         $record->getMapper()->getAlias(),
                         $relations[$key],
                         $item
@@ -138,16 +140,16 @@ trait TWriteDatabase
             }
         }
 
-        if (empty($this->writeQueryBuilder->getConditions())) { /// this one is questionable - I really want to update everything?
+        if (empty($writeQueryBuilder->getConditions())) { /// this one is questionable - I really want to update everything?
             return false;
         }
-        if (empty($this->writeQueryBuilder->getProperties())) {
+        if (empty($writeQueryBuilder->getProperties())) {
             return false;
         }
 
         return $this->writeDatabase->exec(
-            strval($this->writeDialect->update($this->writeQueryBuilder)),
-            $this->writeQueryBuilder->getParams()
+            strval($this->writeDialect->update($writeQueryBuilder)),
+            $writeQueryBuilder->getParams()
         );
     }
 
@@ -162,8 +164,9 @@ trait TWriteDatabase
             return false;
         }
 
-        $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $writeQueryBuilder = clone $this->writeQueryBuilder;
+        $writeQueryBuilder->clear();
+        $writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
@@ -171,7 +174,7 @@ trait TWriteDatabase
                 if (isset($relations[$key])) {
                     $entry = $record->getEntry($key);
                     if ($entry->isFromStorage() && $this->ifEntryChanged($record->getEntry($key))) {
-                        $this->writeQueryBuilder->addCondition(
+                        $writeQueryBuilder->addCondition(
                             $record->getMapper()->getAlias(),
                             $relations[$key],
                             IQueryBuilder::OPERATION_EQ,
@@ -184,7 +187,7 @@ trait TWriteDatabase
             }
         }
 
-        if (empty($this->writeQueryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
+        if (empty($writeQueryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
             return false;
         }
 
@@ -196,18 +199,18 @@ trait TWriteDatabase
                     && !$entry->isFromStorage()
                     && $this->ifEntryChanged($record->getEntry($key))
                 ) {
-                    $this->writeQueryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
+                    $writeQueryBuilder->addProperty($record->getMapper()->getAlias(), $relations[$key], $item);
                 }
             }
         }
 
-        if (empty($this->writeQueryBuilder->getProperties())) {
+        if (empty($writeQueryBuilder->getProperties())) {
             return false;
         }
 
         return $this->writeDatabase->exec(
-            strval($this->writeDialect->update($this->writeQueryBuilder)),
-            $this->writeQueryBuilder->getParams()
+            strval($this->writeDialect->update($writeQueryBuilder)),
+            $writeQueryBuilder->getParams()
         );
     }
 
@@ -222,13 +225,14 @@ trait TWriteDatabase
             return true;
         }
 
-        $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $writeQueryBuilder = clone $this->writeQueryBuilder;
+        $writeQueryBuilder->clear();
+        $writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
             if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
-                $this->writeQueryBuilder->addCondition(
+                $writeQueryBuilder->addCondition(
                     $record->getMapper()->getAlias(),
                     $relations[$key],
                     IQueryBuilder::OPERATION_EQ,
@@ -237,13 +241,13 @@ trait TWriteDatabase
             }
         }
 
-        if (empty($this->writeQueryBuilder->getConditions())) { /// this one is necessary - delete everything? do it yourself - and manually!
+        if (empty($writeQueryBuilder->getConditions())) { /// this one is necessary - delete everything? do it yourself - and manually!
             return false;
         }
 
         return $this->writeDatabase->exec(
-            strval($this->writeDialect->delete($this->writeQueryBuilder)),
-            $this->writeQueryBuilder->getParams()
+            strval($this->writeDialect->delete($writeQueryBuilder)),
+            $writeQueryBuilder->getParams()
         );
     }
 
@@ -258,14 +262,15 @@ trait TWriteDatabase
             return false;
         }
 
-        $this->writeQueryBuilder->clear();
-        $this->writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $writeQueryBuilder = clone $this->writeQueryBuilder;
+        $writeQueryBuilder->clear();
+        $writeQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record->getMapper()->getPrimaryKeys() as $key) {
             try {
                 if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
-                    $this->writeQueryBuilder->addCondition(
+                    $writeQueryBuilder->addCondition(
                         $record->getMapper()->getAlias(),
                         $relations[$key],
                         IQueryBuilder::OPERATION_EQ,
@@ -277,13 +282,13 @@ trait TWriteDatabase
             }
         }
 
-        if (empty($this->writeQueryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
+        if (empty($writeQueryBuilder->getConditions())) { // no conditions, nothing in PKs - back to normal system
             return false;
         }
 
         return $this->writeDatabase->exec(
-            strval($this->writeDialect->delete($this->writeQueryBuilder)),
-            $this->writeQueryBuilder->getParams()
+            strval($this->writeDialect->delete($writeQueryBuilder)),
+            $writeQueryBuilder->getParams()
         );
     }
 }

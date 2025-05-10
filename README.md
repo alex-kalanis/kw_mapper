@@ -11,7 +11,7 @@
 Mapping records and their entries onto other object like tables or files. You can choose
 from multiple sources - raw files in local or remote storage, SQL and NoSQL databases.
 
-kw_mapper is a ORM with separated layers of mappers, records and entries - that allows
+kw_mapper is an ORM with separated layers of mappers, records and entries - that allows
 it to exchange mappers on-the-fly and target it to the different data storages like files
 or databases. So it's possible to use one record to process data on more storages and yet
 it will behave nearly the same way.
@@ -40,7 +40,7 @@ storage. But then remember that every storage behaves differently for unwanted i
 ### The main differences
 
 What is the main differences against its competitors? At first datasources.
-On competitors you can usually have only one datasource - preset database.
+With competitors you can usually have only one datasource - preset database.
 This can have more datasources. So usually more connections to databases.
 You can have main storage in Postgres, yet authentication can run from LDAP
 and ask for remote data in JSON.
@@ -59,7 +59,8 @@ kinds.
 
 Then here is a deep join. So you can use *Search* to access deeper stored
 records in some datasources and filter by them in built query. No shallow
-lookups through only relations of current record anymore!
+lookups through only relations of current record anymore! But beware that
+sometimes it's better to ask more times than once in one complicated query!
 
 Another one is in relations. Here is it an array. Always. No additional checks
 or definitions if that come from 1:1, 1:N or M:N. It's an array. Period.
@@ -79,28 +80,49 @@ familiar with composer)
 
 ## PHP Usage
 
-1.) Use your autoloader (if not already done via Composer autoloader)
+As usual, setting the storage connections and queries is more complicated than it seems.
+You need to set connection to the storage and representation of parts there. This is
+usually the most tedious thing, but it's necessary. Other solutions use discovery,
+but that is not possible here due need to set things differently and see what it already
+did. And better debug when something fails due straightforward nature of this code.
+Little to no magic here.
 
-2.) Add some external packages with connection to the local or remote services.
+1.) Use your autoloader (if not already done via Composer autoloader) to allow access
+    to the classes.
 
-3.) Connect the "kalanis\kw_mapper\Records\ARecord" into your app. Extends it for setting your case.
+2.) Add some external dependencies with connection to the local or remote services. Mainly
+    and usually the database connections and necessary underlying libraries like PDO.
 
-4.) Extend your libraries by interfaces inside the package.
+3.) Make representations of each used group. Usually tables. Note that you need to set both
+    Record entity (child of ```\kalanis\kw_mapper\Records\ARecord```) and Mapper (child of
+    ```\kalanis\kw_mapper\Mappers\AMapper```). Also note that both abstract classes already
+    have some full/abstract children available. So choose best-suited ones and go from there.
+    Not need to make all groups at once, just use the first ones need.
 
-5.) Just call setting and render
+4.) Use Records directly or via ```\kalanis\kw_mapper\Search\Search``` library to work with
+    data.
 
-If you want to know more, just open ```examples/``` directory and see the code there.
+If you want to know a bit more, just open ```examples/``` directory and see the code there.
+There is a small set of examples what to do and where. 
+
+It is also possible to change mappers on Record on-the-fly. That is nice for one of variant
+of transformation from one storage to another. Another variant is with different sources in
+Mappers.
+
 
 ## Caveats
 
-The most of dialects for database has no limits when updating or deleting - and
+The most of the dialects for database has no limits when updating or deleting - and
 roundabout way is to get sub-query with dialect-unknown primary column
 by which the db will limit selection.
 
 Another one is when you define children with the same alias - you cannot ask for
-them in one query or it will mesh together and you got corrupted data. In better
+them in one query or they will mesh together and you got corrupted data. In better
 case. For this case there are available children methods which allows you to define
-alias to pass data when it's necessary to join from already used table. 
+alias to pass data when it's necessary to join from already used table. Down it
+make aliases for specific columns and that allows to separate the result back into
+Records.
+
 
 ### Possible future things
 
@@ -108,3 +130,4 @@ alias to pass data when it's necessary to join from already used table.
   now when the query across the datasources will fail. As expected for now.
 - Extending available datasources with its dialects
 - Extending processing and coverage over the platform-specific datasources.
+- Heavy DI

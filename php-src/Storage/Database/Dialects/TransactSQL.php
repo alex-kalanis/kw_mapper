@@ -15,7 +15,7 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder;
  */
 class TransactSQL extends ADialect
 {
-    use TQuotationDialect;
+    use TSimpleDialect;
 
     /**
      * @param QueryBuilder $builder
@@ -25,7 +25,7 @@ class TransactSQL extends ADialect
      */
     public function insert(QueryBuilder $builder)
     {
-        return sprintf('INSERT INTO "%s" (%s) VALUES (%s);',
+        return sprintf('INSERT INTO %s (%s) VALUES (%s);',
             $builder->getBaseTable(),
             $this->makeSimplePropertyList($builder->getProperties()),
             $this->makePropertyEntries($builder->getProperties())
@@ -40,8 +40,7 @@ class TransactSQL extends ADialect
     public function select(QueryBuilder $builder)
     {
         $joins = $builder->getJoins();
-        return sprintf('SELECT %s %s FROM "%s" %s %s%s%s%s%s;',
-            $this->makeLimit($builder->getLimit()),
+        return sprintf('SELECT %s FROM %s %s %s%s%s%s%s;',
             empty($joins) ? $this->makeSimpleColumns($builder->getColumns()) : $this->makeFullColumns($builder->getColumns()),
             $builder->getBaseTable(),
             empty($joins) ? '' : $this->makeJoin($builder->getJoins()),
@@ -49,7 +48,7 @@ class TransactSQL extends ADialect
             empty($joins) ? $this->makeSimpleGrouping($builder->getGrouping()) : $this->makeFullGrouping($builder->getGrouping()),
             empty($joins) ? $this->makeSimpleHaving($builder->getHavingCondition(), $builder->getRelation()) : $this->makeFullHaving($builder->getHavingCondition(), $builder->getRelation()),
             empty($joins) ? $this->makeSimpleOrdering($builder->getOrdering()) : $this->makeFullOrdering($builder->getOrdering()),
-            $this->makeOffset($builder->getOffset())
+            $this->makeOffset($builder->getOffset(), $builder->getLimit())
         );
     }
 
@@ -60,7 +59,7 @@ class TransactSQL extends ADialect
      */
     public function update(QueryBuilder $builder)
     {
-        return sprintf('UPDATE %s "%s" SET %s%s;',
+        return sprintf('UPDATE %s %s SET %s%s;',
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
             $this->makeProperty($builder->getProperties()),
@@ -75,7 +74,7 @@ class TransactSQL extends ADialect
      */
     public function delete(QueryBuilder $builder)
     {
-        return sprintf('DELETE %s FROM "%s"%s;',
+        return sprintf('DELETE %s FROM %s%s;',
             $this->makeLimit($builder->getLimit()),
             $builder->getBaseTable(),
             $this->makeSimpleConditions($builder->getConditions(), $builder->getRelation())
@@ -92,9 +91,12 @@ class TransactSQL extends ADialect
         return is_null($limit) ? '' : sprintf('TOP(%d)', $limit);
     }
 
-    protected function makeOffset(?int $offset): string
+    protected function makeOffset(?int $offset, ?int $limit): string
     {
-        return is_null($offset) ? '' : sprintf(' OFFSET %d ', $offset);
+        return is_null($limit)
+            ? ''
+            : sprintf(' OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', intval($offset), $limit)
+        ;
     }
 
     public function availableJoins(): array

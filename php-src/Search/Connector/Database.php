@@ -41,19 +41,21 @@ class Database extends AConnector
 
     public function getCount(): int
     {
-        $this->queryBuilder->clearColumns();
+        $countQueryBuilder = clone $this->queryBuilder;
+        $countQueryBuilder->clearColumns();
+        $countQueryBuilder->clearOrdering();
         $relations = $this->basicRecord->getMapper()->getRelations();
         if (empty($this->basicRecord->getMapper()->getPrimaryKeys())) {
             // @codeCoverageIgnoreStart
             // no PKs in table
-            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), strval(reset($relations)), 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $countQueryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), strval(reset($relations)), 'count', IQueryBuilder::AGGREGATE_COUNT);
             // @codeCoverageIgnoreEnd
         } else {
             $pks = $this->basicRecord->getMapper()->getPrimaryKeys();
-            $this->queryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), strval($relations[strval(reset($pks))]), 'count', IQueryBuilder::AGGREGATE_COUNT);
+            $countQueryBuilder->addColumn($this->basicRecord->getMapper()->getAlias(), strval($relations[strval(reset($pks))]), 'count', IQueryBuilder::AGGREGATE_COUNT);
         }
 
-        $lines = $this->database->query(strval($this->dialect->select($this->queryBuilder)), array_filter($this->queryBuilder->getParams(), [$this, 'filterNullValues']));
+        $lines = $this->database->query(strval($this->dialect->select($countQueryBuilder)), array_filter($countQueryBuilder->getParams(), [$this, 'filterNullValues']));
         if (empty($lines) || !is_iterable($lines)) {
             // @codeCoverageIgnoreStart
             // only when something horribly fails
@@ -66,15 +68,24 @@ class Database extends AConnector
 
     public function getResults(): array
     {
-        $this->queryBuilder->clearColumns();
+        $resultQueryBuilder = clone $this->queryBuilder;
+        $resultQueryBuilder->clearColumns();
         $this->filler->initTreeSolver($this->recordsInJoin);
-        foreach ($this->filler->getColumns($this->queryBuilder->getJoins()) as list($table, $column, $alias)) {
-            $this->queryBuilder->addColumn(strval($table), strval($column), strval($alias));
+        foreach ($this->filler->getColumns($resultQueryBuilder->getJoins()) as list($table, $column, $alias)) {
+            $resultQueryBuilder->addColumn(strval($table), strval($column), strval($alias));
+        }
+        if (empty($resultQueryBuilder->getOrdering())) {
+            $basicRelations = $this->basicRecord->getMapper()->getRelations();
+            foreach ($this->basicRecord->getMapper()->getPrimaryKeys() as $primaryKey) {
+                if (isset($basicRelations[$primaryKey])) {
+                    $resultQueryBuilder->addOrderBy($resultQueryBuilder->getBaseTable(), $basicRelations[$primaryKey], IQueryBuilder::ORDER_ASC);
+                }
+            }
         }
 
-        $select = strval($this->dialect->select($this->queryBuilder));
+        $select = strval($this->dialect->select($resultQueryBuilder));
 //print_r(str_split($select, 100));
-        $rows = $this->database->query($select, array_filter($this->queryBuilder->getParams(), [$this, 'filterNullValues']));
+        $rows = $this->database->query($select, array_filter($resultQueryBuilder->getParams(), [$this, 'filterNullValues']));
         if (empty($rows) || !is_iterable($rows)) {
             return [];
         }

@@ -19,10 +19,12 @@ class Factory
     protected static array $map = [
         IDriverSources::TYPE_PDO_MYSQL => PDO\MySQL::class,
         IDriverSources::TYPE_PDO_MSSQL => PDO\MSSQL::class,
+        IDriverSources::TYPE_PDO_MSSQL_T => PDO\MSSQLTrusting::class,
         IDriverSources::TYPE_PDO_ORACLE => PDO\Oracle::class,
         IDriverSources::TYPE_PDO_POSTGRES => PDO\PostgreSQL::class,
         IDriverSources::TYPE_PDO_SQLITE => PDO\SQLite::class,
         IDriverSources::TYPE_RAW_MYSQLI => Raw\MySQLi::class,
+        IDriverSources::TYPE_RAW_ORACLE => Raw\Oracle::class,
         IDriverSources::TYPE_RAW_MONGO => Raw\MongoDb::class,
         IDriverSources::TYPE_RAW_LDAP => Raw\Ldap::class,
         IDriverSources::TYPE_RAW_WINREG => Raw\WinRegistry::class,

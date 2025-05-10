@@ -11,8 +11,12 @@ function autoload($className)
     if (!defined('PROJECT_DIR')) {
         define('PROJECT_DIR', 'src');
     }
+    if (!defined('TEST_NAMESPACE')) {
+        define('TEST_NAMESPACE', 'tests');
+    }
     $className = preg_replace('#^' . AUTHOR_NAME . '\\\\' . PROJECT_NAME . '#', '', $className);
     $className = str_replace('\\', DIRECTORY_SEPARATOR, $className);
+    $className = str_replace(TEST_NAMESPACE . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $className);
 
     if (is_file(__DIR__ . DIRECTORY_SEPARATOR . $className . '.php')) {
         require_once(__DIR__ . DIRECTORY_SEPARATOR . $className . '.php');

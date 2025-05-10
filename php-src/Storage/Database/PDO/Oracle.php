@@ -14,7 +14,7 @@ use PDO;
  */
 class Oracle extends APDO
 {
-    protected string $extension = 'pdo_oracle';
+    protected string $extension = 'pdo_oci';
 
     public function languageDialect(): string
     {
@@ -24,11 +24,11 @@ class Oracle extends APDO
     protected function connectToServer(): PDO
     {
         $connection = new PDO(
-            sprintf('oci:host=%s;port=%d;dbname=%s',
-                $this->config->getLocation(),
-                $this->config->getPort(),
-                $this->config->getDatabase()
-            )
+            sprintf('oci:dbname=%s',
+                $this->config->getLocation()
+            ),
+            $this->config->getUser(),
+            $this->config->getPassword()
         );
 
         $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

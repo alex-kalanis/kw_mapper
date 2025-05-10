@@ -193,13 +193,14 @@ trait TReadDatabase
      */
     public function countRecord(ARecord $record): int
     {
-        $this->readQueryBuilder->clear();
-        $this->readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $readQueryBuilder = clone $this->readQueryBuilder;
+        $readQueryBuilder->clear();
+        $readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
             if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
-                $this->readQueryBuilder->addCondition(
+                $readQueryBuilder->addCondition(
                     $record->getMapper()->getAlias(),
                     $relations[$key],
                     IQueryBuilder::OPERATION_EQ,
@@ -211,7 +212,7 @@ trait TReadDatabase
         if (empty($record->getMapper()->getPrimaryKeys())) {
             $relation = reset($relations);
             if (false !== $relation) {
-                $this->readQueryBuilder->addColumn(
+                $readQueryBuilder->addColumn(
                     $record->getMapper()->getAlias(),
                     $relation,
                     'count',
@@ -220,7 +221,7 @@ trait TReadDatabase
             }
         } else {
 //            foreach ($record->getMapper()->getPrimaryKeys() as $primaryKey) {
-//                $this->readQueryBuilder->addColumn(
+//                $readQueryBuilder->addColumn(
 //                    $record->getMapper()->getAlias(),
 //                    $primaryKey,
 //                    '',
@@ -229,7 +230,7 @@ trait TReadDatabase
 //            }
             $pks = $record->getMapper()->getPrimaryKeys();
             $key = reset($pks);
-            $this->readQueryBuilder->addColumn(
+            $readQueryBuilder->addColumn(
                 $record->getMapper()->getAlias(),
                 $relations[$key],
                 'count',
@@ -238,8 +239,8 @@ trait TReadDatabase
         }
 
         $lines = $this->readDatabase->query(
-            strval($this->readDialect->select($this->readQueryBuilder)),
-            array_filter($this->readQueryBuilder->getParams(), [$this, 'filterNullValues'])
+            strval($this->readDialect->select($readQueryBuilder)),
+            array_filter($readQueryBuilder->getParams(), [$this, 'filterNullValues'])
         );
         if (empty($lines) || !is_iterable($lines)) {
             // @codeCoverageIgnoreStart
@@ -257,13 +258,14 @@ trait TReadDatabase
      */
     public function loadMultiple(ARecord $record): array
     {
-        $this->readQueryBuilder->clear();
-        $this->readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
+        $readQueryBuilder = clone $this->readQueryBuilder;
+        $readQueryBuilder->clear();
+        $readQueryBuilder->setBaseTable($record->getMapper()->getAlias());
         $relations = $record->getMapper()->getRelations();
 
         foreach ($record as $key => $item) {
             if (isset($relations[$key]) && $this->ifEntryChanged($record->getEntry($key))) {
-                $this->readQueryBuilder->addCondition(
+                $readQueryBuilder->addCondition(
                     $record->getMapper()->getAlias(),
                     $relations[$key],
                     IQueryBuilder::OPERATION_EQ,
@@ -274,13 +276,18 @@ trait TReadDatabase
 
         // relations - what to get
         foreach ($relations as $localAlias => $remoteColumn) {
-            $this->readQueryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
+            $readQueryBuilder->addColumn($record->getMapper()->getAlias(), $remoteColumn, $localAlias);
+        }
+        if (empty($readQueryBuilder->getOrdering())) {
+            foreach ($record->getMapper()->getPrimaryKeys() as $primaryKey) {
+                $readQueryBuilder->addOrderBy($readQueryBuilder->getBaseTable(), $relations[$primaryKey], IQueryBuilder::ORDER_ASC);
+            }
         }
 
         // query itself
         $lines = $this->readDatabase->query(
-            strval($this->readDialect->select($this->readQueryBuilder)),
-            array_filter($this->readQueryBuilder->getParams(), [$this, 'filterNullValues'])
+            strval($this->readDialect->select($readQueryBuilder)),
+            array_filter($readQueryBuilder->getParams(), [$this, 'filterNullValues'])
         );
         if (empty($lines)) {
             return [];

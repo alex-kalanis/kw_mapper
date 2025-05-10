@@ -62,7 +62,9 @@ class UserDBMapper extends Mappers\Database\ADatabase
 
     /**
      * Example of DAO and direct queries
-     * Then you can create your own data records and fill them as extra
+     * Then you can create your own data records and fill them as extra.
+     * The mapper is a variant of Repository pattern combined with Active Record.
+     * The records are really just holders of data and the weight is here, shared.
      *
      * @param string $id
      * @param string $pass

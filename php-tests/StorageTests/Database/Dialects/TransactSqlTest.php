@@ -36,7 +36,7 @@ class TransactSqlTest extends CommonTestClass
         $query->addProperty('foo', 'htf', 'yjd');
         $query->addProperty('foo', 'vrs', 'abh');
         $sql = new Dialects\TransactSQL();
-        $this->assertEquals('INSERT INTO "foo" ("bar", "htf", "vrs") VALUES (:bar_0, :htf_1, :vrs_2);', $sql->insert($query));
+        $this->assertEquals('INSERT INTO foo (bar, htf, vrs) VALUES (:bar_0, :htf_1, :vrs_2);', $sql->insert($query));
         $this->assertEquals([ ':bar_0' => 'baz', ':htf_1' => 'yjd', ':vrs_2' => 'abh', ], $query->getParams());
         $query->resetCounter();
     }
@@ -52,7 +52,7 @@ class TransactSqlTest extends CommonTestClass
         $query->addCondition('foo', 'dfd', IQueryBuilder::OPERATION_NEQ, 'yxn');
         $query->setLimit(5);
         $sql = new Dialects\TransactSQL();
-        $this->assertEquals('DELETE TOP(5) FROM "foo" WHERE "dbt" = :dbt_0 AND "dfd" != :dfd_1;', $sql->delete($query));
+        $this->assertEquals('DELETE TOP(5) FROM foo WHERE dbt = :dbt_0 AND dfd != :dfd_1;', $sql->delete($query));
         $this->assertEquals([ ':dbt_0' => 'ggf', ':dfd_1' => 'yxn', ], $query->getParams());
         $query->resetCounter();
     }
@@ -70,7 +70,7 @@ class TransactSqlTest extends CommonTestClass
         $query->addCondition('foo', 'dbt', IQueryBuilder::OPERATION_EQ, 'ggf');
         $query->addCondition('foo', 'dfd', IQueryBuilder::OPERATION_NEQ, 'yxn');
         $sql = new Dialects\TransactSQL();
-        $this->assertEquals('UPDATE  "foo" SET "bar" = :bar_0, "htf" = :htf_1, "vrs" = :vrs_2 WHERE "dbt" = :dbt_3 AND "dfd" != :dfd_4;', $sql->update($query));
+        $this->assertEquals('UPDATE  foo SET bar = :bar_0, htf = :htf_1, vrs = :vrs_2 WHERE dbt = :dbt_3 AND dfd != :dfd_4;', $sql->update($query));
         $this->assertEquals([ ':bar_0' => 'baz', ':htf_1' => 'yjd', ':vrs_2' => 'abh', ':dbt_3' => 'ggf', ':dfd_4' => 'yxn', ], $query->getParams());
         $query->resetCounter();
     }
@@ -92,7 +92,7 @@ class TransactSqlTest extends CommonTestClass
         $query->addGroupBy('foo', 'gds');
         $query->setLimits(5,3);
         $sql = new Dialects\TransactSQL();
-        $this->assertEquals('SELECT TOP(3) "foo"."bar" AS "baz", "foo"."htf" AS "yjd", "dfg"."vrs" AS "abh" FROM "foo"  LEFT JOIN "btr" AS "dfg" ON ("foo"."fds" = "dfg"."gda")  WHERE "foo"."dbt" = :dbt_0 AND "foo"."dfd" != :dfd_1 GROUP BY "foo"."gds" ORDER BY "dfg"."vrs" ASC OFFSET 5 ;', $sql->select($query));
+        $this->assertEquals('SELECT foo.bar AS baz, foo.htf AS yjd, dfg.vrs AS abh FROM foo  LEFT JOIN btr AS dfg ON (foo.fds = dfg.gda)  WHERE foo.dbt = :dbt_0 AND foo.dfd != :dfd_1 GROUP BY foo.gds ORDER BY dfg.vrs ASC OFFSET 5 ROWS FETCH NEXT 3 ROWS ONLY;', $sql->select($query));
         $this->assertEquals([ ':dbt_0' => 'ggf', ':dfd_1' => 'yxn', ], $query->getParams());
         $query->resetCounter();
     }

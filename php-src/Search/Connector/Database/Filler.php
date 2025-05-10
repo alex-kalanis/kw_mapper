@@ -15,8 +15,14 @@ use kalanis\kw_mapper\Storage\Shared\QueryBuilder\Join;
  * @package kalanis\kw_mapper\Search\Connector\Database
  * Filling (Hydrate) both columns and Records
  *
- * Start with getColumns() to decide which columns will be get from DB
+ * Reconstruct the tree structure which has been defined by relations in the DB. Each join says that there is
+ * a step between the record levels. The topmost is the base record on which the search has been initialized.
+ * The rest are just deeper ones based on the relations to the topmost one. It is just another variant of tree.
+ * But you dig the depths instead of go upwards.
+ * Start with getColumns() to decide which columns will be returned from DB
  * After the data will be obtained pass them through fillResults() to fill records itself
+ *
+ * Someone says it shall be Hydrate. But I fill it until there is nothing to get and no space left!
  */
 class Filler
 {

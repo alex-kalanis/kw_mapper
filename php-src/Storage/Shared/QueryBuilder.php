@@ -293,6 +293,11 @@ class QueryBuilder
         $this->columns = [];
     }
 
+    public function clearOrdering(): void
+    {
+        $this->ordering = [];
+    }
+
     public function setBaseTable(string $tableName): void
     {
         $this->baseTable = $tableName;

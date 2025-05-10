@@ -24,7 +24,7 @@ use PDO;
  * Class MySqlTest
  * @package StorageTests\Database\Connect
  * @requires extension PDO
- * @requires extension pdo_mssql
+ * @requires extension pdo_sqlsrv
  * @link https://sqliteonline.com/
  */
 class MsSqlTest extends CommonTestClass
@@ -46,7 +46,7 @@ class MsSqlTest extends CommonTestClass
         $location = false !== $location ? strval($location) : '127.0.0.1' ;
 
         $port = getenv('KW_MAPPER_TSQL_DB_PORT');
-        $port = false !== $port ? intval($port) : 3306 ;
+        $port = false !== $port ? intval($port) : 1433 ;
 
         $user = getenv('KW_MAPPER_TSQL_DB_USER');
         $user = false !== $user ? strval($user) : 'testing' ;
@@ -107,12 +107,12 @@ class MsSqlTest extends CommonTestClass
         $this->assertEquals(5, count($lines));
 
         $this->assertTrue($this->database->beginTransaction());
-        $this->database->exec('INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES (11, 123456, 123456789, 13, \'ls -laf\');', []);
+        $this->database->exec('INSERT INTO d_queued_commands (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (11, 123456, 123456789, 13, \'ls -laf\');', []);
         $this->assertTrue($this->database->commit());
         $this->assertNotEmpty($this->database->lastInsertId(), 'There must be last id!');
         $this->assertEquals(1, $this->database->rowCount());
         $this->assertTrue($this->database->beginTransaction());
-        $this->database->exec('INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES (12, 1234567, 123456789, 13, \'ls -laf\');', []);
+        $this->database->exec('INSERT INTO d_queued_commands (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES (12, 1234567, 123456789, 13, \'ls -laf\');', []);
         $this->assertTrue($this->database->rollBack());
 
         $lines = $this->database->query($sql->select($query), $query->getParams());
@@ -219,23 +219,23 @@ class MsSqlTest extends CommonTestClass
 
     protected function dropTable(): string
     {
-        return 'DROP TABLE IF EXISTS "d_queued_commands"';
+        return 'DROP TABLE IF EXISTS d_queued_commands';
     }
 
     protected function basicTable(): string
     {
-        return 'CREATE TABLE "d_queued_commands" (
-  "qc_id" INT PRIMARY KEY NOT NULL,
-  "qc_time_start" VARCHAR(20) NULL,
-  "qc_time_end" VARCHAR(20) NULL,
-  "qc_status" INT NULL,
-  "qc_command" VARCHAR(256) NULL
+        return 'CREATE TABLE d_queued_commands (
+  qc_id INT PRIMARY KEY NOT NULL,
+  qc_time_start NVARCHAR(20) NULL,
+  qc_time_end NVARCHAR(20) NULL,
+  qc_status INT NULL,
+  qc_command NVARCHAR(256) NULL
 )';
     }
 
     protected function fillTable(): string
     {
-        return 'INSERT INTO "d_queued_commands" ("qc_id", "qc_time_start", "qc_time_end", "qc_status", "qc_command") VALUES
+        return 'INSERT INTO d_queued_commands (qc_id, qc_time_start, qc_time_end, qc_status, qc_command) VALUES
 ( 5, 123456,  12345678,  5, \'ls -laf\'),
 ( 6, 1234567, 12345678,  5, \'ls -laf\'),
 ( 7, 123456,  12345678, 11, \'ls -laf\'),

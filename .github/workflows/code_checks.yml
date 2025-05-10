@@ -1,4 +1,4 @@
-name: Code_Checks
+name: 'Code Checks'
 
 on:
   pull_request:
@@ -42,7 +42,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          coverage: none
+          coverage: xdebug
       - run: composer install --no-progress
       - run: vendor/bin/phpunit
 
@@ -59,7 +59,7 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
       - run: composer install --no-progress
-      - run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --format=txt --verbose --diff --allow-risky=yes --config=.php-cs-fixer.dist.php
+      - run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer check --format=txt --verbose --diff --allow-risky=yes --config=.php-cs-fixer.dist.php
 
   phpstan:
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          coverage: none
+          coverage: xdebug
       - run: composer install --no-progress
       - run: vendor/bin/phpstan analyse -c phpstan.${{ matrix.php }}.neon
 
@@ -87,6 +87,6 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          coverage: none
+          coverage: xdebug
       - run: composer install --no-progress
       - run: vendor/bin/composer-dependency-analyser --config=composer-dependency-analyser.php

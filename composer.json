@@ -25,14 +25,14 @@
     },
     "require-dev": {
         "alex-kalanis/kw_paths": ">=4.0 <5",
-        "alex-kalanis/kw_files": ">=4.0 <5",
-        "alex-kalanis/kw_storage": ">=5.0 <6",
+        "alex-kalanis/kw_files": ">=5.0 <6",
+        "alex-kalanis/kw_storage": ">=6.0 <7",
         "ext-pdo": "*",
         "shipmonk/composer-dependency-analyser": "^1.4",
         "friendsofphp/php-cs-fixer": "^3.0",
         "phpstan/phpstan": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": ">=8.0 <=9"
+        "phpunit/phpunit": ">=9.0 <10"
     },
     "suggest": {
         "ext-pdo": "Content stored in database",
@@ -42,6 +42,12 @@
         "ext-mongodb": "Content stored in MongoDB",
         "ext-dba": "Content stored in DBA",
         "ext-odbc": "Content accessible via ODBC",
+        "ext-pdo_mysql": "Access to MySQL/MariaDB database",
+        "ext-pdo_sqlite": "Access to SQLite database",
+        "ext-pdo_pgsql": "Access to Postgres database",
+        "ext-pdo_sqlsrv": "Access to Microsoft database",
+        "ext-oci8": "Access to Oracle database",
+        "ext-pdo_oci": "Access to Oracle database",
         "ext-win32std": "Connect to Win32 API via external library",
         "ext-com_dotnet": "Connect to Win API via .Net platform",
         "alex-kalanis/kw_storage": "Local storage for accessing resources"

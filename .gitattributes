@@ -1,7 +1,13 @@
 * text=auto
 
 # Ignore stuff for export
-/.github     export-ignore
-/doc         export-ignore
-/examples    export-ignore
-/php-tests   export-ignore
+/.github                          export-ignore
+/doc                              export-ignore
+/examples                         export-ignore
+/php-tests                        export-ignore
+/.scrutinizer.yml                 export-ignore
+/.php-cs-fixer.dist.php           export-ignore
+/composer-dependency-analyser.php export-ignore
+/kwcms.json                       export-ignore
+/phpunit.xml                      export-ignore
+/phpstan.8.1.neon                 export-ignore

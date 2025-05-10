@@ -22,7 +22,7 @@ class MySQLi extends ASQL
     protected string $extension = 'mysqli';
     /** @var \mysqli|null */
     protected $connection = null;
-    protected ?\mysqli_stmt $lastStatement;
+    protected ?\mysqli_stmt $lastStatement = null;
 
     public function disconnect(): void
     {
@@ -51,7 +51,9 @@ class MySQLi extends ASQL
         if (!empty($binds)) {
             $statement->bind_param(implode('', $types), ...$binds); // @phpstan-ignore-line
         }
-        $statement->execute();
+        if (!$statement->execute()) {
+            throw new MapperException('mysqli execute error: ' . $statement->error);
+        }
         $result = $statement->get_result();
 
         $this->lastStatement = $statement;
@@ -75,7 +77,10 @@ class MySQLi extends ASQL
         }
         $this->lastStatement = $statement;
 
-        return $statement->execute();
+        if (!$statement->execute()) {
+            throw new MapperException('mysqli execute error: ' . $statement->error);
+        }
+        return true;
     }
 
     /**
@@ -134,16 +139,16 @@ class MySQLi extends ASQL
             $this->connection = $this->connectToServer();
         }
 
-        return (bool) $this->connection->begin_transaction();
+        return $this->connection->begin_transaction();
     }
 
     public function commit(): bool
     {
-        return (bool) $this->connection->commit();
+        return $this->connection->commit();
     }
 
     public function rollBack(): bool
     {
-        return (bool) $this->connection->rollBack();
+        return $this->connection->rollBack();
     }
 }
