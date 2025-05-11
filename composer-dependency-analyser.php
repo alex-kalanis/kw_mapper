@@ -18,6 +18,7 @@ return $config
     ->addPathToScan($sourcePath, false)
 //    ->addPathToScan($testPath . 'CommonTestClass.php', true) // enable after it can read this base test file shared across the all tests, then disable the following line...
     ->ignoreUnknownClasses(['COM', 'Builder', 'Builder2', 'StrObjMock', 'TableIdRecord', 'TableMapper', 'TableRecord', 'XSimpleRecord'])
+    ->ignoreUnknownFunctions(['oci_bind_by_name', 'oci_close', 'oci_commit', 'oci_connect', 'oci_error', 'oci_execute', 'oci_fetch_all', 'oci_num_rows', 'oci_parse', 'oci_rollback'])
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_paths', $sourcePath . 'Mappers' . DIRECTORY_SEPARATOR . 'File' . DIRECTORY_SEPARATOR . 'AFile.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_paths', $sourcePath . 'Mappers' . DIRECTORY_SEPARATOR . 'File' . DIRECTORY_SEPARATOR . 'AFileSource.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
     ->ignoreErrorsOnPackageAndPath('alex-kalanis/kw_files', $sourcePath . 'Mappers' . DIRECTORY_SEPARATOR . 'File' . DIRECTORY_SEPARATOR . 'AFile.php', [ErrorType::DEV_DEPENDENCY_IN_PROD])
