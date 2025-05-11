@@ -25,22 +25,22 @@ class Csv implements IFileFormat
 
     public function unpack(string $content): array
     {
-        $lines = str_getcsv($content, $this->delimitLines); //parse the rows
+        $lines = explode($this->delimitLines, $content);
         $records = [];
         foreach ($lines as &$line) {
             if (empty($line)) {
                 continue;
             }
 
-            $records[] = array_map([$this, 'unescapeNl'], str_getcsv($line));
+            $records[] = array_map([$this, 'unescapeNl'], str_getcsv($line, ',', '"', '\\'));
         }
         return $records;
     }
 
-    public function pack(array $records): string
+    public function pack(array $content): string
     {
         $lines = [];
-        foreach ($records as &$record) {
+        foreach ($content as &$record) {
             $record = (array) $record;
             ksort($record);
             $record[] = ''; // separator on end
@@ -58,13 +58,10 @@ class Csv implements IFileFormat
      * @link https://www.php.net/manual/en/function.str-getcsv.php#88353
      * @codeCoverageIgnore better try it live
      */
-    protected function str_putcsv($array, $delimiter = ',', $enclosure = '"', $terminator = "\n") {
+    protected function str_putcsv(array $array, string $delimiter = ',', string $enclosure = '"', string $terminator = PHP_EOL): string
+    {
         # First convert associative array to numeric indexed array
-        $workArray = [];
-        foreach ($array as $key => $value) {
-            $workArray[] = $value;
-        }
-
+        $workArray = array_values($array);
         $returnString = '';                 # Initialize return string
         $arraySize = count($workArray);     # Get size of array
 
@@ -84,7 +81,7 @@ class Csv implements IFileFormat
                     # Unknown or invalid items for a csv - note: the datatype of array is already handled above, assuming the data is nested
                     case "object":
                     case "resource":
-                    default:         $_spFormat = ''; break;
+                    default:         $_spFormat = '';
                 }
                 $returnString .= sprintf('%2$s'.$_spFormat.'%2$s', $workArray[$i], $enclosure);
                 $returnString .= ($i < ($arraySize-1)) ? $delimiter : $terminator;
@@ -93,5 +90,4 @@ class Csv implements IFileFormat
         # Done the workload, return the output information
         return $returnString;
     }
-
 }
